@@ -121,7 +121,7 @@ struct modemctl {
 	struct wake_lock ip_tx_wakelock;
 	struct wake_lock ip_rx_wakelock;
 
-	struct net_device *ndev;
+	struct net_device **ndev;
 
 	int open_count;
 	int status;
@@ -135,6 +135,8 @@ struct modemctl {
 	unsigned gpio_phone_active;
 	unsigned gpio_pda_active;
 	unsigned gpio_cp_reset;
+
+	int num_pdp_contexts;
 
 	struct miscdevice dev;
 

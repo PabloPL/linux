@@ -608,6 +608,11 @@ static int __devinit modemctl_probe(struct platform_device *pdev)
 	mc->gpio_pda_active = pdata->gpio_pda_active;
 	mc->gpio_cp_reset = pdata->gpio_cp_reset;
 
+	if (pdata->num_pdp_contexts)
+		mc->num_pdp_contexts = pdata->num_pdp_contexts;
+	else
+		mc->num_pdp_contexts = 1;
+
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
 		goto err_free;

@@ -37,6 +37,7 @@ struct modemctl_data {
 	unsigned gpio_phone_active;
 	unsigned gpio_pda_active;
 	unsigned gpio_cp_reset;
+	int num_pdp_contexts;
 };
 
 #endif
