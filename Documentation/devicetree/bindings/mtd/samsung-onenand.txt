@@ -1,0 +1,55 @@
+Device tree bindings for Samsung SoC OneNAND controller
+
+Required properties:
+ - compatible : value should be either of the following.
+   (a) "samsung,s3c6400-onenand" - for onenand controller compatible with
+       S3C6400 SoC,
+   (b) "samsung,s3c6410-onenand" - for onenand controller compatible with
+       S3C6410 SoC,
+   (c) "samsung,s5pv210-onenand" - for onenand controller compatible with
+       S5PC110/S5PV210 SoCs.
+
+ - reg : memory mapped register region for the controller
+ - interrupts : specifier of interrupt signal to which the OneNAND controller
+   is wired; should contain just one entry.
+ - clock-names : should contain two entries:
+   - "bus" - bus clock of the controller,
+   - "onenand" - clock supplied to OneNAND memory via the controller.
+ - clock: should contain list of phandles and specifiers for all clocks listed
+   in clock-names property.
+ - #address-cells : should be 1
+ - #size-cells : should be 1
+ - ranges : must be present
+
+Optional children nodes:
+Individual OneNAND chips are children of the OneNAND controller node. Currently
+only one OneNAND chip is supported.
+
+Required children node properties:
+ - reg : memory mapped register region for the chip.
+ - #address-cells : should be 1
+ - #size-cells : should be 1
+
+Each child device node may optionally contain a 'partitions' sub-node,
+which further contains sub-nodes describing the flash partition mapping.
+See partition.txt for more detail.
+
+Example for an s5pv210 board:
+
+	onenand-controller@b0600000 {
+		compatible = "samsung,s5pv210-onenand";
+		reg = <0xb0600000 0x2000>;
+		interrupt-parent = <&vic1>;
+		interrupts = <31>;
+		clock-names = "bus", "onenand";
+		clocks = <&clocks NANDXL>, <&clocks DOUT_FLASH>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		onenand@b0000000 {
+			reg = <0xb0000000 0x20000>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+		};
+	};
