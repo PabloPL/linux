@@ -14,6 +14,7 @@
  *	S5PC110: use DMA
  */
 
+#include <linux/clk.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/sched.h>
@@ -125,6 +126,7 @@ enum soc_type {
 struct s3c_onenand {
 	struct mtd_info	*mtd;
 	struct platform_device	*pdev;
+	struct clk	*clk_bus;
 	enum soc_type	type;
 	void __iomem	*ctrl_base;
 	void __iomem	*chip_base;
@@ -916,6 +918,10 @@ static int s3c_onenand_probe(struct platform_device *pdev)
 		}
 	}
 
+	onenand->clk_bus = devm_clk_get(&pdev->dev, "bus");
+	if (!IS_ERR(onenand->clk_bus))
+		clk_prepare_enable(onenand->clk_bus);
+	
 	err = onenand_scan(mtd, 1);
 	if (err)
 		return err;
@@ -948,6 +954,8 @@ static int s3c_onenand_remove(struct platform_device *pdev)
 	struct mtd_info *mtd = platform_get_drvdata(pdev);
 
 	onenand_release(mtd);
+	if (!IS_ERR(onenand->clk_bus))
+		clk_disable_unprepare(onenand->clk_bus);
 
 	return 0;
 }
