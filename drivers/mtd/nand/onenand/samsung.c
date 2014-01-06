@@ -123,8 +123,8 @@ struct s3c_onenand {
 	struct mtd_info	*mtd;
 	struct platform_device	*pdev;
 	enum soc_type	type;
-	void __iomem	*base;
-	void __iomem	*ahb_addr;
+	void __iomem	*ctrl_base;
+	void __iomem	*chip_base;
 	int		bootram_command;
 	void		*page_buf;
 	void		*oob_buf;
@@ -144,22 +144,22 @@ static struct s3c_onenand *onenand;
 
 static inline int s3c_read_reg(int offset)
 {
-	return readl(onenand->base + offset);
+	return readl(onenand->ctrl_base + offset);
 }
 
 static inline void s3c_write_reg(int value, int offset)
 {
-	writel(value, onenand->base + offset);
+	writel(value, onenand->ctrl_base + offset);
 }
 
 static inline int s3c_read_cmd(unsigned int cmd)
 {
-	return readl(onenand->ahb_addr + cmd);
+	return readl(onenand->chip_base + cmd);
 }
 
 static inline void s3c_write_cmd(int value, unsigned int cmd)
 {
-	writel(value, onenand->ahb_addr + cmd);
+	writel(value, onenand->chip_base + cmd);
 }
 
 #ifdef SAMSUNG_DEBUG
@@ -861,23 +861,23 @@ static int s3c_onenand_probe(struct platform_device *pdev)
 	s3c_onenand_setup(mtd);
 
 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	onenand->base = devm_ioremap_resource(&pdev->dev, r);
-	if (IS_ERR(onenand->base))
-		return PTR_ERR(onenand->base);
+	onenand->ctrl_base = devm_ioremap_resource(&pdev->dev, r);
+	if (IS_ERR(onenand->ctrl_base))
+		return PTR_ERR(onenand->ctrl_base);
 
 	onenand->phys_base = r->start;
 
 	/* Set onenand_chip also */
-	this->base = onenand->base;
+	this->base = onenand->ctrl_base;
 
 	/* Use runtime badblock check */
 	this->options |= ONENAND_SKIP_UNLOCK_CHECK;
 
 	if (onenand->type != TYPE_S5PC110) {
 		r = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-		onenand->ahb_addr = devm_ioremap_resource(&pdev->dev, r);
-		if (IS_ERR(onenand->ahb_addr))
-			return PTR_ERR(onenand->ahb_addr);
+		onenand->chip_base = devm_ioremap_resource(&pdev->dev, r);
+		if (IS_ERR(onenand->chip_base))
+			return PTR_ERR(onenand->chip_base);
 
 		/* Allocate 4KiB BufferRAM */
 		onenand->page_buf = devm_kzalloc(&pdev->dev, SZ_4K,
