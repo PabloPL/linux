@@ -310,3 +310,7 @@
 &uart3 {
 	status = "okay";
 };
+
+&fimd {
+	status = "okay";
+};
