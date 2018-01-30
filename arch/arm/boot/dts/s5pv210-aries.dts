@@ -282,6 +282,10 @@
 	clock-frequency = <24000000>;
 };
 
+&onenand {
+	status = "okay";
+};
+
 &sdhci2 {
 	bus-width = <4>;
 	non-removable;
