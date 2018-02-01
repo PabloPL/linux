@@ -23,6 +23,7 @@
 
 	aliases {
 		i2c6 = &i2c_pmic;
+		i2c9 = &i2c_fuel;
 	};
 
 	chosen {
@@ -238,6 +239,23 @@
 					};
 				};
 			};
+		};
+	};
+
+	i2c_fuel: i2c-fuel {
+		compatible = "i2c-gpio";
+		gpios = <&mp05 1 0>, /* sda */
+			<&mp05 0 0>; /* scl */
+		i2c-gpio,delay-us = <2>;        /* ~100 kHz */
+		#address-cells = <1>;
+		#size-cells = <0>;
+		status = "okay";
+
+		fuel@36 {
+			compatible = "maxim,max17040";
+			interrupt-parent = <&vic0>;
+			interrupts = <7>;
+			reg = <0x36>;
 		};
 	};
 
