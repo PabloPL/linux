@@ -50,6 +50,10 @@
 			compatible = "maxim,max8998";
 			reg = <0x66>;
 
+			max8998,charge-eoc = <0>;
+			max8998,charge-restart = <(-1)>;
+			max8998,charge-timeout = <7>;
+
 			max8998,pmic-buck1-default-dvs-idx = <1>;
 			max8998,pmic-buck1-dvs-gpios = <&gph0 3 0>,
 							<&gph0 4 0>;
