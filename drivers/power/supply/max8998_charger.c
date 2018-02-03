@@ -8,6 +8,7 @@
 #include <linux/err.h>
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
+#include <linux/of.h>
 #include <linux/slab.h>
 #include <linux/platform_device.h>
 #include <linux/power_supply.h>
@@ -69,6 +70,59 @@ static const struct power_supply_desc max8998_battery_desc = {
 	.num_properties	= ARRAY_SIZE(max8998_battery_props),
 };
 
+static int max8998_pmic_dt_parse_pdata(struct max8998_dev *iodev,
+					struct max8998_platform_data *pdata)
+{
+	struct device_node *pmic_np = iodev->dev->of_node;
+	struct device_node *charger_np;
+	int ret;
+
+	charger_np = of_get_child_by_name(pmic_np, "charger");
+	if (!charger_np) {
+		dev_err(iodev->dev, "could not find charger sub-node\n");
+		return -EINVAL;
+	}
+
+	ret = of_property_read_u32(charger_np,
+					"maxim,end-of-charge-percentage",
+					&pdata->eoc);
+	if (ret < 0) {
+		dev_err(iodev->dev,
+			"Could not find maxim,end-of-charge-percentage in devicetree\n");
+		return ret;
+	}
+
+	ret = of_property_read_u32(charger_np,
+					"maxim,charge-restart-threshold",
+					&pdata->restart);
+	if (ret < 0) {
+		if (ret != -EINVAL) {
+			dev_err(iodev->dev,
+				"Failed to read maxim,charge-restart-threshold\n");
+			return ret;
+		}
+
+		pdata->restart = -1;
+		dev_dbg(iodev->dev, "Charge Restart Threshold disabled\n");
+	}
+
+	ret = of_property_read_u32(charger_np,
+					"maxim,charge-timeout",
+					&pdata->timeout);
+	if (ret < 0) {
+		if (ret != -EINVAL) {
+			dev_err(iodev->dev,
+				"Failed to read maxim,charge-timeout\n");
+			return ret;
+		}
+
+		pdata->timeout = -1;
+		dev_dbg(iodev->dev, "Charge Full Timeout disabled\n");
+	}
+
+	return 0;
+}
+
 static int max8998_battery_probe(struct platform_device *pdev)
 {
 	struct max8998_dev *iodev = dev_get_drvdata(pdev->dev.parent);
@@ -81,6 +135,12 @@ static int max8998_battery_probe(struct platform_device *pdev)
 	if (!pdata) {
 		dev_err(pdev->dev.parent, "No platform init data supplied\n");
 		return -ENODEV;
+	}
+
+	if (IS_ENABLED(CONFIG_OF) && iodev->dev->of_node) {
+		ret = max8998_pmic_dt_parse_pdata(iodev, pdata);
+		if (ret)
+			return ret;
 	}
 
 	max8998 = devm_kzalloc(&pdev->dev, sizeof(struct max8998_battery_data),
