@@ -48,6 +48,25 @@ Additional properties required if max8998,pmic-buck2-dvs-gpio is defined:
 - max8998,pmic-buck2-dvs-voltage: An array of 2 voltage values in microvolts
   for buck2 regulator that can be selected using dvs gpio.
 
+Charger: Configuration for battery charging controller should be added
+inside a child node named 'charger'.
+  Required properties:
+  - maxim,end-of-charge-percentage: End of Charge in percent.
+    When the charge current in constant-voltage phase drops below
+    end-of-charge-percentage of it's start value, charging is terminated.
+    If value equals 0, leave it unchanged. Otherwise it should be value
+    from 10 to 45 by 5 step.
+
+  Optional properties:
+  - maxim,charge-restart-threshold: Charge restart threshold in millivolts.
+    If property is not present, this will be disabled.
+    Valid values are: 0, 100, 150, 200. If the value equals 0, leave it
+    unchanged.
+
+  - maxim,charge-timeout: Charge timeout in hours. If property is not
+    present, this will be disabled. Valid values are: 0, 5, 6, 7.
+    If the value equals 0, leave it unchanged.
+
 Regulators: All the regulators of MAX8998 to be instantiated shall be
 listed in a child node named 'regulators'. Each regulator is represented
 by a child node of the 'regulators' node.
@@ -96,6 +115,13 @@ Example:
 		max8998,pmic-buck2-default-dvs-idx = <0>;
 		max8998,pmic-buck2-dvs-gpio = <&gpx0 0 3 0 0>; /* SET3 */
 		max8998,pmic-buck2-dvs-voltage = <1350000>, <1300000>;
+
+		/* Charger configuration */
+		charger {
+			maxim,end-of-charge-percentage = <20>;
+			maxim,charge-restart-threshold = <100>;
+			maxim,charge-timeout = <7>;
+		};
 
 		/* Regulators to instantiate */
 		regulators {
