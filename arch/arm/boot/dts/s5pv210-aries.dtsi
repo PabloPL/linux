@@ -13,7 +13,9 @@
 
 	aliases {
 		i2c6 = &i2c_pmic;
+		i2c7 = &i2c_musb;
 		i2c9 = &i2c_fuel;
+		i2c10 = &i2c_touchkey;
 	};
 
 	memory@30000000 {
@@ -55,6 +57,22 @@
 		pinctrl-0 = <&wlan_gpio_rst>;
 		post-power-on-delay-ms = <500>;
 		power-off-delay-us = <500>;
+	};
+
+	touchkey_vdd: touchkey-vcc {
+		compatible = "regulator-fixed";
+		regulator-name = "VTOUCH_3.3V";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		enable-active-high;
+		gpio = <&gpj3 2 GPIO_ACTIVE_HIGH>;
+	};
+
+	touchkey_vcc: touchkey-vdd {
+		compatible = "regulator-fixed";
+		regulator-name = "VTOUCH_1.8V";
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
 	};
 
 	i2c_pmic: i2c-gpio-0 {
@@ -134,8 +152,6 @@
 					regulator-name = "VLCD_1.8V";
 					regulator-min-microvolt = <1800000>;
 					regulator-max-microvolt = <1800000>;
-					/* Till we get panel driver */
-					regulator-always-on;
 
 					regulator-state-mem {
 						regulator-off-in-suspend;
@@ -234,8 +250,6 @@
 					regulator-name = "VCC_3.0V_LCD";
 					regulator-min-microvolt = <3000000>;
 					regulator-max-microvolt = <3000000>;
-					/* Till we get panel driver */
-					regulator-always-on;
 
 					regulator-state-mem {
 						regulator-off-in-suspend;
@@ -322,6 +336,43 @@
 		};
 	};
 
+	i2c_touchkey: i2c-gpio-2 {
+		compatible = "i2c-gpio";
+		sda-gpios = <&gpj3 0 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&gpj3 1 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		i2c-gpio,delay-us = <2>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		touchkey@20 {
+			compatible = "cypress,aries-touchkey";
+			reg = <0x20>;
+			vdd-supply = <&touchkey_vdd>;
+			vcc-supply = <&touchkey_vcc>;
+			linux,keycodes = <KEY_MENU KEY_BACK KEY_HOMEPAGE KEY_SEARCH>;
+			interrupt-parent = <&gpj4>;
+			interrupts = <1 IRQ_TYPE_LEVEL_LOW>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&touchkey_irq>;
+		};
+	};
+
+	i2c_musb: i2c-gpio-3 {
+		compatible = "i2c-gpio";
+		sda-gpios = <&gpj3 4 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&gpj3 5 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		i2c-gpio,delay-us = <2>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		fsa9480: musb@25 {
+			compatible = "fcs,fsa9480";
+			reg = <0x25>;
+			interrupt-parent = <&gph2>;
+			interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
+		};
+	};
+
 	vibrator: pwm-vibrator {
 		compatible = "pwm-vibrator";
 		pwms = <&pwm 1 44642 0>;
@@ -337,6 +388,34 @@
 		offset = <0x681c>; /* PS_HOLD_CONTROL */
 		value = <0x5200>;
 	};
+
+	spi_lcd: spi-gpio-0 {
+		compatible = "spi-gpio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		sck-gpios = <&mp04 1 GPIO_ACTIVE_HIGH>;
+		miso-gpios = <&mp04 2 GPIO_ACTIVE_HIGH>;
+		mosi-gpios = <&mp04 3 GPIO_ACTIVE_HIGH>;
+		cs-gpios = <&mp01 1 GPIO_ACTIVE_HIGH>;
+		num-chipselects = <1>;
+
+		panel@0 {
+			compatible = "samsung,s6e63m0";
+			reg = <0>;
+			reset-gpios = <&mp05 5 GPIO_ACTIVE_LOW>;
+			vdd3-supply = <&ldo7_reg>;
+			vci-supply = <&ldo17_reg>;
+			spi-cs-high;
+			spi-max-frequency = <1200000>;
+
+			port {
+				lcd_ep: endpoint {
+					remote-endpoint = <&fimd_ep>;
+				};
+			};
+		};
+	};
 };
 
 &fimd {
@@ -347,18 +426,13 @@
 	samsung,invert-vden;
 	samsung,invert-vclk;
 
-	display-timings {
-		timing-0 {
-			/* 480x800@60Hz */
-			clock-frequency = <25628040>;
-			hactive = <480>;
-			vactive = <800>;
-			hfront-porch = <16>;
-			hback-porch = <16>;
-			hsync-len = <2>;
-			vfront-porch = <28>;
-			vback-porch = <1>;
-			vsync-len = <2>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	port@3 {
+		reg = <3>;
+		fimd_ep: endpoint {
+			remote-endpoint = <&lcd_ep>;
 		};
 	};
 };
@@ -436,6 +510,13 @@
 		samsung,pins = "gpj0-5";
 		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
 		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
+		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
+	};
+
+	touchkey_irq: touchkey-irq {
+		samsung,pins = "gpj4-1";
+		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
+		samsung,pin-pud = <S3C64XX_PIN_PULL_UP>;
 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 	};
 };
