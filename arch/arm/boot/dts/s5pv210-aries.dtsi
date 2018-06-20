@@ -14,6 +14,7 @@
 	aliases {
 		i2c6 = &i2c_pmic;
 		i2c9 = &i2c_fuel;
+		i2c11 = &i2c_gp2a;
 	};
 
 	memory@30000000 {
@@ -296,6 +297,31 @@
 			reg = <0x36>;
 		};
 	};
+
+	i2c_gp2a: i2c-gpio-2 {
+		compatible = "i2c-gpio";
+		sda-gpios = <&gpg2 2 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&gpg0 2 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		i2c-gpio,delay-us = <2>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		gp2a@44 {
+			compatible = "sharp,gp2ap002a00f";
+			reg = <0x44>;
+			vout-gpio = <&gph0 2 GPIO_ACTIVE_HIGH>;
+			interrupt-parent = <&gph0>;
+			interrupts = <2 IRQ_TYPE_EDGE_BOTH>;
+			io-channels = <&adc 9>;
+			io-channel-names = "light";
+			pinctrl-names = "default";
+			pinctrl-0 = <&gp2a_power &gp2a_irq>;
+		};
+	};
+};
+
+&adc {
+	status = "okay";
 };
 
 &fimd {
@@ -343,6 +369,12 @@
 		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
 	};
 
+	gp2a_irq: gp2a-irq {
+		samsung,pins = "gph0-2";
+		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
+		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
+	};
+
 	wifi_host_wake: wifi-host-wake {
 		samsung,pins = "gph2-4";
 		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
@@ -361,6 +393,13 @@
 		samsung,pins = "gph3-5";
 		samsung,pin-function = <EXYNOS_PIN_FUNC_OUTPUT>;
 		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
+	};
+
+	gp2a_power: gp2a-power {
+		samsung,pins = "gpj1-4";
+		samsung,pin-function = <EXYNOS_PIN_FUNC_OUTPUT>;
+		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
+		samsung,pin-val = <1>;
 	};
 };
 
