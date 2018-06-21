@@ -1,0 +1,29 @@
+* Sharp GP2AP002A00F I2C Proximity/Opto Sensor
+
+Required properties:
+- compatible : Should be "sharp,gp2ap002a00f"
+- reg : The I2C address of the sensor
+- vout-gpio : The gpio connected to the vout pin
+- interrupt-parent : should be the phandle for the interrupt controller
+- interrupts : Interrupt mapping for GPIO IRQ, it should by configured with
+		flags IRQ_TYPE_EDGE_BOTH
+
+Optional properties:
+- wakeup : If the device is capable of waking up the system
+- io-channels : Phandle to an ADC channel connected to the light sensor
+- io-channel-names = "light";
+- poll-interval : Poll interval time in milliseconds, default 500ms
+- light-adc-max : Maximum light value reported, default 4096
+- light-adc-fuzz : Fuzz value for reported light value, default 80
+
+Example:
+
+gp2a@44 {
+	compatible = "sharp,gp2ap002a00f";
+	reg = <0x44>;
+	vout-gpio = <&gph0 2 GPIO_ACTIVE_HIGH>;
+	interrupt-parent = <&gph0>;
+	interrupts = <2 IRQ_TYPE_EDGE_BOTH>;
+	io-channels = <&adc 9>;
+	io-channel-names = "light";
+};
