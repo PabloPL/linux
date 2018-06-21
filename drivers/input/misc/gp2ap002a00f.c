@@ -21,6 +21,8 @@
 #include <linux/gpio.h>
 #include <linux/delay.h>
 #include <linux/input/gp2ap002a00f.h>
+#include <linux/of.h>
+#include <linux/of_gpio.h>
 
 struct gp2a_data {
 	struct iio_channel *channel;
@@ -140,12 +142,47 @@ static int gp2a_initialize(struct gp2a_data *dt)
 	return error;
 }
 
+static struct gp2a_platform_data *gp2a_parse_dt_pdata(struct device *dev)
+{
+	struct gp2a_platform_data *pdata;
+	int ret;
+
+	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+	if (!pdata)
+		return ERR_PTR(-ENOMEM);
+
+	pdata->wakeup = of_property_read_bool(dev->of_node, "wakeup");
+
+	pdata->vout_gpio = of_get_named_gpio(dev->of_node, "vout-gpio", 0);
+	if (pdata->vout_gpio < 0) {
+		dev_err(dev, "failed to find vout-gpio");
+		return ERR_PTR(-EINVAL);
+	}
+
+	ret = device_property_read_u32(dev, "light-adc-max",
+				       &pdata->light_adc_max);
+	if (ret)
+		pdata->light_adc_max = 4096;
+	ret = device_property_read_u32(dev, "light-adc-fuzz",
+				       &pdata->light_adc_fuzz);
+	if (ret)
+		pdata->light_adc_fuzz = 80;
+
+	return pdata;
+}
+
 static int gp2a_probe(struct i2c_client *client,
 				const struct i2c_device_id *id)
 {
 	const struct gp2a_platform_data *pdata = dev_get_platdata(&client->dev);
 	struct gp2a_data *dt;
 	int error, value;
+
+	if (IS_ENABLED(CONFIG_OF) && client->dev.of_node) {
+		pdata = gp2a_parse_dt_pdata(&client->dev);
+		if (IS_ERR(pdata))
+			return PTR_ERR(pdata);
+	}
 
 	if (!pdata)
 		return -EINVAL;
@@ -317,6 +354,14 @@ static int __maybe_unused gp2a_resume(struct device *dev)
 
 static SIMPLE_DEV_PM_OPS(gp2a_pm, gp2a_suspend, gp2a_resume);
 
+#if IS_ENABLED(CONFIG_OF)
+static const struct of_device_id gp2a_of_match[] = {
+	{ .compatible = "sharp,gp2ap002a00f" },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, gp2a_of_match);
+#endif
+
 static const struct i2c_device_id gp2a_i2c_id[] = {
 	{ GP2A_I2C_NAME, 0 },
 	{ }
@@ -326,6 +371,7 @@ MODULE_DEVICE_TABLE(i2c, gp2a_i2c_id);
 static struct i2c_driver gp2a_i2c_driver = {
 	.driver = {
 		.name	= GP2A_I2C_NAME,
+		.of_match_table = of_match_ptr(gp2a_of_match),
 		.pm	= &gp2a_pm,
 	},
 	.probe		= gp2a_probe,
