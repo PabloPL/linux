@@ -17,6 +17,7 @@ obj-y				+= amlogic/
 obj-y				+= qcom/
 obj-y				+= renesas/
 obj-$(CONFIG_ARCH_ROCKCHIP)	+= rockchip/
+obj-$(CONFIG_ARCH_S5PV210)	+= s5pv210/
 obj-$(CONFIG_SOC_SAMSUNG)	+= samsung/
 obj-y				+= sunxi/
 obj-$(CONFIG_ARCH_TEGRA)	+= tegra/

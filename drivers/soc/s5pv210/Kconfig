@@ -1,0 +1,22 @@
+#
+# S5PV210 SoC drivers
+#
+menuconfig SOC_S5PV210
+	depends on ARCH_S5PV210 || COMPILE_TEST
+	bool "S5PV210 SoC driver support"
+
+if SOC_S5PV210
+
+config S5PV210_PM_DOMAINS
+	bool "Samsung S5PV210 and S5PC110 PM domains"
+	depends on PM && OF
+	select PM_GENERIC_DOMAINS
+	select PM_GENERIC_DOMAINS_OF
+	default y
+	help
+	  This adds the power domain driver for Samsung S5PV210 and
+	  S5PC110 SoCs.
+
+	  If in doubt, say N.
+
+endif

@@ -1,0 +1,1 @@
+obj-$(CONFIG_S5PV210_PM_DOMAINS) += s5pv210-pm_domains.o
