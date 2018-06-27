@@ -41,6 +41,13 @@
 		};
 	};
 
+	power_domain: power-domain {
+		compatible = "samsung,s5pv210-pd";
+		reg = <0xe010c010 0x20>,
+			<0xe010c204 0x20>;
+		#power-domain-cells = <1>;
+	};
+
 	vibrator_pwr: regulator-fixed-0 {
 		compatible = "regulator-fixed";
 		regulator-name = "vibrator-en";
