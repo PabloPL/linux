@@ -252,6 +252,8 @@ config INPUT_GP2A
 	tristate "Sharp GP2AP002A00F I2C Proximity/Opto sensor driver"
 	depends on I2C
 	depends on GPIOLIB || COMPILE_TEST
+	depends on IIO
+	select INPUT_POLLDEV
 	help
 	  Say Y here if you have a Sharp GP2AP002A00F proximity/als combo-chip
 	  hooked to an I2C bus.

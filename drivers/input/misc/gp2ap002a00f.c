@@ -10,9 +10,12 @@
  */
 
 #include <linux/i2c.h>
+#include <linux/iio/consumer.h>
+#include <linux/iio/iio.h>
 #include <linux/irq.h>
 #include <linux/slab.h>
 #include <linux/input.h>
+#include <linux/input-polldev.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/gpio.h>
@@ -20,7 +23,9 @@
 #include <linux/input/gp2ap002a00f.h>
 
 struct gp2a_data {
+	struct iio_channel *channel;
 	struct input_dev *input;
+	struct input_polled_dev *poll_dev;
 	const struct gp2a_platform_data *pdata;
 	struct i2c_client *i2c_client;
 };
@@ -56,6 +61,19 @@ static irqreturn_t gp2a_irq(int irq, void *handle)
 	gp2a_report(dt);
 
 	return IRQ_HANDLED;
+}
+
+static void gp2a_poll(struct input_polled_dev *dev)
+{
+	struct gp2a_data *dt = dev->private;
+	int ret, value;
+
+	ret = iio_read_channel_processed(dt->channel, &value);
+	if (ret < 0)
+		dev_err(&dt->i2c_client->dev, "failed to read value!");
+
+	input_report_abs(dev->input, ABS_MISC, value);
+	input_sync(dev->input);
 }
 
 static int gp2a_enable(struct gp2a_data *dt)
@@ -127,7 +145,7 @@ static int gp2a_probe(struct i2c_client *client,
 {
 	const struct gp2a_platform_data *pdata = dev_get_platdata(&client->dev);
 	struct gp2a_data *dt;
-	int error;
+	int error, value;
 
 	if (!pdata)
 		return -EINVAL;
@@ -151,6 +169,49 @@ static int gp2a_probe(struct i2c_client *client,
 
 	dt->pdata = pdata;
 	dt->i2c_client = client;
+
+	dt->channel = devm_iio_channel_get(&client->dev, "light");
+	if (!IS_ERR(dt->channel)) {
+		if (!dt->channel->indio_dev) {
+			error = -ENXIO;
+			goto err_hw_shutdown;
+		}
+
+		if (dt->pdata->light_adc_max <= 0 ||
+			dt->pdata->light_adc_fuzz <= 0) {
+			error = -EINVAL;
+			goto err_hw_shutdown;
+		}
+
+		dt->poll_dev = devm_input_allocate_polled_device(&client->dev);
+		if (!dt->poll_dev) {
+			dev_err(&client->dev,
+				"failed to allocate polled input device");
+			error = -ENOMEM;
+			goto err_hw_shutdown;
+		}
+
+		if (!device_property_read_u32(&client->dev, "poll-interval",
+					      &value))
+			dt->poll_dev->poll_interval = value;
+
+		dt->poll_dev->poll = gp2a_poll;
+		dt->poll_dev->private = dt;
+
+		dt->poll_dev->input->name = GP2A_I2C_NAME;
+
+		input_set_capability(dt->poll_dev->input, EV_ABS, ABS_MISC);
+		input_set_abs_params(dt->poll_dev->input, ABS_MISC, 0,
+				     dt->pdata->light_adc_max,
+				     dt->pdata->light_adc_fuzz, 0);
+
+		error = input_register_polled_device(dt->poll_dev);
+		if (error)
+			goto err_hw_shutdown;
+	} else if (PTR_ERR(dt->channel) == -EPROBE_DEFER) {
+		error = -EPROBE_DEFER;
+		goto err_hw_shutdown;
+	}
 
 	error = gp2a_initialize(dt);
 	if (error < 0)
@@ -203,6 +264,8 @@ static int gp2a_remove(struct i2c_client *client)
 	const struct gp2a_platform_data *pdata = dt->pdata;
 
 	input_unregister_device(dt->input);
+	if (dt->poll_dev)
+		input_unregister_polled_device(dt->poll_dev);
 
 	if (pdata->hw_shutdown)
 		pdata->hw_shutdown(client);
@@ -241,6 +304,12 @@ static int __maybe_unused gp2a_resume(struct device *dev)
 		if (dt->input->users)
 			retval = gp2a_enable(dt);
 		mutex_unlock(&dt->input->mutex);
+	}
+
+	if (dt->poll_dev) {
+		/* Out of range value so real value goes through next */
+		input_abs_set_val(dt->poll_dev->input, ABS_MISC,
+				  -dt->pdata->light_adc_max);
 	}
 
 	return retval;
