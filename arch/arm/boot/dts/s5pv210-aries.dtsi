@@ -12,6 +12,7 @@
 	compatible = "samsung,aries", "samsung,s5pv210";
 
 	aliases {
+		i2c5 = &i2c_accel;
 		i2c6 = &i2c_pmic;
 		i2c7 = &i2c_musb;
 		i2c9 = &i2c_fuel;
@@ -410,6 +411,20 @@
 			assigned-clocks = <&clocks MOUT_CLKOUT>;
 			assigned-clock-rates = <0>;
 			assigned-clock-parents = <&xusbxti>;
+		};
+	};
+
+	i2c_accel: i2c-gpio-6 {
+		compatible = "i2c-gpio";
+		sda-gpios = <&gpj3 6 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&gpj3 7 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		i2c-gpio,delay-us = <2>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		accelermoter@38 {
+			compatible = "bosch,bma023";
+			reg = <0x38>;
 		};
 	};
 
