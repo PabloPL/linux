@@ -12,6 +12,7 @@
 	compatible = "samsung,aries", "samsung,s5pv210";
 
 	aliases {
+		i2c5 = &i2c_bma150;
 		i2c6 = &i2c_pmic;
 		i2c9 = &i2c_fuel;
 	};
@@ -319,6 +320,20 @@
 			interrupt-parent = <&vic0>;
 			interrupts = <7>;
 			reg = <0x36>;
+		};
+	};
+
+	i2c_bma150: i2c-gpio-2 {
+		compatible = "i2c-gpio";
+		sda-gpios = <&gpj3 6 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&gpj3 7 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		i2c-gpio,delay-us = <2>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		bma150@38 {
+			compatible = "bosch,bma150";
+			reg = <0x38>;
 		};
 	};
 
