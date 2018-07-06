@@ -1,0 +1,38 @@
+* Bosch BMA150 Accelerometer Sensor
+
+Also works for the SMB380 and BMA023 accelerometers
+
+Required properties:
+- compatible : Should be "bosch,bma150"
+- reg : The I2C address of the sensor
+
+Optional properties:
+- interrupt-parent : should be the phandle for the interrupt controller
+- interrupts : Interrupt mapping for IRQ.  If not present device will be polled
+- any-motion-int : bool for if the any motion interrupt should be enabled
+- hg-int : bool for if the high-G interrupt should be enabled
+- lg-int : bool for if the low-G interrupt should be enabled
+- any-motion-cfg : array of integers for any motion duration and threshold
+- hg-cfg : array of integers for high-G hysterisis, duration, and threshold
+- lg-cfg : array of integers for low-G hysterisis, duration, and threshold
+- range : configuration of range, one of BMA150_RANGE_* as defined in [1]
+- bandwidth : refresh rate of device, one of BMA150_BW_* as defined in [1]
+
+Example:
+
+bma150@38 {
+	compatible = "bosch,bma150";
+	reg = <0x38>;
+	interrupt-parent = <&gph0>;
+	interrupts = <1 IRQ_TYPE_EDGE_RISING>;
+	any-motion-int;
+	hg-int;
+	lg-int;
+	any-motion-cfg = <0 0>;
+	hg-cfg = <0 150 160>;
+	lg-cfg = <0 150 20>;
+	range = <BMA150_RANGE_2G>;
+	bandwidth = <BMA150_BW_50HZ>;
+};
+
+[1] include/dt-bindings/input/bma150.h
