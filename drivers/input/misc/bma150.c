@@ -471,7 +471,7 @@ static int bma150_register_input_device(struct bma150_data *bma150)
 	struct input_dev *idev;
 	int error;
 
-	idev = input_allocate_device();
+	idev = devm_input_allocate_device(&bma150->client->dev);
 	if (!idev)
 		return -ENOMEM;
 
@@ -482,10 +482,8 @@ static int bma150_register_input_device(struct bma150_data *bma150)
 	input_set_drvdata(idev, bma150);
 
 	error = input_register_device(idev);
-	if (error) {
-		input_free_device(idev);
+	if (error)
 		return error;
-	}
 
 	bma150->input = idev;
 	return 0;
@@ -496,7 +494,7 @@ static int bma150_register_polled_device(struct bma150_data *bma150)
 	struct input_polled_dev *ipoll_dev;
 	int error;
 
-	ipoll_dev = input_allocate_polled_device();
+	ipoll_dev = devm_input_allocate_polled_device(&bma150->client->dev);
 	if (!ipoll_dev)
 		return -ENOMEM;
 
@@ -511,10 +509,8 @@ static int bma150_register_polled_device(struct bma150_data *bma150)
 	bma150_init_input_device(bma150, ipoll_dev->input);
 
 	error = input_register_polled_device(ipoll_dev);
-	if (error) {
-		input_free_polled_device(ipoll_dev);
+	if (error)
 		return error;
-	}
 
 	bma150->input_polled = ipoll_dev;
 	bma150->input = ipoll_dev->input;
@@ -543,7 +539,8 @@ static int bma150_probe(struct i2c_client *client,
 		return -EINVAL;
 	}
 
-	bma150 = kzalloc(sizeof(struct bma150_data), GFP_KERNEL);
+	bma150 = devm_kzalloc(&client->dev, sizeof(struct bma150_data),
+			      GFP_KERNEL);
 	if (!bma150)
 		return -ENOMEM;
 
@@ -556,7 +553,7 @@ static int bma150_probe(struct i2c_client *client,
 				dev_err(&client->dev,
 					"IRQ GPIO conf. error %d, error %d\n",
 					client->irq, error);
-				goto err_free_mem;
+				return error;
 			}
 		}
 		cfg = &pdata->cfg;
@@ -566,14 +563,14 @@ static int bma150_probe(struct i2c_client *client,
 
 	error = bma150_initialize(bma150, cfg);
 	if (error)
-		goto err_free_mem;
+		return error;
 
 	if (client->irq > 0) {
 		error = bma150_register_input_device(bma150);
 		if (error)
-			goto err_free_mem;
+			return error;
 
-		error = request_threaded_irq(client->irq,
+		error = devm_request_threaded_irq(&client->dev, client->irq,
 					NULL, bma150_irq_thread,
 					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
 					BMA150_DRIVER, bma150);
@@ -581,13 +578,12 @@ static int bma150_probe(struct i2c_client *client,
 			dev_err(&client->dev,
 				"irq request failed %d, error %d\n",
 				client->irq, error);
-			input_unregister_device(bma150->input);
-			goto err_free_mem;
+			return error;
 		}
 	} else {
 		error = bma150_register_polled_device(bma150);
 		if (error)
-			goto err_free_mem;
+			return error;
 	}
 
 	i2c_set_clientdata(client, bma150);
@@ -595,27 +591,11 @@ static int bma150_probe(struct i2c_client *client,
 	pm_runtime_enable(&client->dev);
 
 	return 0;
-
-err_free_mem:
-	kfree(bma150);
-	return error;
 }
 
 static int bma150_remove(struct i2c_client *client)
 {
-	struct bma150_data *bma150 = i2c_get_clientdata(client);
-
 	pm_runtime_disable(&client->dev);
-
-	if (client->irq > 0) {
-		free_irq(client->irq, bma150);
-		input_unregister_device(bma150->input);
-	} else {
-		input_unregister_polled_device(bma150->input_polled);
-		input_free_polled_device(bma150->input_polled);
-	}
-
-	kfree(bma150);
 
 	return 0;
 }
