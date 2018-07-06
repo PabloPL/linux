@@ -29,16 +29,16 @@ struct bma150_cfg {
 	bool any_motion_int;		/* Set to enable any-motion interrupt */
 	bool hg_int;			/* Set to enable high-G interrupt */
 	bool lg_int;			/* Set to enable low-G interrupt */
-	unsigned char any_motion_dur;	/* Any-motion duration */
-	unsigned char any_motion_thres;	/* Any-motion threshold */
-	unsigned char hg_hyst;		/* High-G hysterisis */
-	unsigned char hg_dur;		/* High-G duration */
-	unsigned char hg_thres;		/* High-G threshold */
-	unsigned char lg_hyst;		/* Low-G hysterisis */
-	unsigned char lg_dur;		/* Low-G duration */
-	unsigned char lg_thres;		/* Low-G threshold */
-	unsigned char range;		/* one of BMA0150_RANGE_xxx */
-	unsigned char bandwidth;	/* one of BMA0150_BW_xxx */
+	u32 any_motion_dur;		/* Any-motion duration */
+	u32 any_motion_thres;		/* Any-motion threshold */
+	u32 hg_hyst;			/* High-G hysterisis */
+	u32 hg_dur;			/* High-G duration */
+	u32 hg_thres;			/* High-G threshold */
+	u32 lg_hyst;			/* Low-G hysterisis */
+	u32 lg_dur;			/* Low-G duration */
+	u32 lg_thres;			/* Low-G threshold */
+	u32 range;			/* one of BMA0150_RANGE_xxx */
+	u32 bandwidth;			/* one of BMA0150_BW_xxx */
 };
 
 struct bma150_platform_data {
