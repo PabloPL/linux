@@ -13,6 +13,7 @@
 
 	aliases {
 		i2c6 = &i2c_pmic;
+		i2c7 = &i2c_musb;
 		i2c9 = &i2c_fuel;
 		i2c10 = &i2c_touchkey;
 	};
@@ -358,6 +359,23 @@
 			pinctrl-names = "default";
 			pinctrl-0 = <&touchkey_irq>;
 		};
+	};
+
+	i2c_musb: i2c-gpio-4 {
+		compatible = "i2c-gpio";
+		sda-gpios = <&gpj3 4 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&gpj3 5 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		i2c-gpio,delay-us = <2>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		musb@25 {
+			compatible = "fcs,fsa9480";
+			reg = <0x25>;
+			interrupt-parent = <&gph2>;
+			interrupts = <7 0>;
+		};
+	};
 
 	vibrator: pwm-vibrator {
 		compatible = "pwm-vibrator";
