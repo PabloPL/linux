@@ -497,6 +497,14 @@ static const struct arch_timer_erratum_workaround ool_workarounds[] = {
 		.disable_compat_vdso = true,
 	},
 #endif
+#ifdef CONFIG_ARCH_TIMER_REGISTERS_NOT_FW_CONFIGURED
+	{
+		.match_type = ate_match_dt,
+		.id = "arm,cpu-registers-not-fw-configured",
+		.desc = "broken CPU firmware (timer registers not configured)",
+		.read_cntvct_el0 = arch_counter_get_cntpct,
+	},
+#endif
 };
 
 typedef bool (*ate_match_fn_t)(const struct arch_timer_erratum_workaround *,
@@ -1400,9 +1408,10 @@ static int __init arch_timer_of_init(struct device_node *np)
 	 * If we cannot rely on firmware initializing the timer registers then
 	 * we should use the physical timers instead.
 	 */
-	if (IS_ENABLED(CONFIG_ARM) &&
-	    of_property_read_bool(np, "arm,cpu-registers-not-fw-configured"))
-		arch_timer_uses_ppi = ARCH_TIMER_PHYS_SECURE_PPI;
+	if (of_property_read_bool(np, "arm,cpu-registers-not-fw-configured"))
+		arch_timer_uses_ppi = IS_ENABLED(CONFIG_ARM64) ?
+					ARCH_TIMER_PHYS_NONSECURE_PPI :
+					ARCH_TIMER_PHYS_SECURE_PPI;
 	else
 		arch_timer_uses_ppi = arch_timer_select_ppi();
 

@@ -368,6 +368,17 @@ config SUN50I_ERRATUM_UNKNOWN1
 	  the Allwinner A64 SoC. The workaround will only be active if the
 	  allwinner,erratum-unknown1 property is found in the timer node.
 
+config ARCH_TIMER_REGISTERS_NOT_FW_CONFIGURED
+	bool "Workaround for arch timer registers not configured by firmware"
+	default y
+	select ARM_ARCH_TIMER_OOL_WORKAROUND
+	depends on ARM_ARCH_TIMER && ARM64
+	help
+	  This option enables a workaround for boards, on which arch timer
+	  registers are not properly configured by the board firmware.
+	  The workaround will be dynamically enabled when an affected
+	  board is detected.
+
 config ARM_GLOBAL_TIMER
 	bool "Support for the ARM global timer" if COMPILE_TEST
 	select TIMER_OF if OF
