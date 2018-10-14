@@ -632,7 +632,7 @@ static const struct samsung_gate_clock s5pv210_gate_clks[] __initconst = {
 	GATE(CLK_G2D, "g2d", "dout_hclkd", CLK_GATE_IP0, 12, 0, 0),
 	GATE(CLK_G3D, "g3d", "dout_hclkm", CLK_GATE_IP0, 8, 0, 0),
 	GATE(CLK_IMEM, "imem", "dout_hclkm", CLK_GATE_IP0, 5, 0, 0),
-	GATE(CLK_PDMA1, "pdma1", "dout_hclkp", CLK_GATE_IP0, 4, 0, 0),
+	GATE(CLK_PDMA1, "pdma1", "pdma0", CLK_GATE_IP0, 4, 0, 0),
 
 	GATE(CLK_NFCON, "nfcon", "dout_hclkp", CLK_GATE_IP1, 28, 0, 0),
 	GATE(CLK_CFCON, "cfcon", "dout_hclkp", CLK_GATE_IP1, 25, 0, 0),
