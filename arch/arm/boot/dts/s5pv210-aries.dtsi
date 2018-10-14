@@ -296,6 +296,59 @@
 			reg = <0x36>;
 		};
 	};
+
+	i2c_sound: i2c-gpio-2 {
+		compatible = "i2c-gpio";
+		sda-gpios = <&mp05 3 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&mp05 2 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		i2c-gpio,delay-us = <2>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		wm8994: wm8994@1a {
+			compatible = "wlf,wm8994";
+			reg = <0x1a>;
+
+			gpio-controller;
+			#gpio-cells = <2>;
+
+			clocks = <&xusbxti>;
+			clock-names = "MCLK1";
+
+			AVDD2-supply = <&buck3_reg>;
+			CPVDD-supply = <&buck3_reg>;
+			DBVDD-supply = <&buck3_reg>;
+			DCVDD-supply = <&dcvdd>;
+			SPKVDD1-supply = <&buck3_reg>;
+			SPKVDD2-supply = <&buck3_reg>;
+
+			wlf,gpio-cfg = <0x0001 0xa101 0x8100 0x8100 0x8100 0xa101
+				0x0100 0x8100 0x0100 0x0100 0x0100>;
+
+			wlf,ldo1ena = <&gpf3 4 GPIO_ACTIVE_HIGH>;
+
+			lineout1-se;
+			lineout2-se;
+
+			assigned-clocks = <&clocks MOUT_CLKOUT>;
+			assigned-clock-rates = <0>;
+			assigned-clock-parents = <&xusbxti>;
+		};
+	};
+
+	dcvdd: fixed-regulator@0 {
+		compatible = "regulator-fixed";
+		regulator-name = "DCVDD_1.0V";
+		regulator-min-microvolt = <1000000>;
+		regulator-max-microvolt = <1000000>;
+	};
+
+	sound {
+		compatible = "samsung,smdk-wm8994";
+
+		samsung,i2s-controller = <&i2s0>;
+		samsung,audio-codec = <&wm8994>;
+	};
 };
 
 &fimd {
@@ -326,6 +379,10 @@
 	vusb_a-supply = <&ldo8_reg>;
 	vusb_d-supply = <&ldo3_reg>;
 	dr_mode = "peripheral";
+	status = "okay";
+};
+
+&i2s0 {
 	status = "okay";
 };
 
