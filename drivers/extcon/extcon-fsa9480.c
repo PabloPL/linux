@@ -70,6 +70,10 @@
 #define DEV_AUDIO_2		1
 #define DEV_AUDIO_1		0
 
+#define DEV_T1_USB_MASK		(DEV_USB_OTG | DEV_USB)
+#define DEV_T1_UART_MASK	(DEV_UART)
+#define DEV_T1_CHARGER_MASK	(DEV_DEDICATED_CHG | DEV_USB_CHG)
+
 /* Device Type 2 */
 #define DEV_AV			14
 #define DEV_TTY			13
@@ -78,6 +82,11 @@
 #define DEV_JIG_UART_ON		10
 #define DEV_JIG_USB_OFF		9
 #define DEV_JIG_USB_ON		8
+
+#define DEV_T2_USB_MASK		(DEV_JIG_USB_OFF | DEV_JIG_USB_ON)
+#define DEV_T2_UART_MASK	(DEV_JIG_UART_OFF | DEV_JIG_UART_ON)
+#define DEV_T2_JIG_MASK		(DEV_JIG_USB_OFF | DEV_JIG_USB_ON | \
+				DEV_JIG_UART_OFF | DEV_JIG_UART_ON)
 
 /*
  * Manual Switch
@@ -105,6 +114,7 @@ struct fsa9480_usbsw {
 	struct i2c_client *client;
 	struct extcon_dev *edev;
 	u16 dev;
+	u16 mansw;
 };
 
 static const unsigned int max8998_extcon_cable[] = {
@@ -172,6 +182,91 @@ static int fsa9480_read_irq(struct i2c_client *client, int *value)
 	return ret;
 }
 
+static void fsa9480_set_switch(struct i2c_client *client, const char *buf)
+{
+	struct  fsa9480_usbsw *usbsw = i2c_get_clientdata(client);
+	unsigned int value;
+	unsigned int path = 0;
+
+	value = fsa9480_read_reg(client, FSA9480_REG_CTRL);
+
+	if (!strncmp(buf, "VAUDIO", 6)) {
+		path = SW_VAUDIO;
+		value &= ~CON_MANUAL_SW;
+	} else if (!strncmp(buf, "UART", 4)) {
+		path = SW_UART;
+		value &= ~CON_MANUAL_SW;
+	} else if (!strncmp(buf, "AUDIO", 5)) {
+		path = SW_AUDIO;
+		value &= ~CON_MANUAL_SW;
+	} else if (!strncmp(buf, "DHOST", 5)) {
+		path = SW_DHOST;
+		value &= ~CON_MANUAL_SW;
+	} else if (!strncmp(buf, "AUTO", 4)) {
+		path = SW_AUTO;
+		value |= CON_MANUAL_SW;
+	} else {
+		printk(KERN_ERR "Wrong command\n");
+		return;
+	}
+
+	usbsw->mansw = path;
+	fsa9480_write_reg(client, FSA9480_REG_MANSW1, path);
+	fsa9480_write_reg(client, FSA9480_REG_CTRL, value);
+}
+
+static ssize_t fsa9480_get_switch(struct i2c_client *client, char *buf)
+{
+	unsigned int value;
+
+	value = fsa9480_read_reg(client, FSA9480_REG_MANSW1);
+
+	if (value == SW_VAUDIO)
+		return sprintf(buf, "VAUDIO\n");
+	else if (value == SW_UART)
+		return sprintf(buf, "UART\n");
+	else if (value == SW_AUDIO)
+		return sprintf(buf, "AUDIO\n");
+	else if (value == SW_DHOST)
+		return sprintf(buf, "DHOST\n");
+	else if (value == SW_AUTO)
+		return sprintf(buf, "AUTO\n");
+	else
+		return sprintf(buf, "%x", value);
+}
+
+static ssize_t fsa9480_show_manualsw(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+
+	return fsa9480_get_switch(client, buf);
+
+}
+
+static ssize_t fsa9480_set_manualsw(struct device *dev,
+				    struct device_attribute *attr,
+				    const char *buf, size_t count)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+
+	fsa9480_set_switch(client, buf);
+
+	return count;
+}
+
+static DEVICE_ATTR(switch, S_IRUGO | S_IWUSR,
+		fsa9480_show_manualsw, fsa9480_set_manualsw);
+
+static struct attribute *fsa9480_attributes[] = {
+	&dev_attr_switch.attr,
+	NULL
+};
+
+static const struct attribute_group fsa9480_group = {
+	.attrs = fsa9480_attributes,
+};
+
 static void fsa9480_handle_change(struct fsa9480_usbsw *usbsw,
 				  u16 mask, bool attached)
 {
@@ -205,6 +300,9 @@ static void fsa9480_detect_dev(struct fsa9480_usbsw *usbsw)
 	val = val2 << 8 | val1;
 
 	dev_info(&client->dev, "dev1: 0x%x, dev2: 0x%x\n", val1, val2);
+
+	if (usbsw->mansw && (val1 & DEV_T1_USB_MASK || val2 & DEV_T2_USB_MASK))
+		fsa9480_write_reg(client, FSA9480_REG_MANSW1, usbsw->mansw);
 
 	/* handle detached cables first */
 	fsa9480_handle_change(usbsw, usbsw->dev & ~val, false);
@@ -286,11 +384,20 @@ static int fsa9480_probe(struct i2c_client *client,
 	device_init_wakeup(&client->dev, true);
 	fsa9480_detect_dev(info);
 
+	ret = sysfs_create_group(&client->dev.kobj, &fsa9480_group);
+	if (ret) {
+		dev_err(&client->dev,
+				"failed to create fsa9480 attribute group\n");
+		return ret;
+	}
+
 	return 0;
 }
 
 static int fsa9480_remove(struct i2c_client *client)
 {
+	sysfs_remove_group(&client->dev.kobj, &fsa9480_group);
+
 	return 0;
 }
 
