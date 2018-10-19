@@ -18,6 +18,7 @@
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include <linux/types.h>
 #include <linux/i2c.h>
 #include <linux/slab.h>
 #include <linux/bitops.h>
@@ -106,48 +107,34 @@ struct fsa9480_usbsw {
 	u16 dev;
 };
 
-enum fsa9480_cable_type {
-	EXTCON_CABLE_USB_HOST,
-	EXTCON_CABLE_USB,
-	EXTCON_CABLE_UART,
-	EXTCON_CABLE_CHARGER,
-	EXTCON_CABLE_JIG,
-	EXTCON_CABLE_AUDIO,
-	EXTCON_CABLE_VIDEO,
-	EXTCON_CABLE_TTY,
-
-	_EXTCON_CABLE_NUM,
-};
-
 static const unsigned int max8998_extcon_cable[] = {
-	EXTCON_CABLE_USB_HOST,
-	EXTCON_CABLE_USB,
-	EXTCON_CABLE_UART,
-	EXTCON_CABLE_CHARGER,
-	EXTCON_CABLE_JIG,
-	EXTCON_CABLE_AUDIO,
-	EXTCON_CABLE_VIDEO,
-	EXTCON_CABLE_TTY,
+	EXTCON_USB_HOST,
+	EXTCON_USB,
+	EXTCON_CHG_USB_SDP,
+	EXTCON_CHG_USB_ACA,
+	EXTCON_JACK_LINE_OUT,
+	EXTCON_JACK_VIDEO_OUT,
+	EXTCON_JIG,
 
 	EXTCON_NONE,
 };
 
-static const enum fsa9480_cable_type cable_types[] = {
-	[DEV_USB_OTG] = BIT(EXTCON_CABLE_USB_HOST),
-	[DEV_DEDICATED_CHG] = BIT(EXTCON_CABLE_CHARGER),
-	[DEV_USB_CHG] = BIT(EXTCON_CABLE_CHARGER),
-	[DEV_CAR_KIT] = BIT(EXTCON_CABLE_CHARGER) | BIT(EXTCON_CABLE_AUDIO),
-	[DEV_UART] = BIT(EXTCON_CABLE_UART),
-	[DEV_USB] = BIT(EXTCON_CABLE_USB),
-	[DEV_AUDIO_2] = BIT(EXTCON_CABLE_AUDIO),
-	[DEV_AUDIO_1] = BIT(EXTCON_CABLE_AUDIO),
-	[DEV_AV] = BIT(EXTCON_CABLE_AUDIO) | BIT(EXTCON_CABLE_VIDEO),
-	[DEV_TTY] = BIT(EXTCON_CABLE_TTY),
-	[DEV_PPD] = 0, /* TODO */
-	[DEV_JIG_UART_OFF] = BIT(EXTCON_CABLE_UART) | BIT(EXTCON_CABLE_JIG),
-	[DEV_JIG_UART_ON] = BIT(EXTCON_CABLE_UART) | BIT(EXTCON_CABLE_JIG),
-	[DEV_JIG_USB_OFF] = BIT(EXTCON_CABLE_USB) | BIT(EXTCON_CABLE_JIG),
-	[DEV_JIG_USB_ON] = BIT(EXTCON_CABLE_USB) | BIT(EXTCON_CABLE_JIG),
+static const u64 cable_types[] = {
+	[DEV_USB_OTG] = BIT_ULL(EXTCON_USB_HOST),
+	[DEV_DEDICATED_CHG] = BIT_ULL(EXTCON_USB) | BIT_ULL(EXTCON_CHG_USB_DCP),
+	[DEV_USB_CHG] = BIT_ULL(EXTCON_USB) | BIT_ULL(EXTCON_CHG_USB_SDP),
+	[DEV_CAR_KIT] = BIT_ULL(EXTCON_USB) | BIT_ULL(EXTCON_CHG_USB_SDP) | BIT_ULL(EXTCON_JACK_LINE_OUT),
+	[DEV_UART] = BIT_ULL(EXTCON_JIG),
+	[DEV_USB] = BIT_ULL(EXTCON_USB) | BIT_ULL(EXTCON_CHG_USB_SDP),
+	[DEV_AUDIO_2] = BIT_ULL(EXTCON_JACK_LINE_OUT),
+	[DEV_AUDIO_1] = BIT_ULL(EXTCON_JACK_LINE_OUT),
+	[DEV_AV] = BIT_ULL(EXTCON_JACK_LINE_OUT) | BIT_ULL(EXTCON_JACK_VIDEO_OUT),
+	[DEV_TTY] = BIT_ULL(EXTCON_JIG),
+	[DEV_PPD] = BIT_ULL(EXTCON_JACK_LINE_OUT) | BIT_ULL(EXTCON_CHG_USB_ACA),
+	[DEV_JIG_UART_OFF] = BIT_ULL(EXTCON_JIG),
+	[DEV_JIG_UART_ON] = BIT_ULL(EXTCON_JIG),
+	[DEV_JIG_USB_OFF] = BIT_ULL(EXTCON_USB) | BIT_ULL(EXTCON_JIG),
+	[DEV_JIG_USB_ON] = BIT_ULL(EXTCON_USB) | BIT_ULL(EXTCON_JIG),
 };
 
 static int fsa9480_write_reg(struct i2c_client *client, int reg, int value)
@@ -189,17 +176,17 @@ static void fsa9480_handle_change(struct fsa9480_usbsw *usbsw,
 				  u16 mask, bool attached)
 {
 	while (mask) {
-		int dev = fls(mask) - 1;
-		int cables = cable_types[dev];
+		int dev = fls64(mask) - 1;
+		u64 cables = cable_types[dev];
 
 		while (cables) {
-			int cable = fls(cables) - 1;
+			int cable = fls64(cables) - 1;
 
 			extcon_set_state_sync(usbsw->edev, cable, attached);
-			cables &= ~BIT(cable);
+			cables &= ~BIT_ULL(cable);
 		}
 
-		mask &= ~BIT(dev);
+		mask &= ~BIT_ULL(dev);
 	}
 }
 
