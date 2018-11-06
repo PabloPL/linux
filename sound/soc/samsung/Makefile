@@ -19,6 +19,7 @@ obj-$(CONFIG_SND_SAMSUNG_I2S) += snd-soc-i2s.o
 obj-$(CONFIG_SND_SAMSUNG_I2S) += snd-soc-idma.o
 
 # S3C24XX Machine Support
+snd-soc-aries-wm8994-objs := aries_wm8994.o
 snd-soc-jive-wm8750-objs := jive_wm8750.o
 snd-soc-neo1973-wm8753-objs := neo1973_wm8753.o
 snd-soc-s3c24xx-uda134x-objs := s3c24xx_uda134x.o
@@ -42,6 +43,7 @@ snd-soc-odroid-objs := odroid.o
 snd-soc-arndale-rt5631-objs := arndale_rt5631.o
 snd-soc-tm2-wm5110-objs := tm2_wm5110.o
 
+obj-$(CONFIG_SND_SOC_SAMSUNG_ARIES_WM8994) += snd-soc-aries-wm8994.o
 obj-$(CONFIG_SND_SOC_SAMSUNG_JIVE_WM8750) += snd-soc-jive-wm8750.o
 obj-$(CONFIG_SND_SOC_SAMSUNG_NEO1973_WM8753) += snd-soc-neo1973-wm8753.o
 obj-$(CONFIG_SND_SOC_SAMSUNG_S3C24XX_UDA134X) += snd-soc-s3c24xx-uda134x.o

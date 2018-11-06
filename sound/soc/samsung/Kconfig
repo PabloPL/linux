@@ -30,6 +30,16 @@ config SND_SAMSUNG_SPDIF
 config SND_SAMSUNG_I2S
 	tristate "Samsung I2S interface support"
 
+config SND_SOC_SAMSUNG_ARIES_WM8994
+	tristate "SoC I2S Audio support for WM8994 on Aries"
+	depends on I2C
+	select MFD_WM8994
+	select SND_SOC_WM8994
+	select SND_SAMSUNG_I2S
+	help
+		Say Y if you want to add support for SoC audio on Aries
+		smartphones.
+
 config SND_SOC_SAMSUNG_NEO1973_WM8753
 	tristate "Audio support for Openmoko Neo1973 Smartphones (GTA02)"
 	depends on MACH_NEO1973_GTA02
