@@ -393,6 +393,7 @@ static struct snd_soc_dai_link aries_dai[] = {
 		.name = "WM8994 AIF1",
 		.stream_name = "Pri_Dai",
 		.codec_dai_name = "wm8994-aif1",
+		.cpu_dai_name = SAMSUNG_I2S_DAI,
 		.dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
 			SND_SOC_DAIFMT_CBM_CFM,
 		.ops = &aries_ops,
