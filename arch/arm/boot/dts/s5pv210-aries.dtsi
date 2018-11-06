@@ -369,11 +369,47 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 
-		musb@25 {
+		fsa9480: musb@25 {
 			compatible = "fcs,fsa9480";
 			reg = <0x25>;
 			interrupt-parent = <&gph2>;
 			interrupts = <7 0>;
+		};
+	};
+
+	i2c_sound: i2c-gpio-5 {
+		compatible = "i2c-gpio";
+		sda-gpios = <&mp05 3 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&mp05 2 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		i2c-gpio,delay-us = <2>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		wm8994: wm8994@1a {
+			compatible = "wlf,wm8994";
+			reg = <0x1a>;
+
+			gpio-controller;
+			#gpio-cells = <2>;
+
+			clocks = <&xusbxti>;
+			clock-names = "MCLK1";
+
+			AVDD2-supply = <&buck3_reg>;
+			CPVDD-supply = <&buck3_reg>;
+			DBVDD-supply = <&buck3_reg>;
+			DCVDD-supply = <&dcvdd>;
+			SPKVDD1-supply = <&buck3_reg>;
+			SPKVDD2-supply = <&buck3_reg>;
+
+			wlf,gpio-cfg = <0xa101 0x8100 0x0100 0x0100 0x8100 0xa101
+					0x0100 0x8100 0x0100 0x0100 0x0100>;
+
+			wlf,ldo1ena = <&gpf3 4 GPIO_ACTIVE_HIGH>;
+
+			assigned-clocks = <&clocks MOUT_CLKOUT>;
+			assigned-clock-rates = <0>;
+			assigned-clock-parents = <&xusbxti>;
 		};
 	};
 
@@ -392,6 +428,17 @@
 		offset = <0x681c>; /* PS_HOLD_CONTROL */
 		value = <0x5200>;
 	};
+
+	dcvdd: regulator-fixed-1 {
+		compatible = "regulator-fixed";
+		regulator-name = "DCVDD_1.0V";
+		regulator-min-microvolt = <1000000>;
+		regulator-max-microvolt = <1000000>;
+	};
+};
+
+&adc {
+	status = "okay";
 };
 
 &fimd {
@@ -440,6 +487,10 @@
 		pinctrl-0 = <&ts_irq>;
 		reset-gpios = <&gpj1 3 GPIO_ACTIVE_HIGH>;
 	};
+};
+
+&i2s0 {
+	status = "okay";
 };
 
 &mfc {

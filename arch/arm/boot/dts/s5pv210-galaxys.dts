@@ -3,6 +3,7 @@
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
+#include <dt-bindings/sound/audio-jack-events.h>
 #include "s5pv210-aries.dtsi"
 
 / {
@@ -86,6 +87,64 @@
 		pinctrl-0 = <&onedram_int &eint15 &cp_rst &pda_active>;
 		pinctrl-names = "default";
 	};
+
+	shared_micbias_reg: regulator-shared-micbias {
+		compatible = "regulator-fixed";
+		regulator-name = "Shared_Micbias";
+		gpio = <&gpj4 2 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+	};
+
+	sound {
+		compatible = "samsung,aries-wm8994";
+
+		samsung,i2s-controller = <&i2s0>;
+		samsung,audio-codec = <&wm8994>;
+
+		earpath-sel-gpios = <&gpj2 6 GPIO_ACTIVE_HIGH>;
+		main-micbias-supply = <&shared_micbias_reg>;
+		headset-micbias-supply = <&shared_micbias_reg>;
+
+		io-channels = <&adc 3>;
+		io-channel-names = "headset-detect";
+		headset-detect-gpios = <&gph0 6 GPIO_ACTIVE_HIGH>;
+		headset-key-gpios = <&gph3 6 GPIO_ACTIVE_HIGH>;
+		jack-det-adcs = <0 900 2000 3400 2147483647>;
+		jack-det-delays = <20 10 10 10 10>;
+		jack-det-counts = <25 80 80 10 200>;
+		jack-types = <JACK_HEADPHONE JACK_HEADPHONE JACK_HEADPHONE (JACK_HEADPHONE | JACK_MICROPHONE) JACK_HEADPHONE>;
+
+
+		dock-extcon = <&fsa9480>;
+
+		model = "Aries";
+		samsung,audio-routing =
+			"HP", "HPOUT1L",
+			"HP", "HPOUT1R",
+
+			"SPK", "SPKOUTLN",
+			"SPK", "SPKOUTLP",
+			"SPK", "SPKOUTRN",
+			"SPK", "SPKOUTRP",
+
+			"RCV", "HPOUT2N",
+			"RCV", "HPOUT2P",
+
+			"LINE", "LINEOUT2N",
+			"LINE", "LINEOUT2P",
+
+			"IN1LP", "Main Mic",
+			"IN1LN", "Main Mic",
+
+			"IN1RP", "Headset Mic",
+			"IN1RN", "Headset Mic",
+
+			"IN2LN", "FM In",
+			"IN2RN", "FM In";
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&jack_det_irq &media_key_irq>;
+	};
 };
 
 &pinctrl0 {
@@ -117,6 +176,16 @@
 	pda_active: pda-active {
 		samsung,pins = "mp03-3";
 		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
+	};
+
+	jack_det_irq: jack-det-irq {
+		samsung,pins = "gph0-6";
+		samsung,pin-function = <EXYNOS_PIN_FUNC_EINT>;
+	};
+
+	media_key_irq: media-key-irq {
+		samsung,pins = "gph3-6";
+		samsung,pin-function = <EXYNOS_PIN_FUNC_EINT>;
 	};
 };
 
