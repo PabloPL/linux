@@ -34,7 +34,7 @@ struct net_device;
 
 struct m_pipe {
 	int (*push_header)(struct modem_io *io, void *header);
-	int (*pull_header)(struct modem_io *io, void *header);
+	int (*pull_header)(struct modem_io *io, void *header, bool is_ste_modem);
 
 	unsigned header_size;
 
@@ -135,8 +135,16 @@ struct modemctl {
 	unsigned gpio_phone_active;
 	unsigned gpio_pda_active;
 	unsigned gpio_cp_reset;
+	unsigned gpio_phone_on;
+	unsigned gpio_int_resout;
+	unsigned gpio_cp_pwr_rst;
+
+	bool is_ste_modem;
 
 	int num_pdp_contexts;
+
+	struct regulator *cp_rtc_regulator;
+	struct regulator *cp_32khz_regulator;
 
 	struct miscdevice dev;
 

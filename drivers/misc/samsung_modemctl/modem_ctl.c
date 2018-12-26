@@ -31,6 +31,7 @@
 #include <linux/gpio.h>
 #include <linux/delay.h>
 #include <linux/wakelock.h>
+#include <linux/regulator/consumer.h>
 
 #include "modem_ctl.h"
 #include "modem_ctl_p.h"
@@ -280,6 +281,43 @@ done:
 	return ret;
 }
 
+static int modem_wait_for_sbl(struct modemctl *mc)
+{
+	pr_info("[MODEM] modem_wait_for_sbl()\n");
+
+	while (readl(mc->mmio + OFF_MBOX_BP) != MODEM_MSG_SBL_DONE) {
+		pr_info("[MODEM] SBL not done yet...");
+		msleep(5);
+	}
+
+	while (mmio_sem(mc) != 1) {
+		pr_info("[MODEM] Doesn't own semaphore");
+		msleep(5);
+	}
+
+	return 0;
+}
+
+static int modem_binary_load(struct modemctl *mc)
+{
+	int ret;
+
+	pr_info("[MODEM] modem_load_binary\n");
+
+	writel(0, mc->mmio + OFF_SEM);
+	pr_err("onedram: write_sem 0");
+
+	mc->status = MODEM_BOOTING_NORMAL;
+	writel(MODEM_CMD_BINARY_LOAD, mc->mmio + OFF_MBOX_AP);
+	pr_err("onedram: send %x\n", MODEM_CMD_BINARY_LOAD);
+
+	ret = wait_event_timeout(mc->wq,
+				modem_running(mc), 25 * HZ);
+	if (ret == 0)
+		return -ENODEV;
+
+	return 0;
+}
 
 static int modem_start(struct modemctl *mc, int ramdump)
 {
@@ -334,20 +372,49 @@ static int modem_reset(struct modemctl *mc)
 	/* write outbound mbox to assert outbound IRQ */
 	writel(0, mc->mmio + OFF_MBOX_AP);
 
-	/* ensure cp_reset pin set to low */
-	gpio_set_value(mc->gpio_cp_reset, 0);
-	msleep(100);
+	if (mc->is_ste_modem) {
+		/* ensure cp_reset pin set to low */
+		gpio_set_value(mc->gpio_cp_reset, 0);
+		msleep(100);
 
-	gpio_set_value(mc->gpio_cp_reset, 0);
-	msleep(100);
+		gpio_set_value(mc->gpio_phone_on, 1);
+		msleep(18);
 
-	gpio_set_value(mc->gpio_cp_reset, 1);
+		regulator_set_voltage(mc->cp_rtc_regulator, 1800000, 1800000);
 
-	/* Follow RESET timming delay not Power-On timming,
-	   because CP_RST & PHONE_ON have been set high already. */
-	msleep(100); /*wait modem stable */
+		if (!regulator_is_enabled(mc->cp_rtc_regulator)) {
+			if (regulator_enable(mc->cp_rtc_regulator)) {
+				pr_err("Failed to enable CP_RTC_1.8V regulator.\n");
+				return -1;
+			}
+		}
 
-	gpio_set_value(mc->gpio_pda_active, 1);
+		if (!regulator_is_enabled(mc->cp_32khz_regulator)) {
+			if (regulator_enable(mc->cp_32khz_regulator)) {
+				pr_err("Failed to enable CP_32KHz regulator.\n");
+				return -1;
+			}
+		}
+
+		gpio_set_value(mc->gpio_pda_active, 1);
+
+		msleep(150); /*wait modem stable */
+	} else {
+		/* ensure cp_reset pin set to low */
+		gpio_set_value(mc->gpio_cp_reset, 0);
+		msleep(100);
+
+		gpio_set_value(mc->gpio_cp_reset, 0);
+		msleep(100);
+
+		gpio_set_value(mc->gpio_cp_reset, 1);
+
+		/* Follow RESET timming delay not Power-On timming,
+		because CP_RST & PHONE_ON have been set high already. */
+		msleep(100); /*wait modem stable */
+
+		gpio_set_value(mc->gpio_pda_active, 1);
+	}
 
 	mc->status = MODEM_POWER_ON;
 
@@ -357,7 +424,41 @@ static int modem_reset(struct modemctl *mc)
 static int modem_off(struct modemctl *mc)
 {
 	pr_info("[MODEM] modem_off()\n");
+
+	if (mc->is_ste_modem) {
+		gpio_set_value(mc->gpio_phone_on, 0);
+		gpio_direction_output(mc->gpio_cp_reset, 0);
+
+		if (!gpio_get_value(mc->gpio_int_resout) && !gpio_get_value(mc->gpio_cp_pwr_rst)) {
+			if (regulator_is_enabled(mc->cp_32khz_regulator)) {
+				if (regulator_disable(mc->cp_32khz_regulator)) {
+					pr_err("Failed to disable CP_32KHz regulator.\n");
+					return -1;
+				}
+			}
+			goto done;
+		}
+
+		if (gpio_get_value(mc->gpio_cp_pwr_rst)) {
+			pr_err ("%s, GPIO_CP_PWR_RST is high\n", __func__);
+			gpio_set_value(mc->gpio_cp_reset, 1);
+			while (gpio_get_value(mc->gpio_cp_pwr_rst)) {
+				pr_err ("[%s] waiting 1 sec for modem to stabilize. \n", __func__);
+				msleep(1000); /*wait modem stable */
+			}
+		}
+
+		if (regulator_is_enabled(mc->cp_32khz_regulator)) {
+			if (regulator_disable(mc->cp_32khz_regulator)) {
+				pr_err ("Failed to disable CP_32KHz regulator.\n");
+				return -1;
+			}
+		}
+	}
+
 	gpio_set_value(mc->gpio_cp_reset, 0);
+
+done:
 	mc->status = MODEM_OFF;
 	return 0;
 }
@@ -382,6 +483,12 @@ static long modemctl_ioctl(struct file *filp,
 		break;
 	case IOCTL_MODEM_OFF:
 		ret = modem_off(mc);
+		break;
+	case IOCTL_MODEM_WAIT_FOR_SBL:
+		ret = modem_wait_for_sbl(mc);
+		break;
+	case IOCTL_MODEM_BINARY_LOAD:
+		ret = modem_binary_load(mc);
 		break;
 	default:
 		ret = -EINVAL;
@@ -414,6 +521,13 @@ static void modemctl_handle_offline(struct modemctl *mc, unsigned cmd)
 	case MODEM_BOOTING_NORMAL:
 		if (cmd == MODEM_MSG_BINARY_DONE) {
 			pr_info("[MODEM] binary load done\n");
+
+			/* STE modems are poorly implemented and need this written now,
+			 * not when MBC_PHONE_START as that is too late
+			 */
+			if (mc->is_ste_modem)
+				writel(MB_VALID | MB_COMMAND | MBC_INIT_END | CP_BOOT_AIRPLANE, mc->mmio + OFF_MBOX_AP);
+
 			mc->status = MODEM_RUNNING;
 			wake_up(&mc->wq);
 		}
@@ -536,6 +650,12 @@ static irqreturn_t modemctl_mbox_irq_handler(int irq, void *_mc)
 		case MBC_RESUME:
 			break;
 		}
+	} else if (mc->is_ste_modem && mmio_sem(mc) == 0) {
+		/* STE modems don't automatically release the semaphore
+		 * we need to request it when we don't have it
+		 */
+		modem_request_sem(mc);
+		goto done;
 	}
 
 	/* On *any* interrupt from the modem it may have given
@@ -607,11 +727,24 @@ static int __devinit modemctl_probe(struct platform_device *pdev)
 	mc->gpio_phone_active = pdata->gpio_phone_active;
 	mc->gpio_pda_active = pdata->gpio_pda_active;
 	mc->gpio_cp_reset = pdata->gpio_cp_reset;
+	mc->gpio_int_resout = pdata->gpio_int_resout;
+	mc->gpio_cp_pwr_rst = pdata->gpio_cp_pwr_rst;
+	mc->gpio_phone_on = pdata->gpio_phone_on;
+	mc->is_ste_modem = pdata->is_ste_modem;
 
 	if (pdata->num_pdp_contexts)
 		mc->num_pdp_contexts = pdata->num_pdp_contexts;
 	else
 		mc->num_pdp_contexts = 1;
+
+	if (mc->is_ste_modem) {
+		mc->cp_rtc_regulator = regulator_get(NULL, "cp_rtc");
+		if (IS_ERR_OR_NULL(mc->cp_rtc_regulator))
+			return -ENODEV;
+		mc->cp_32khz_regulator = regulator_get(NULL, "cp_32khz");
+		if (IS_ERR_OR_NULL(mc->cp_32khz_regulator))
+			return -ENODEV;
+	}
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
