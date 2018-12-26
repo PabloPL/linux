@@ -24,6 +24,9 @@
 #define IOCTL_MODEM_SEND		_IO('o', 0x23)
 #define IOCTL_MODEM_RECV		_IO('o', 0x24)
 
+#define IOCTL_MODEM_WAIT_FOR_SBL	_IO('o', 0x25)
+#define IOCTL_MODEM_BINARY_LOAD		_IO('o', 0x26)
+
 struct modem_io {
 	uint32_t size;
 	uint32_t id;
@@ -37,6 +40,10 @@ struct modemctl_data {
 	unsigned gpio_phone_active;
 	unsigned gpio_pda_active;
 	unsigned gpio_cp_reset;
+	unsigned gpio_phone_on;
+	unsigned gpio_int_resout;
+	unsigned gpio_cp_pwr_rst;
+	bool is_ste_modem;
 	int num_pdp_contexts;
 };
 

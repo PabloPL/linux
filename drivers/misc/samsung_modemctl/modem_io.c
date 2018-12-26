@@ -256,7 +256,7 @@ static int modem_pipe_read(struct m_pipe *pipe, struct modem_io *io)
 	if (fifo_read(pipe->rx, hdr, pipe->header_size) == 0)
 		return -EAGAIN;
 
-	ret = pipe->pull_header(io, hdr);
+	ret = pipe->pull_header(io, hdr, pipe->mc->is_ste_modem);
 	if (ret)
 		return ret;
 
@@ -522,13 +522,14 @@ static int push_fmt_header(struct modem_io *io, void *header)
 	return 0;
 }
 
-static int pull_fmt_header(struct modem_io *io, void *header)
+static int pull_fmt_header(struct modem_io *io, void *header, bool is_ste_modem)
 {
 	struct fmt_hdr *fh = header;
 
 	if (fh->start != 0x7f)
 		return -EINVAL;
-	if (fh->control != 0x00)
+	/* STE modems have the control value count up from 0-127 */
+	if (fh->control != 0x00 && !is_ste_modem)
 		return -EINVAL;
 	if (fh->len < 3)
 		return -EINVAL;
@@ -560,7 +561,7 @@ static int push_rfs_header(struct modem_io *io, void *header)
 	return 0;
 }
 
-static int pull_rfs_header(struct modem_io *io, void *header)
+static int pull_rfs_header(struct modem_io *io, void *header, bool is_ste_modem)
 {
 	struct rfs_hdr *rh = header;
 
