@@ -788,8 +788,6 @@ static int modemctl_probe(struct platform_device *pdev)
 
 	return 0;
 
-err_irq_mbox:
-	free_irq(mc->irq_mbox, mc);
 err_irq_bp:
 	free_irq(mc->irq_bp, mc);
 err_ioremap:
