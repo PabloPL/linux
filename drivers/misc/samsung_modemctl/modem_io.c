@@ -655,7 +655,7 @@ int modem_io_init(struct modemctl *mc, void __iomem *mmio)
 	}
 	for (i = 0, ch_id = RAW_CH_VNET0; i < mc->num_pdp_contexts;
 			i++, ch_id++) {
-		mc->ndev[i] = alloc_netdev(0, "rmnet%d", vnet_setup);
+		mc->ndev[i] = alloc_netdev(0, "rmnet%d", NET_NAME_PREDICTABLE, vnet_setup);
 		if (mc->ndev[i]) {
 			vn = netdev_priv(mc->ndev[i]);
 			vn->mc = mc;
