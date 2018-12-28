@@ -26,6 +26,7 @@
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
+#include <linux/miscdevice.h>
 
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
