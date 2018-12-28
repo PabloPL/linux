@@ -703,7 +703,7 @@ void modem_force_crash(struct modemctl *mc)
 	spin_unlock_irqrestore(&mc->lock, flags);
 }
 
-static int __devinit modemctl_probe(struct platform_device *pdev)
+static int modemctl_probe(struct platform_device *pdev)
 {
 	int r = -ENOMEM;
 	struct modemctl *mc;
