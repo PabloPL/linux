@@ -533,7 +533,8 @@ config PVPANIC
 	  (guest) communicate panic events to the host.
 
 config SAMSUNG_MODEMCTL
-	bool "Samsung Modem Control/IO Driver"
+	depends on ARCH_S5PV210
+	bool "Samsung Modem Control/IO Driver for S5PV210"
 
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
