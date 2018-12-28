@@ -34,7 +34,6 @@
 #include <linux/if_arp.h>
 
 #include <linux/circ_buf.h>
-#include <linux/wakelock.h>
 
 #include "modem_ctl.h"
 #include "modem_ctl_p.h"
@@ -163,17 +162,9 @@ void modem_update_state(struct modemctl *mc)
 	/* update our idea of space available in fifos */
 	mc->fmt_tx.avail = fifo_space(&mc->fmt_tx);
 	mc->fmt_rx.avail = fifo_count(&mc->fmt_rx);
-	if (mc->fmt_rx.avail)
-		wake_lock(&mc->cmd_pipe.wakelock);
-	else
-		wake_unlock(&mc->cmd_pipe.wakelock);
 
 	mc->rfs_tx.avail = fifo_space(&mc->rfs_tx);
 	mc->rfs_rx.avail = fifo_count(&mc->rfs_rx);
-	if (mc->rfs_rx.avail)
-		wake_lock(&mc->rfs_pipe.wakelock);
-	else
-		wake_unlock(&mc->rfs_pipe.wakelock);
 
 	mc->raw_tx.avail = fifo_space(&mc->raw_tx);
 	mc->raw_rx.avail = fifo_count(&mc->raw_rx);
@@ -188,10 +179,6 @@ void modem_update_pipe(struct m_pipe *pipe)
 	spin_lock_irqsave(&pipe->mc->lock, flags);
 	pipe->tx->avail = fifo_space(pipe->tx);
 	pipe->rx->avail = fifo_count(pipe->rx);
-	if (pipe->rx->avail)
-		wake_lock(&pipe->wakelock);
-	else
-		wake_unlock(&pipe->wakelock);
 	spin_unlock_irqrestore(&pipe->mc->lock, flags);
 }
 
@@ -366,8 +353,6 @@ static void handle_raw_rx(struct modemctl *mc)
 		MODEM_COUNT(mc, rx_received);
 	}
 
-	if (recvdata)
-		wake_lock_timeout(&mc->ip_rx_wakelock, HZ * 2);
 	return;
 
 purge_raw_fifo:
@@ -432,8 +417,6 @@ void modem_handle_io(struct modemctl *mc)
 		if (skb == NULL)
 			cnt++;
 	}
-	if (cnt == mc->num_pdp_contexts)
-		wake_unlock(&mc->ip_tx_wakelock);
 }
 
 static int vnet_open(struct net_device *ndev)
@@ -457,12 +440,10 @@ static int vnet_xmit(struct sk_buff *skb, struct net_device *ndev)
 	spin_lock_irqsave(&mc->lock, flags);
 	if (readl(mc->mmio + OFF_SEM) & 1) {
 		/* if we happen to hold the hw mmio sem, transmit NOW */
-		if (handle_raw_tx(mc, skb)) {
-			wake_lock(&mc->ip_tx_wakelock);
+		if (handle_raw_tx(mc, skb))
 			skb_queue_tail(&vn->txq, skb);
-		} else {
+		else
 			MODEM_COUNT(mc, tx_no_delay);
-		}
 		if (!mc->mmio_owner) {
 			/* if we don't own the semaphore, immediately
 			 * give it back to the modem and signal the modem
@@ -645,8 +626,6 @@ static int modem_pipe_register(struct m_pipe *pipe, const char *devname)
 	pipe->dev.minor = MISC_DYNAMIC_MINOR;
 	pipe->dev.name = devname;
 	pipe->dev.fops = &modem_io_fops;
-
-	wake_lock_init(&pipe->wakelock, WAKE_LOCK_SUSPEND, devname);
 
 	mutex_init(&pipe->tx_lock);
 	mutex_init(&pipe->rx_lock);

@@ -30,7 +30,6 @@
 #include <linux/irq.h>
 #include <linux/gpio.h>
 #include <linux/delay.h>
-#include <linux/wakelock.h>
 #include <linux/regulator/consumer.h>
 
 #include "modem_ctl.h"
@@ -768,11 +767,6 @@ static int __devinit modemctl_probe(struct platform_device *pdev)
 	/* hide control registers from userspace */
 	mc->mmsize -= 0x800;
 	mc->status = MODEM_OFF;
-
-	wake_lock_init(&mc->ip_tx_wakelock,
-		       WAKE_LOCK_SUSPEND, "modem_ip_tx");
-	wake_lock_init(&mc->ip_rx_wakelock,
-		       WAKE_LOCK_SUSPEND, "modem_ip_rx");
 
 	modem_io_init(mc, mc->mmio);
 

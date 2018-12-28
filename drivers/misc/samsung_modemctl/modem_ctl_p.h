@@ -48,8 +48,6 @@ struct m_pipe {
 
 	struct mutex tx_lock;
 	struct mutex rx_lock;
-
-	struct wake_lock wakelock;
 };
 #define to_m_pipe(misc) container_of(misc, struct m_pipe, dev)
 
@@ -117,9 +115,6 @@ struct modemctl {
 	struct m_fifo raw_rx;
 	struct m_fifo rfs_tx;
 	struct m_fifo rfs_rx;
-
-	struct wake_lock ip_tx_wakelock;
-	struct wake_lock ip_rx_wakelock;
 
 	struct net_device **ndev;
 
