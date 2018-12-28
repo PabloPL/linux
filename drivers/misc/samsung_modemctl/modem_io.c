@@ -136,25 +136,6 @@ static unsigned fifo_skip(struct m_fifo *q, unsigned count)
 #define fifo_count(mf) CIRC_CNT(*(mf)->head, *(mf)->tail, (mf)->size)
 #define fifo_space(mf) CIRC_SPACE(*(mf)->head, *(mf)->tail, (mf)->size)
 
-static void fifo_dump(const char *tag, struct m_fifo *q,
-		      unsigned start, unsigned count)
-{
-	if (count > 64)
-		count = 64;
-
-	if ((start + count) <= q->size) {
-		print_hex_dump_bytes(tag, DUMP_PREFIX_ADDRESS,
-				     q->data + start, count);
-	} else {
-		print_hex_dump_bytes(tag, DUMP_PREFIX_ADDRESS,
-				     q->data + start, q->size - start);
-		print_hex_dump_bytes(tag, DUMP_PREFIX_ADDRESS,
-				     q->data, count - (q->size - start));
-	}
-}
-
-
-
 /* Called with mc->lock held whenever we gain access
  * to the mmio region.
  */
