@@ -19,6 +19,8 @@
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/miscdevice.h>
+#include <linux/of.h>
+#include <linux/of_gpio.h>
 
 #include <linux/uaccess.h>
 #include <linux/fs.h>
@@ -708,9 +710,8 @@ static int modemctl_probe(struct platform_device *pdev)
 	int r;
 	struct modemctl *mc;
 	struct modemctl_data *pdata;
+	struct device_node *np;
 	struct resource *res;
-
-	pdata = pdev->dev.platform_data;
 
 	mc = devm_kzalloc(&pdev->dev, sizeof(*mc), GFP_KERNEL);
 	if (!mc)
@@ -720,21 +721,73 @@ static int modemctl_probe(struct platform_device *pdev)
 	spin_lock_init(&mc->lock);
 	mutex_init(&mc->ctl_lock);
 
+	if (pdev->dev.platform_data) {
+		pdata = pdev->dev.platform_data;
+
+		mc->is_ste_modem = pdata->is_ste_modem;
+
+		mc->gpio_phone_active = pdata->gpio_phone_active;
+		mc->gpio_pda_active = pdata->gpio_pda_active;
+		mc->gpio_cp_reset = pdata->gpio_cp_reset;
+		mc->gpio_int_resout = pdata->gpio_int_resout;
+		mc->gpio_cp_pwr_rst = pdata->gpio_cp_pwr_rst;
+		mc->gpio_phone_on = pdata->gpio_phone_on;
+
+		mc->num_pdp_contexts = pdata->num_pdp_contexts;
+	} else if (IS_ENABLED(CONFIG_OF) && pdev->dev.of_node) {
+		np = pdev->dev.of_node;
+
+		mc->is_ste_modem = of_property_read_bool(np, "ste-modem");
+
+		mc->gpio_phone_active = of_get_named_gpio(np, "phone_active-gpio", 0);
+		if (!gpio_is_valid(mc->gpio_phone_active)) {
+			pr_err("no phone_active gpio");
+			return -EINVAL;
+		}
+
+		mc->gpio_pda_active = of_get_named_gpio(np, "pda_active-gpio", 0);
+		if (!gpio_is_valid(mc->gpio_pda_active)) {
+			pr_err("no pda_active gpio");
+			return -EINVAL;
+		}
+
+		mc->gpio_cp_reset = of_get_named_gpio(np, "cp_reset-gpio", 0);
+		if (!gpio_is_valid(mc->gpio_cp_reset)) {
+			pr_err("no cp_reset gpio");
+			return -EINVAL;
+		}
+
+		if (mc->is_ste_modem) {
+			mc->gpio_int_resout = of_get_named_gpio(np, "int_resout-gpio", 0);
+			if (!gpio_is_valid(mc->gpio_int_resout)) {
+				pr_err("no int_resout gpio");
+				return -EINVAL;
+			}
+
+			mc->gpio_cp_pwr_rst = of_get_named_gpio(np, "cp_pwr_rst-gpio", 0);
+			if (!gpio_is_valid(mc->gpio_cp_pwr_rst)) {
+				pr_err("no cp_pwr_rst gpio");
+				return -EINVAL;
+			}
+
+			mc->gpio_phone_on = of_get_named_gpio(np, "phone_on-gpio", 0);
+			if (!gpio_is_valid(mc->gpio_phone_on)) {
+				pr_err("no phone_on gpio");
+				return -EINVAL;
+			}
+		}
+
+		of_property_read_s32(np, "num-pdp-contexts", &mc->num_pdp_contexts);
+	} else {
+		dev_err(&pdev->dev, "No platform data found");
+		return -EINVAL;
+	}
+
+	if (!mc->num_pdp_contexts)
+		mc->num_pdp_contexts = 1;
+
 	mc->irq_bp = platform_get_irq_byname(pdev, "active");
 	mc->irq_mbox = platform_get_irq_byname(pdev, "onedram");
-
-	mc->gpio_phone_active = pdata->gpio_phone_active;
-	mc->gpio_pda_active = pdata->gpio_pda_active;
-	mc->gpio_cp_reset = pdata->gpio_cp_reset;
-	mc->gpio_int_resout = pdata->gpio_int_resout;
-	mc->gpio_cp_pwr_rst = pdata->gpio_cp_pwr_rst;
-	mc->gpio_phone_on = pdata->gpio_phone_on;
-	mc->is_ste_modem = pdata->is_ste_modem;
-
-	if (pdata->num_pdp_contexts)
-		mc->num_pdp_contexts = pdata->num_pdp_contexts;
-	else
-		mc->num_pdp_contexts = 1;
 
 	if (mc->is_ste_modem) {
 		mc->cp_rtc_regulator = devm_regulator_get(&pdev->dev, "cp_rtc");
@@ -808,10 +861,19 @@ static const struct dev_pm_ops modemctl_pm_ops = {
 	.resume     = modemctl_resume,
 };
 
+#if IS_ENABLED(CONFIG_OF)
+static const struct of_device_id modemctl_of_match[] = {
+	{ .compatible = "samsung,onedram-modemctl" },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, modemctl_of_match);
+#endif
+
 static struct platform_driver modemctl_driver = {
 	.probe = modemctl_probe,
 	.driver = {
 		.name = "modemctl",
+		.of_match_table = of_match_ptr(modemctl_of_match),
 		.pm   = &modemctl_pm_ops,
 	},
 };
