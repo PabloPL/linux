@@ -705,14 +705,14 @@ void modem_force_crash(struct modemctl *mc)
 
 static int modemctl_probe(struct platform_device *pdev)
 {
-	int r = -ENOMEM;
+	int r;
 	struct modemctl *mc;
 	struct modemctl_data *pdata;
 	struct resource *res;
 
 	pdata = pdev->dev.platform_data;
 
-	mc = kzalloc(sizeof(*mc), GFP_KERNEL);
+	mc = devm_kzalloc(&pdev->dev, sizeof(*mc), GFP_KERNEL);
 	if (!mc)
 		return -ENOMEM;
 
@@ -737,23 +737,23 @@ static int modemctl_probe(struct platform_device *pdev)
 		mc->num_pdp_contexts = 1;
 
 	if (mc->is_ste_modem) {
-		mc->cp_rtc_regulator = regulator_get(NULL, "cp_rtc");
+		mc->cp_rtc_regulator = devm_regulator_get(&pdev->dev, "cp_rtc");
 		if (IS_ERR_OR_NULL(mc->cp_rtc_regulator))
 			return -ENODEV;
-		mc->cp_32khz_regulator = regulator_get(NULL, "cp_32khz");
+		mc->cp_32khz_regulator = devm_regulator_get(&pdev->dev, "cp_32khz");
 		if (IS_ERR_OR_NULL(mc->cp_32khz_regulator))
 			return -ENODEV;
 	}
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res)
-		goto err_free;
+		return -ENOMEM;
 	mc->mmbase = res->start;
 	mc->mmsize = resource_size(res);
 
-	mc->mmio = ioremap_nocache(mc->mmbase, mc->mmsize);
+	mc->mmio = devm_ioremap_nocache(&pdev->dev, mc->mmbase, mc->mmsize);
 	if (!mc->mmio)
-		goto err_free;
+		return -EADDRNOTAVAIL;
 
 	platform_set_drvdata(pdev, mc);
 
@@ -762,7 +762,7 @@ static int modemctl_probe(struct platform_device *pdev)
 	mc->dev.fops = &modemctl_fops;
 	r = misc_register(&mc->dev);
 	if (r)
-		goto err_ioremap;
+		return r;
 
 	/* hide control registers from userspace */
 	mc->mmsize -= 0x800;
@@ -770,16 +770,16 @@ static int modemctl_probe(struct platform_device *pdev)
 
 	modem_io_init(mc, mc->mmio);
 
-	r = request_irq(mc->irq_bp, modemctl_bp_irq_handler,
+	r = devm_request_irq(&pdev->dev, mc->irq_bp, modemctl_bp_irq_handler,
 			IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
 			"modemctl_bp", mc);
 	if (r)
-		goto err_ioremap;
+		return r;
 
-	r = request_irq(mc->irq_mbox, modemctl_mbox_irq_handler,
+	r = devm_request_irq(&pdev->dev, mc->irq_mbox, modemctl_mbox_irq_handler,
 			IRQF_TRIGGER_LOW, "modemctl_mbox", mc);
 	if (r)
-		goto err_irq_bp;
+		return r;
 
 	enable_irq_wake(mc->irq_bp);
 	enable_irq_wake(mc->irq_mbox);
@@ -787,14 +787,6 @@ static int modemctl_probe(struct platform_device *pdev)
 	modem_debugfs_init(mc);
 
 	return 0;
-
-err_irq_bp:
-	free_irq(mc->irq_bp, mc);
-err_ioremap:
-	iounmap(mc->mmio);
-err_free:
-	kfree(mc);
-	return r;
 }
 
 static int modemctl_suspend(struct device *pdev)
