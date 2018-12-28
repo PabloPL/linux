@@ -514,7 +514,8 @@ config MISC_RTSX
 	default MISC_RTSX_PCI || MISC_RTSX_USB
 
 config SAMSUNG_MODEMCTL
-	bool "Samsung Modem Control/IO Driver"
+	depends on ARCH_S5PV210
+	bool "Samsung Modem Control/IO Driver for S5PV210"
 
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
