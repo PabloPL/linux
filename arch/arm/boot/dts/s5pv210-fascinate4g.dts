@@ -35,4 +35,70 @@
 			linux,code = <KEY_VOLUMEUP>;
 		};
 	};
+
+	modem {
+		compatible = "samsung,onedram-modemctl";
+
+		interrupt-parent = <&gph1>;
+		interrupt-names = "active", "onedram";
+		interrupts = <7 IRQ_TYPE_EDGE_BOTH>, <3 IRQ_TYPE_LEVEL_LOW>;
+		reg = <0x35000000 0x01000000>;
+
+		phone_active-gpio = <&gph1 7 GPIO_ACTIVE_HIGH>;
+		pda_active-gpio = <&mp03 3 GPIO_ACTIVE_HIGH>;
+		cp_reset-gpio = <&gph1 0 GPIO_ACTIVE_HIGH>;
+		int_resout-gpio = <&gph1 4 GPIO_ACTIVE_HIGH>;
+		cp_pwr_rst-gpio = <&gph1 1 GPIO_ACTIVE_HIGH>;
+		phone_on-gpio = <&gpj1 0 GPIO_ACTIVE_HIGH>;
+
+		cp_rtc-supply = <&ldo6_reg>;
+		cp_32khz-supply = <&cp32khz_reg>;
+
+		ste-modem;
+		num-pdp-contexts = <3>;
+
+		pinctrl-0 = <&onedram_int &int_resout &cp_pwr_rst &eint15 &phone_on &cp_rst &pda_active>;
+		pinctrl-names = "default";
+	};
+};
+
+&pinctrl0 {
+	onedram_int: onedram-int {
+		samsung,pins = "gph1-3";
+		samsung,pin-function = <EXYNOS_PIN_FUNC_F>;
+		samsung,pin-pud = <S3C64XX_PIN_PULL_UP>;
+	};
+
+	int_resout: int-resout {
+		samsung,pins = "gph1-4";
+		samsung,pin-function = <EXYNOS_PIN_FUNC_F>;
+		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
+	};
+
+	cp_pwr_rst: cp-pwr-rst {
+		samsung,pins = "gph1-1";
+		samsung,pin-function = <EXYNOS_PIN_FUNC_F>;
+		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
+	};
+
+	phone_on: phone-on {
+		samsung,pins = "gpj1-0";
+		samsung,pin-function = <EXYNOS_PIN_FUNC_OUTPUT>;
+		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
+		samsung,pin-val = <0>;
+	};
+
+	cp_rst: cp-rst {
+		samsung,pins = "gph1-0";
+		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
+	};
+
+	pda_active: pda-active {
+		samsung,pins = "mp03-3";
+		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
+	};
+};
+
+&uart3 {
+	status = "okay";
 };
