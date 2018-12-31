@@ -827,18 +827,30 @@ static int modemctl_probe(struct platform_device *pdev)
 			IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
 			"modemctl_bp", mc);
 	if (r)
-		return r;
+		goto err_misc_register;
 
 	r = devm_request_irq(&pdev->dev, mc->irq_mbox, modemctl_mbox_irq_handler,
 			IRQF_TRIGGER_LOW, "modemctl_mbox", mc);
 	if (r)
-		return r;
+		goto err_misc_register;
 
 	enable_irq_wake(mc->irq_bp);
 	enable_irq_wake(mc->irq_mbox);
 
 	modem_debugfs_init(mc);
 
+	return 0;
+
+err_misc_register:
+	misc_deregister(&mc->dev);
+	return r;
+}
+
+static int modemctl_remove(struct platform_device *pdev)
+{
+	struct device *dev = &pdev->dev;
+	struct modemctl *mc = dev_get_drvdata(dev);
+	misc_deregister(&mc->dev);
 	return 0;
 }
 
@@ -871,6 +883,7 @@ MODULE_DEVICE_TABLE(of, modemctl_of_match);
 
 static struct platform_driver modemctl_driver = {
 	.probe = modemctl_probe,
+	.remove = modemctl_remove,
 	.driver = {
 		.name = "modemctl",
 		.of_match_table = of_match_ptr(modemctl_of_match),
