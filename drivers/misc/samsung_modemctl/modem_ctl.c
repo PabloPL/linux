@@ -705,6 +705,30 @@ void modem_force_crash(struct modemctl *mc)
 	spin_unlock_irqrestore(&mc->lock, flags);
 }
 
+static ssize_t modemctl_show_type(struct device *dev,
+        struct device_attribute *attr, char *buf)
+{
+	struct modemctl *mc = dev_get_drvdata(dev);
+	int len;
+
+	if (mc->is_ste_modem) {
+		len = sprintf(buf, "%s\n", "ste");
+	} else {
+		len = sprintf(buf, "%s\n", "xmm");
+	}
+
+    return len;
+}
+
+static DEVICE_ATTR(type, S_IRUGO, modemctl_show_type, NULL);
+
+static struct attribute *modemctl_attrs[] = {
+	&dev_attr_type.attr,
+	NULL
+};
+
+ATTRIBUTE_GROUPS(modemctl);
+
 static int modemctl_probe(struct platform_device *pdev)
 {
 	int r;
@@ -813,9 +837,12 @@ static int modemctl_probe(struct platform_device *pdev)
 	mc->dev.name = "modem_ctl";
 	mc->dev.minor = MISC_DYNAMIC_MINOR;
 	mc->dev.fops = &modemctl_fops;
+	mc->dev.groups = modemctl_groups;
 	r = misc_register(&mc->dev);
 	if (r)
 		return r;
+
+	dev_set_drvdata(mc->dev.this_device, mc);
 
 	/* hide control registers from userspace */
 	mc->mmsize -= 0x800;
