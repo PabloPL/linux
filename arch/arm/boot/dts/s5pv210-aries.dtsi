@@ -81,6 +81,11 @@
 			max8998,pmic-buck2-dvs-gpio = <&gph0 5 GPIO_ACTIVE_HIGH>;
 			max8998,pmic-buck2-dvs-voltage = <1100000>, <1000000>;
 
+			charger {
+				maxim,end-of-charge-percentage = <20>;
+				maxim,charge-timeout = <7>;
+			};
+
 			regulators {
 				ldo2_reg: LDO2 {
 					regulator-name = "VALIVE_1.2V";
