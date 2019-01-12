@@ -116,7 +116,9 @@ static struct notifier_block cpufreq_limit_notifier = {
 
 static PVRSRV_ERROR EnableSGXClocks(void)
 {
-	regulator_enable(g3d_pd_regulator);
+	if (regulator_enable(g3d_pd_regulator))
+		PVR_DPF((PVR_DBG_ERROR, "G3D failed to enable g3d power domain"));
+
 	clk_enable(g3d_clock);
 	cpufreq_update_policy(current_thread_info()->cpu);
 
