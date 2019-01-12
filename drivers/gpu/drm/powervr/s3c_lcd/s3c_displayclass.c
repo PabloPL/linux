@@ -34,9 +34,8 @@
 #include <linux/dma-mapping.h>
 #include <linux/interrupt.h>
 #include <asm/hardirq.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <asm/irq.h>
-#include <asm/uaccess.h>
 #include <asm/memory.h>
 #include <plat/regs-fb.h>
 #include <linux/console.h>

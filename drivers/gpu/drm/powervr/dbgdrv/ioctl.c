@@ -27,7 +27,7 @@
 
 
 #ifdef LINUX
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include "pvr_uaccess.h"
 #endif 
 

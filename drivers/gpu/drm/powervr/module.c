@@ -76,7 +76,7 @@
 #endif 
 
 #if defined(DEBUG) && defined(PVR_MANUAL_POWER_CONTROL)
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #endif
 
 #if defined(PVR_LDM_MODULE) || defined(PVR_DRI_DRM_PLATFORM_DEV)

@@ -48,7 +48,7 @@
 #include <linux/timer.h>
 #include <linux/capability.h>
 #include <linux/sched.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 #include "img_types.h"
 #include "services_headers.h"

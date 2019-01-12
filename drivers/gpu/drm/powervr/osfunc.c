@@ -49,7 +49,7 @@
 #include <asm/hardirq.h>
 #include <linux/timer.h>
 #include <linux/capability.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/spinlock.h>
 #if defined(PVR_LINUX_MISR_USING_WORKQUEUE) || \
 	defined(PVR_LINUX_MISR_USING_PRIVATE_WORKQUEUE) || \

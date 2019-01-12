@@ -33,7 +33,7 @@
 #endif
 
 #include <asm/io.h>
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 #include <linux/kernel.h>
 #include <linux/hardirq.h>
 #include <linux/module.h>

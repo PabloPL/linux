@@ -43,7 +43,7 @@
 #include <linux/pci.h>
 #endif
 
-#include <asm/uaccess.h>
+#include <linux/uaccess.h>
 
 #if defined(SUPPORT_DRI_DRM)
 #include "drmP.h"
