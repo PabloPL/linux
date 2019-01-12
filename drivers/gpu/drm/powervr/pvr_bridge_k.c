@@ -209,8 +209,7 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 #else
 	psBridgePackageKM = &sBridgePackageKM;
 
-	if(!OSAccessOK(PVR_VERIFY_WRITE,
-				   psBridgePackageUM,
+	if(!OSAccessOK(psBridgePackageUM,
 				   sizeof(PVRSRV_BRIDGE_PACKAGE)))
 	{
 		PVR_DPF((PVR_DBG_ERROR, "%s: Received invalid pointer to function arguments",

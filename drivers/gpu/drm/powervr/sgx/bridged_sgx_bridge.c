@@ -485,9 +485,8 @@ SGXDoKickBW(IMG_UINT32 ui32BridgeID,
 
 	if(ui32NumDstSyncs > 0)
 	{
-		if(!OSAccessOK(PVR_VERIFY_READ,
-						psDoKickIN->sCCBKick.pahDstSyncHandles,
-						ui32NumDstSyncs * sizeof(IMG_HANDLE)))
+		if(!OSAccessOK(psDoKickIN->sCCBKick.pahDstSyncHandles,
+					   ui32NumDstSyncs * sizeof(IMG_HANDLE)))
 		{
 			PVR_DPF((PVR_DBG_ERROR, "%s: SGXDoKickBW:"
 					" Invalid pasDstSyncHandles pointer", __FUNCTION__));
@@ -2813,8 +2812,7 @@ SGXAddSharedPBDescBW(IMG_UINT32 ui32BridgeID,
 	}
 
 
-	if(!OSAccessOK(PVR_VERIFY_READ,
-				   psSGXAddSharedPBDescIN->phKernelMemInfoHandles,
+	if(!OSAccessOK(psSGXAddSharedPBDescIN->phKernelMemInfoHandles,
 				   ui32KernelMemInfoHandlesCount * sizeof(IMG_HANDLE)))
 	{
 		PVR_DPF((PVR_DBG_ERROR, "%s: PVRSRV_BRIDGE_SGX_ADDSHAREDPBDESC:"

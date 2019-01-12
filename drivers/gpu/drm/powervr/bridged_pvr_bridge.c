@@ -539,8 +539,7 @@ PVRSRVAllocDeviceMemBW(IMG_UINT32 ui32BridgeID,
 	
 	if(psAllocDeviceMemIN->pvPrivData)
 	{
-		if(!OSAccessOK(PVR_VERIFY_READ,
-					   psAllocDeviceMemIN->pvPrivData,
+		if(!OSAccessOK(psAllocDeviceMemIN->pvPrivData,
 					   psAllocDeviceMemIN->ui32PrivDataLength))
 		{
 			PVR_DPF((PVR_DBG_ERROR, "PVRSRVAllocDeviceMemBW: Access check failed for pvPrivData"));
@@ -3011,16 +3010,14 @@ PVRSRVSwapToDCBuffer2BW(IMG_UINT32 ui32BridgeID,
 		return 0;
 	}
 
-	if(!OSAccessOK(PVR_VERIFY_WRITE,
-				   psSwapDispClassBufferIN->ppsKernelMemInfos,
+	if(!OSAccessOK(psSwapDispClassBufferIN->ppsKernelMemInfos,
 				   sizeof(IMG_HANDLE) * psSwapDispClassBufferIN->ui32NumMemInfos))
 	{
 		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Access check failed for ppsKernelMemInfos"));
 		return -EFAULT;
 	}
 
-	if(!OSAccessOK(PVR_VERIFY_WRITE,
-				   psSwapDispClassBufferIN->ppsKernelSyncInfos,
+	if(!OSAccessOK(psSwapDispClassBufferIN->ppsKernelSyncInfos,
 				   sizeof(IMG_HANDLE) * psSwapDispClassBufferIN->ui32NumMemInfos))
 	{
 		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Access check failed for ppsKernelSyncInfos"));
@@ -4832,9 +4829,8 @@ IMG_INT BridgedDispatchKM(PVRSRV_PER_PROCESS_DATA * psPerProc,
 
 		if(psBridgePackageKM->ui32InBufferSize > 0)
 		{
-			if(!OSAccessOK(PVR_VERIFY_READ,
-							psBridgePackageKM->pvParamIn,
-							psBridgePackageKM->ui32InBufferSize))
+			if(!OSAccessOK(psBridgePackageKM->pvParamIn,
+						   psBridgePackageKM->ui32InBufferSize))
 			{
 				PVR_DPF((PVR_DBG_ERROR, "%s: Invalid pvParamIn pointer", __FUNCTION__));
 			}

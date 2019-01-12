@@ -536,13 +536,7 @@ IMG_VOID OSPanic(IMG_VOID);
 
 IMG_BOOL OSProcHasPrivSrvInit(IMG_VOID);
 
-typedef enum _img_verify_test
-{
-	PVR_VERIFY_WRITE = 0,
-	PVR_VERIFY_READ
-} IMG_VERIFY_TEST;
-
-IMG_BOOL OSAccessOK(IMG_VERIFY_TEST eVerification, IMG_VOID *pvUserPtr, IMG_SIZE_T ui32Bytes);
+IMG_BOOL OSAccessOK(IMG_VOID *pvUserPtr, IMG_SIZE_T ui32Bytes);
 
 PVRSRV_ERROR OSCopyToUser(IMG_PVOID pvProcess, IMG_VOID *pvDest, IMG_VOID *pvSrc, IMG_SIZE_T ui32Bytes);
 PVRSRV_ERROR OSCopyFromUser(IMG_PVOID pvProcess, IMG_VOID *pvDest, IMG_VOID *pvSrc, IMG_SIZE_T ui32Bytes);

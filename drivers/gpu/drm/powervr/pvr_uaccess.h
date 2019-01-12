@@ -40,7 +40,7 @@
 static inline unsigned long pvr_copy_to_user(void __user *pvTo, const void *pvFrom, unsigned long ulBytes)
 {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33))
-    if (access_ok(VERIFY_WRITE, pvTo, ulBytes))
+    if (access_ok(pvTo, ulBytes))
     {
 	return __copy_to_user(pvTo, pvFrom, ulBytes);
     }
@@ -54,7 +54,7 @@ static inline unsigned long pvr_copy_from_user(void *pvTo, const void __user *pv
 {
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33))
     
-    if (access_ok(VERIFY_READ, pvFrom, ulBytes))
+    if (access_ok(pvFrom, ulBytes))
     {
 	return __copy_from_user(pvTo, pvFrom, ulBytes);
     }
