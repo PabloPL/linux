@@ -37,7 +37,6 @@
 #include <linux/uaccess.h>
 #include <asm/irq.h>
 #include <asm/memory.h>
-#include <plat/regs-fb.h>
 #include <linux/console.h>
 #include <linux/workqueue.h>
 #include <linux/version.h>
