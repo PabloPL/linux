@@ -1938,12 +1938,7 @@ IMG_HANDLE OSAddTimer(PFN_TIMER_FUNC pfnTimerFunc, IMG_VOID *pvData, IMG_UINT32 
                                 ?	1
                                 :	((HZ * ui32MsTimeout) / 1000);
     
-    init_timer(&psTimerCBData->sTimer);
-    
-    
-     
-    psTimerCBData->sTimer.function = (IMG_VOID *)OSTimerCallbackWrapper;
-    psTimerCBData->sTimer.data = (IMG_UINT32)psTimerCBData;
+    timer_setup(&psTimerCBData->sTimer, (IMG_VOID *)OSTimerCallbackWrapper, 0);
     
     return (IMG_HANDLE)(ui32i + 1);
 }
