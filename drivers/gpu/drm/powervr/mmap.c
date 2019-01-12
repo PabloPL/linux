@@ -39,6 +39,7 @@
 #include <linux/wrapper.h>
 #endif
 #include <linux/slab.h>
+#include <linux/pfn_t.h>
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,26))
 #include <linux/highmem.h>
 #endif
@@ -562,7 +563,11 @@ DoMapToUser(LinuxMemArea *psLinuxMemArea,
 #if defined(PVR_MAKE_ALL_PFNS_SPECIAL)
 	    if (bMixedMap)
 	    {
-		result = vm_insert_mixed(ps_vma, ulVMAPos, pfn);
+		vm_fault_t vmf = vmf_insert_mixed(ps_vma, ulVMAPos, pfn_to_pfn_t(pfn));
+		if (vmf & VM_FAULT_ERROR) {
+			result = vm_fault_to_errno(vmf, 0);
+		}
+
                 if(result != 0)
                 {
                     PVR_DPF((PVR_DBG_ERROR,"%s: Error - vm_insert_mixed failed (%d)", __FUNCTION__, result));
