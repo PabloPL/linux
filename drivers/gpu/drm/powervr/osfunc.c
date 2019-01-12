@@ -2331,7 +2331,7 @@ PVRSRV_ERROR OSReleasePhysPageAddr(IMG_HANDLE hOSWrapMem)
                         SetPageDirty(psPage);
                     }
 	        }
-                page_cache_release(psPage);
+                put_page(psPage);
 	    }
             break;
         }
