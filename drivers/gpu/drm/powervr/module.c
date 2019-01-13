@@ -236,8 +236,8 @@ static LDM_DRV powervr_driver = {
 
 LDM_DEV *gpsPVRLDMDev;
 
-#if ((defined(MODULE) || defined(FORCE_DEVICE_PROBE)) && defined(PVR_LDM_PLATFORM_MODULE) && \
-	!defined(PVR_USE_PRE_REGISTERED_PLATFORM_DEV))
+#if defined(MODULE) && defined(PVR_LDM_PLATFORM_MODULE) && \
+	!defined(PVR_USE_PRE_REGISTERED_PLATFORM_DEV)
 static void PVRSRVDeviceRelease(struct device unref__ *pDevice)
 {
 }
@@ -649,7 +649,7 @@ static int __init PVRCore_Init(void)
 		goto init_failed;
 	}
 
-#if ((defined(MODULE) || defined(FORCE_DEVICE_PROBE)) && !defined(PVR_USE_PRE_REGISTERED_PLATFORM_DEV))
+#if defined(MODULE) && !defined(PVR_USE_PRE_REGISTERED_PLATFORM_DEV)
 	if ((error = platform_device_register(&powervr_device)) != 0)
 	{
 		platform_driver_unregister(&powervr_driver);
@@ -742,7 +742,7 @@ sys_deinit:
 #endif
 
 #if defined (PVR_LDM_PLATFORM_MODULE)
-#if (defined(MODULE) || defined(FORCE_DEVICE_PROBE)) && !defined(PVR_USE_PRE_REGISTERED_PLATFORM_DEV)
+#if defined(MODULE) && !defined(PVR_USE_PRE_REGISTERED_PLATFORM_DEV)
 	platform_device_unregister(&powervr_device);
 #endif
 	platform_driver_unregister(&powervr_driver);
@@ -815,7 +815,7 @@ static void __exit PVRCore_Cleanup(void)
 #endif
 
 #if defined (PVR_LDM_PLATFORM_MODULE)
-#if (defined(MODULE) || defined(FORCE_DEVICE_PROBE)) && !defined(PVR_USE_PRE_REGISTERED_PLATFORM_DEV)
+#if defined(MODULE) && !defined(PVR_USE_PRE_REGISTERED_PLATFORM_DEV)
 	platform_device_unregister(&powervr_device);
 #endif
 	platform_driver_unregister(&powervr_driver);
