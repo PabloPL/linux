@@ -116,7 +116,7 @@ static struct notifier_block cpufreq_limit_notifier = {
 
 static PVRSRV_ERROR EnableSGXClocks(void)
 {
-	clk_enable(g3d_clock);
+	clk_prepare_enable(g3d_clock);
 	running = true;
 	cpufreq_update_policy(current_thread_info()->cpu);
 
@@ -125,7 +125,7 @@ static PVRSRV_ERROR EnableSGXClocks(void)
 
 static PVRSRV_ERROR DisableSGXClocks(void)
 {
-	clk_disable(g3d_clock);
+	clk_disable_unprepare(g3d_clock);
 	running = false;
 	cpufreq_update_policy(current_thread_info()->cpu);
 
