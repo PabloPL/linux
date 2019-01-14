@@ -120,7 +120,9 @@ ccflags-$(CONFIG_ARCH_S5PV210) += \
 
 ccflags-$(CONFIG_ARCH_S5PV210) += \
 	-DSGX540 -DSUPPORT_SGX540 \
-	-DSGX_CORE_REV=120
+	-DSGX_CORE_REV=120 \
+	-DPVR_LDM_DEVICE_TREE \
+	-DSYS_SGX_DEV_NAME="\"samsung,s5pc110-sgx540\""
 
 pvrsrvkm-$(CONFIG_ARCH_S5PV210) += \
 	s5pc110/sysconfig.o \

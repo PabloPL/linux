@@ -36,11 +36,12 @@
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/cpufreq.h>
+#include <linux/of_irq.h>
 
+// TODO - Convert BASEADDR and MAPPING_SIZE to DT
 #define REAL_HARDWARE 1
 #define SGX540_BASEADDR 0xf3000000
 #define MAPPING_SIZE 0x10000
-#define SGX540_IRQ 106
 
 #define SYS_SGX_CLOCK_SPEED					(200000000)
 #define SYS_SGX_HWRECOVERY_TIMEOUT_FREQ		(100) // 10ms (100hz)
@@ -86,13 +87,13 @@ IMG_UINT32   PVRSRV_BridgeDispatchKM( IMG_UINT32  Ioctl,
 /*
  * We need to keep the memory bus speed up when the GPU is active.
  * On the  S5PV210, it is bound to the CPU freq.
- * In arch/arm/mach-s5pv210/cpufreq.c, the bus speed is only lowered when the
+ * The bus speed is only lowered when the
  * CPU freq is below 200MHz.
  */
 #define MIN_CPU_KHZ_FREQ 200000
 
 static struct clk *g3d_clock;
-static struct regulator *g3d_pd_regulator;
+static bool running;
 
 static int limit_adjust_cpufreq_notifier(struct notifier_block *nb,
 					 unsigned long event, void *data)
@@ -102,8 +103,7 @@ static int limit_adjust_cpufreq_notifier(struct notifier_block *nb,
 	if (event != CPUFREQ_ADJUST)
 		return 0;
 
-	/* This is our indicator of GPU activity */
-	if (regulator_is_enabled(g3d_pd_regulator))
+	if (running)
 		cpufreq_verify_within_limits(policy, MIN_CPU_KHZ_FREQ,
 					     policy->cpuinfo.max_freq);
 
@@ -116,10 +116,8 @@ static struct notifier_block cpufreq_limit_notifier = {
 
 static PVRSRV_ERROR EnableSGXClocks(void)
 {
-	if (regulator_enable(g3d_pd_regulator))
-		PVR_DPF((PVR_DBG_ERROR, "G3D failed to enable g3d power domain"));
-
 	clk_enable(g3d_clock);
+	running = true;
 	cpufreq_update_policy(current_thread_info()->cpu);
 
 	return PVRSRV_OK;
@@ -128,7 +126,7 @@ static PVRSRV_ERROR EnableSGXClocks(void)
 static PVRSRV_ERROR DisableSGXClocks(void)
 {
 	clk_disable(g3d_clock);
-	regulator_disable(g3d_pd_regulator);
+	running = false;
 	cpufreq_update_policy(current_thread_info()->cpu);
 
 	return PVRSRV_OK;
@@ -150,12 +148,14 @@ static PVRSRV_ERROR DisableSGXClocks(void)
 ******************************************************************************/
 static PVRSRV_ERROR SysLocateDevices(SYS_DATA *psSysData)
 {
+	extern struct platform_device *gpsPVRLDMDev;
+
 	PVR_UNREFERENCED_PARAMETER(psSysData);
 
 	gsSGXDeviceMap.sRegsSysPBase.uiAddr = SGX540_BASEADDR;
 	gsSGXDeviceMap.sRegsCpuPBase = SysSysPAddrToCpuPAddr(gsSGXDeviceMap.sRegsSysPBase);
 	gsSGXDeviceMap.ui32RegsSize = SGX_REG_SIZE;
-	gsSGXDeviceMap.ui32IRQ = SGX540_IRQ;
+	gsSGXDeviceMap.ui32IRQ = of_irq_get(gpsPVRLDMDev->dev.of_node, 0);
 
 #if defined(SGX_FEATURE_HOST_PORT)
 	/* HostPort: */
@@ -173,12 +173,6 @@ static PVRSRV_ERROR SysLocateDevices(SYS_DATA *psSysData)
 	gsSGXDeviceMap.sLocalMemDevPBase.uiAddr = 0;
 	gsSGXDeviceMap.sLocalMemCpuPBase.uiAddr = 0;
 	gsSGXDeviceMap.ui32LocalMemSize = 0;
-
-	/* 
-		device interrupt IRQ
-		Note: no interrupts available on No HW system
-	*/
-	gsSGXDeviceMap.ui32IRQ = SGX540_IRQ;
 
 #if defined(PDUMP)
 	{
@@ -218,14 +212,6 @@ PVRSRV_ERROR SysInitialise(IMG_VOID)
 #if defined(SUPPORT_ACTIVE_POWER_MANAGEMENT)
 	{
 		extern struct platform_device *gpsPVRLDMDev;
-
-		g3d_pd_regulator = regulator_get(&gpsPVRLDMDev->dev, "pd");
-
-		if (IS_ERR(g3d_pd_regulator))
-		{
-			PVR_DPF((PVR_DBG_ERROR, "G3D failed to find g3d power domain"));
-			return PVRSRV_ERROR_INIT_FAILURE;
-		}
 
 		g3d_clock = clk_get(&gpsPVRLDMDev->dev, "sclk");
 		if (IS_ERR(g3d_clock))
