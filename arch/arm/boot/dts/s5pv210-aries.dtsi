@@ -322,6 +322,15 @@
 		};
 	};
 
+	powervr: powervr-sgx540@f3000000 {
+		compatible = "samsung,s5pc110-sgx540";
+		reg = <0xf3000000 0x10000>;
+		interrupt-parent = <&vic2>;
+		interrupts = <10>;
+		clock-names = "sclk";
+		clocks = <&clocks CLK_G3D>;
+	};
+
 	vibrator: pwm-vibrator {
 		compatible = "pwm-vibrator";
 		pwms = <&pwm 1 44642 0>;
