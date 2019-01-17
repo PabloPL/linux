@@ -40,6 +40,8 @@
 #include <linux/console.h>
 #include <linux/workqueue.h>
 #include <linux/version.h>
+#include <linux/platform_device.h>
+#include <linux/of_irq.h>
 
 #include "img_defs.h"
 #include "servicesext.h"
@@ -56,14 +58,13 @@
 #endif
 
 static int fb_idx = 0;
+static int VSYNC_IRQ = 0;
 
 #define S3C_MAX_BACKBUFFERS 	2
 #define S3C_MAX_BUFFERS (S3C_MAX_BACKBUFFERS+1)
 
 #define S3C_DISPLAY_FORMAT_NUM 1
 #define S3C_DISPLAY_DIM_NUM 1
-
-#define VSYNC_IRQ 0x61
 
 #define DC_S3C_LCD_COMMAND_COUNT 1
 
@@ -395,6 +396,14 @@ static irqreturn_t S3C_VSyncISR(int irq, void *dev_id)
 
 static IMG_VOID S3C_InstallVsyncISR(void)
 {	
+	extern struct platform_device *gpsPVRLDMDev;
+
+	VSYNC_IRQ = of_irq_get(gpsPVRLDMDev->dev.of_node, 1);
+	if (VSYNC_IRQ < 0) {
+		printk("S3C_InstallVsyncISR: Couldn't get system LISR from OF: %d", VSYNC_IRQ);
+		return;
+	}
+
 	if(request_irq(VSYNC_IRQ, S3C_VSyncISR, IRQF_SHARED , "s3cfb", gpsLCDInfo))
 	{
 		printk("S3C_InstallVsyncISR: Couldn't install system LISR on IRQ %d", VSYNC_IRQ);

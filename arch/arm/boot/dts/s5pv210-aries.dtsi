@@ -326,7 +326,8 @@
 		compatible = "samsung,s5pc110-sgx540";
 		reg = <0xf3000000 0x10000>;
 		interrupt-parent = <&vic2>;
-		interrupts = <10>;
+		interrupts = <10>, <1>;
+		interrupt-names = "main", "vsync";
 		clock-names = "sclk";
 		clocks = <&clocks CLK_G3D>;
 	};
