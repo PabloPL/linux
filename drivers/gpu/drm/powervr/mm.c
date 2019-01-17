@@ -805,8 +805,19 @@ FreePagePool(IMG_VOID)
 static struct shrinker g_sShrinker;
 #endif
 
-static int
-ShrinkPagePool(struct shrinker *psShrinker, struct shrink_control *psShrinkControl)
+unsigned long
+ShrinkPageCount(struct shrinker *psShrinker, struct shrink_control *psShrinkControl);
+unsigned long
+ShrinkPageScan(struct shrinker *psShrinker, struct shrink_control *psShrinkControl);
+
+unsigned long
+ShrinkPageCount(struct shrinker *psShrinker, struct shrink_control *psShrinkControl)
+{
+	return atomic_read(&g_sPagePoolEntryCount);
+}
+
+unsigned long
+ShrinkPageScan(struct shrinker *psShrinker, struct shrink_control *psShrinkControl)
 {
 	unsigned long uNumToScan = psShrinkControl->nr_to_scan;
 
@@ -823,7 +834,7 @@ ShrinkPagePool(struct shrinker *psShrinker, struct shrink_control *psShrinkContr
 		if (!PagePoolTrylock())
 		{
 			PVR_TRACE(("%s: Couldn't get page pool lock", __FUNCTION__));
-			return -1;
+			return SHRINK_STOP;
 		}
 
 		list_for_each_entry_safe(psPagePoolEntry, psTempPoolEntry, &g_sPagePoolList, sPagePoolItem)
@@ -2573,7 +2584,8 @@ static IMG_VOID LinuxMMCleanup_MemRecords_ForEachVa(DEBUG_MEM_ALLOC_REC *psCurre
 #if defined(PVR_LINUX_MEM_AREA_POOL_ALLOW_SHRINK)
 static struct shrinker g_sShrinker =
 {
-	.shrink = ShrinkPagePool,
+	.scan_objects = ShrinkPageScan,
+	.count_objects = ShrinkPageCount,
 	.seeks = DEFAULT_SEEKS
 };
 
