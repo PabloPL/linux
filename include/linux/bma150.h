@@ -41,9 +41,4 @@ struct bma150_cfg {
 	u32 bandwidth;			/* one of BMA0150_BW_xxx */
 };
 
-struct bma150_platform_data {
-	struct bma150_cfg cfg;
-	int (*irq_gpio_cfg)(void);
-};
-
 #endif /* _BMA150_H_ */

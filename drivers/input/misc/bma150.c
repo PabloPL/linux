@@ -567,8 +567,6 @@ int bma150_cfg_from_of(struct device_node *np)
 static int bma150_probe(struct i2c_client *client,
 				  const struct i2c_device_id *id)
 {
-	const struct bma150_platform_data *pdata =
-			dev_get_platdata(&client->dev);
 	const struct bma150_cfg *cfg;
 	struct bma150_data *bma150;
 	int chip_id;
@@ -592,27 +590,12 @@ static int bma150_probe(struct i2c_client *client,
 
 	bma150->client = client;
 
-	if (pdata) {
-		if (pdata->irq_gpio_cfg) {
-			error = pdata->irq_gpio_cfg();
-			if (error) {
-				dev_err(&client->dev,
-					"IRQ GPIO conf. error %d, error %d\n",
-					client->irq, error);
-				return error;
-			}
-		}
-		cfg = &pdata->cfg;
-	} else if (client->dev.of_node) {
-		error = bma150_cfg_from_of(client->dev.of_node);
-		if (error) {
-			dev_err(&client->dev, "Failed to parse of data\n");
-			return error;
-		}
-		cfg = &default_cfg;
-	} else {
-		cfg = &default_cfg;
+	error = bma150_cfg_from_of(client->dev.of_node);
+	if (error) {
+		dev_err(&client->dev, "Failed to parse of data\n");
+		return error;
 	}
+	cfg = &default_cfg;
 
 	error = bma150_initialize(bma150, cfg);
 	if (error)
