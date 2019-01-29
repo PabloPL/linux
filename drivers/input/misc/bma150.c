@@ -470,7 +470,6 @@ static void bma150_init_input_device(struct bma150_data *bma150,
 static int bma150_register_input_device(struct bma150_data *bma150)
 {
 	struct input_dev *idev;
-	int error;
 
 	idev = devm_input_allocate_device(&bma150->client->dev);
 	if (!idev)
@@ -482,18 +481,14 @@ static int bma150_register_input_device(struct bma150_data *bma150)
 	idev->close = bma150_irq_close;
 	input_set_drvdata(idev, bma150);
 
-	error = input_register_device(idev);
-	if (error)
-		return error;
-
 	bma150->input = idev;
-	return 0;
+
+	return input_register_device(idev);
 }
 
 static int bma150_register_polled_device(struct bma150_data *bma150)
 {
 	struct input_polled_dev *ipoll_dev;
-	int error;
 
 	ipoll_dev = devm_input_allocate_polled_device(&bma150->client->dev);
 	if (!ipoll_dev)
@@ -509,14 +504,10 @@ static int bma150_register_polled_device(struct bma150_data *bma150)
 
 	bma150_init_input_device(bma150, ipoll_dev->input);
 
-	error = input_register_polled_device(ipoll_dev);
-	if (error)
-		return error;
-
 	bma150->input_polled = ipoll_dev;
 	bma150->input = ipoll_dev->input;
 
-	return 0;
+	return input_register_polled_device(ipoll_dev);
 }
 
 int bma150_cfg_from_of(struct device_node *np)
