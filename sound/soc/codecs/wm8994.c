@@ -527,6 +527,20 @@ static SOC_ENUM_SINGLE_DECL(aif2dacl_src,
 static SOC_ENUM_SINGLE_DECL(aif2dacr_src,
 			    WM8994_AIF2_CONTROL_2, 14, aif_chan_src_text);
 
+static const char *spk_src_text[] = {
+	"Left", "Right", "Both",
+};
+
+static const unsigned int spk_src_values[] = {
+	0x2, 0x1, 0x3,
+};
+
+static SOC_VALUE_ENUM_SINGLE_DECL(spkl_src, WM8994_SPKOUT_MIXERS,
+				  3, 0x3, spk_src_text, spk_src_values);
+
+static SOC_VALUE_ENUM_SINGLE_DECL(spkr_src, WM8994_SPKOUT_MIXERS,
+				  0, 0x3, spk_src_text, spk_src_values);
+
 static const char *osr_text[] = {
 	"Low Power", "High Performance",
 };
@@ -557,6 +571,9 @@ SOC_ENUM("AIF1DACL Source", aif1dacl_src),
 SOC_ENUM("AIF1DACR Source", aif1dacr_src),
 SOC_ENUM("AIF2DACL Source", aif2dacl_src),
 SOC_ENUM("AIF2DACR Source", aif2dacr_src),
+
+SOC_ENUM("SPKR Source", spkr_src),
+SOC_ENUM("SPKL Source", spkl_src),
 
 SOC_DOUBLE_R_TLV("AIF1DAC1 Volume", WM8994_AIF1_DAC1_LEFT_VOLUME,
 		 WM8994_AIF1_DAC1_RIGHT_VOLUME, 1, 96, 0, digital_tlv),
