@@ -498,6 +498,7 @@ static int aries_audio_probe(struct platform_device *pdev)
 			dev_warn(dev, "Couldn't get extcon device");
 			priv->usb_extcon = NULL;
 		}
+		of_node_put(extcon_np);
 	}
 
 	priv->adc = devm_iio_channel_get(dev, "headset-detect");
