@@ -580,17 +580,15 @@ static int aries_audio_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	cpu_dai_np = of_parse_phandle(dev->of_node,
-			"samsung,i2s-controller", 0);
+	cpu_dai_np = of_parse_phandle(dev->of_node, "i2s-controller", 0);
 	if (!cpu_dai_np) {
 		dev_err(dev, "i2s-controller property invalid/missing\n");
 		return -EINVAL;
 	}
 
-	codec_dai_np = of_parse_phandle(dev->of_node,
-			"samsung,audio-codec", 0);
+	codec_dai_np = of_parse_phandle(dev->of_node, "audio-codec", 0);
 	if (!codec_dai_np) {
-		dev_err(dev, "samsung,audio-codec property invalid/missing\n");
+		dev_err(dev, "audio-codec property invalid/missing\n");
 		return -EINVAL;
 	}
 
