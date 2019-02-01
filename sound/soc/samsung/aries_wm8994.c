@@ -44,7 +44,6 @@ struct aries_wm8994_data {
 	struct iio_channel *adc;
 	struct jack_zone zones[MAX_ZONES];
 	int num_zones;
-	unsigned int fll1_rate;
 	bool aif2_slave;
 };
 
@@ -219,8 +218,6 @@ static int aries_hw_params(struct snd_pcm_substream *substream,
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
-	struct snd_soc_card *card = rtd->card;
-	struct aries_wm8994_data *priv = snd_soc_card_get_drvdata(card);
 	unsigned int pll_out;
 	int ret;
 
@@ -232,36 +229,43 @@ static int aries_hw_params(struct snd_pcm_substream *substream,
 	else
 		pll_out = params_rate(params) * 256;
 
-	/* switch to MCLK1 as source while we reconfigure FLL1 if necessary */
-	if (priv->fll1_rate && priv->fll1_rate != pll_out) {
-		ret = snd_soc_dai_set_sysclk(codec_dai, WM8994_SYSCLK_MCLK1,
-			ARIES_MCLK1_FREQ, SND_SOC_CLOCK_IN);
-		if (ret < 0)
-			return ret;
-	}
-
 	/* set the codec FLL */
 	ret = snd_soc_dai_set_pll(codec_dai, WM8994_FLL1, WM8994_FLL_SRC_MCLK1,
-					ARIES_MCLK1_FREQ, pll_out);
+			ARIES_MCLK1_FREQ, pll_out);
 	if (ret < 0)
 		return ret;
 
-	priv->fll1_rate = pll_out;
-
 	/* set the codec system clock */
 	ret = snd_soc_dai_set_sysclk(codec_dai, WM8994_SYSCLK_FLL1,
-					pll_out, SND_SOC_CLOCK_IN);
+			pll_out, SND_SOC_CLOCK_IN);
 	if (ret < 0)
 		return ret;
 
 	return 0;
 }
 
-/*
- * Aries WM8994 DAI operations.
- */
+static int aries_hw_free(struct snd_pcm_substream *substream)
+{
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_soc_dai *codec_dai = rtd->codec_dai;
+	int ret;
+
+	/* set system clock to MCLK1 as it is always on */
+	ret = snd_soc_dai_set_sysclk(codec_dai, WM8994_SYSCLK_MCLK1,
+			ARIES_MCLK1_FREQ, SND_SOC_CLOCK_IN);
+	if (ret < 0)
+		return ret;
+
+	/* disable FLL1 */
+	ret = snd_soc_dai_set_pll(codec_dai, WM8994_FLL1, WM8994_SYSCLK_MCLK1,
+				    0, 0);
+
+	return ret;
+}
+
 static struct snd_soc_ops aries_ops = {
 	.hw_params = aries_hw_params,
+	.hw_free = aries_hw_free,
 };
 
 static int aries_modem_hw_params(struct snd_pcm_substream *substream,
@@ -311,8 +315,28 @@ static int aries_modem_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
+static int aries_modem_hw_free(struct snd_pcm_substream *substream)
+{
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_soc_dai *codec_dai = rtd->codec_dai;
+	int ret;
+
+	/* set system clock to MCLK1 as it is always on */
+	ret = snd_soc_dai_set_sysclk(codec_dai, WM8994_SYSCLK_MCLK1,
+			ARIES_MCLK1_FREQ, SND_SOC_CLOCK_IN);
+	if (ret < 0)
+		return ret;
+
+	/* disable FLL2 */
+	ret = snd_soc_dai_set_pll(codec_dai, WM8994_FLL2, WM8994_SYSCLK_MCLK1,
+				    0, 0);
+
+	return ret;
+}
+
 static struct snd_soc_ops aries_modem_ops = {
 	.hw_params = aries_modem_hw_params,
+	.hw_free = aries_modem_hw_free,
 };
 
 static int aries_late_probe(struct snd_soc_card *card)
