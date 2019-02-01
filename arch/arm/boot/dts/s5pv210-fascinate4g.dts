@@ -79,8 +79,8 @@
 	sound {
 		compatible = "samsung,aries-wm8994";
 
-		samsung,i2s-controller = <&i2s0>;
-		samsung,audio-codec = <&wm8994>;
+		i2s-controller = <&i2s0>;
+		audio-codec = <&wm8994>;
 
 		aif2-slave;
 
