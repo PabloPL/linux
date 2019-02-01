@@ -589,7 +589,8 @@ static int aries_audio_probe(struct platform_device *pdev)
 	codec_dai_np = of_parse_phandle(dev->of_node, "audio-codec", 0);
 	if (!codec_dai_np) {
 		dev_err(dev, "audio-codec property invalid/missing\n");
-		return -EINVAL;
+		ret = -EINVAL;
+		goto cpu_dai_node_put;
 	}
 
 	for_each_card_prelinks(card, i, dai_link)
@@ -601,14 +602,18 @@ static int aries_audio_probe(struct platform_device *pdev)
 			aries_ext_dai, ARRAY_SIZE(aries_ext_dai));
 	if (ret < 0) {
 		dev_err(dev, "Failed to register component: %d\n", ret);
-		return ret;
+		goto codec_dai_node_put;
 	}
 
 	ret = devm_snd_soc_register_card(dev, card);
-	if (ret < 0) {
+	if (ret < 0)
 		dev_err(dev, "Failed to register card: %d\n", ret);
-		return ret;
-	}
+
+codec_dai_node_put:
+	of_node_put(codec_dai_np);
+
+cpu_dai_node_put:
+	of_node_put(cpu_dai_np);
 
 	return ret;
 }
