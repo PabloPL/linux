@@ -392,16 +392,20 @@ static int aries_late_probe(struct snd_soc_card *card)
 
 static struct snd_soc_dai_driver aries_ext_dai[] = {
 	{
-		.name = "Voice call",
+		.name = "aries-modem-dai",
 		.playback = {
 			.channels_min = 1,
 			.channels_max = 2,
+			.rate_min = 8000,
+			.rate_max = 8000,
 			.rates = SNDRV_PCM_RATE_8000,
 			.formats = SNDRV_PCM_FMTBIT_S16_LE,
 		},
 		.capture = {
 			.channels_min = 1,
 			.channels_max = 2,
+			.rate_min = 8000,
+			.rate_max = 8000,
 			.rates = SNDRV_PCM_RATE_8000,
 			.formats = SNDRV_PCM_FMTBIT_S16_LE,
 		},
@@ -424,9 +428,9 @@ static struct snd_soc_dai_link aries_dai[] = {
 	},
 	{
 		.name = "WM8994 AIF2",
-		.stream_name = "Voice call",
-		.cpu_dai_name = "Voice call",
+		.stream_name = "Voice",
 		.codec_dai_name = "wm8994-aif2",
+		.cpu_dai_name = "aries-modem-dai",
 		.ops = &aries_modem_ops,
 		.ignore_suspend = 1,
 	},
