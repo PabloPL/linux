@@ -268,20 +268,15 @@ static struct snd_soc_ops aries_ops = {
 	.hw_free = aries_hw_free,
 };
 
-static int aries_modem_hw_params(struct snd_pcm_substream *substream,
-		struct snd_pcm_hw_params *params)
+static int aries_modem_init(struct snd_soc_pcm_runtime *rtd)
 {
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_card *card = rtd->card;
 	struct aries_wm8994_data *priv = snd_soc_card_get_drvdata(card);
 	struct snd_soc_dai *codec_dai = rtd->codec_dai;
 	unsigned int pll_in, pll_out;
 	int mclk, fmt, ret;
 
-	if (params_rate(params) != 8000)
-		return -EINVAL;
-
-	pll_out = params_rate(params) * 256;
+	pll_out = 8000 * 256;
 
 	if (priv->aif2_slave) {
 		mclk = WM8994_FLL_SRC_MCLK2;
@@ -314,30 +309,6 @@ static int aries_modem_hw_params(struct snd_pcm_substream *substream,
 
 	return 0;
 }
-
-static int aries_modem_hw_free(struct snd_pcm_substream *substream)
-{
-	struct snd_soc_pcm_runtime *rtd = substream->private_data;
-	struct snd_soc_dai *codec_dai = rtd->codec_dai;
-	int ret;
-
-	/* set system clock to MCLK1 as it is always on */
-	ret = snd_soc_dai_set_sysclk(codec_dai, WM8994_SYSCLK_MCLK1,
-			ARIES_MCLK1_FREQ, SND_SOC_CLOCK_IN);
-	if (ret < 0)
-		return ret;
-
-	/* disable FLL2 */
-	ret = snd_soc_dai_set_pll(codec_dai, WM8994_FLL2, WM8994_SYSCLK_MCLK1,
-				    0, 0);
-
-	return ret;
-}
-
-static struct snd_soc_ops aries_modem_ops = {
-	.hw_params = aries_modem_hw_params,
-	.hw_free = aries_modem_hw_free,
-};
 
 static int aries_late_probe(struct snd_soc_card *card)
 {
@@ -416,6 +387,14 @@ static const struct snd_soc_component_driver aries_component = {
 	.name	= "aries-audio",
 };
 
+static const struct snd_soc_pcm_stream baseband_params = {
+	.formats = SNDRV_PCM_FMTBIT_S16_LE,
+	.rate_min = 8000,
+	.rate_max = 8000,
+	.channels_min = 2,
+	.channels_max = 2,
+};
+
 static struct snd_soc_dai_link aries_dai[] = {
 	{
 		.name = "WM8994 AIF1",
@@ -431,7 +410,8 @@ static struct snd_soc_dai_link aries_dai[] = {
 		.stream_name = "Voice",
 		.codec_dai_name = "wm8994-aif2",
 		.cpu_dai_name = "aries-modem-dai",
-		.ops = &aries_modem_ops,
+		.init = &aries_modem_init,
+		.params = &baseband_params,
 		.ignore_suspend = 1,
 	},
 };
