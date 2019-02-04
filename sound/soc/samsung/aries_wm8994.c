@@ -20,9 +20,11 @@
 #include "i2s.h"
 #include "../codecs/wm8994.h"
 
-/* Aries has a 24MHZ crystal attached to WM8994 */
+/* All Aries has a 24MHz clock attached to WM8994 */
 #define ARIES_MCLK1_FREQ 24000000
-#define ARIES_MCLK2_FREQ 32768
+
+/* AIF2 slave devices have a 26MHz clock from modem */
+#define ARIES_MCLK2_FREQ 26000000
 
 /* Support up to 5 different jack detection zones */
 #define MAX_ZONES 5
@@ -276,16 +278,17 @@ static int aries_modem_init(struct snd_soc_pcm_runtime *rtd)
 	unsigned int pll_in, pll_out;
 	int mclk, fmt, ret;
 
-	pll_out = 8000 * 256;
-
 	if (priv->aif2_slave) {
 		mclk = WM8994_FLL_SRC_MCLK2;
 		pll_in = ARIES_MCLK2_FREQ;
+		// TODO - See if this actually needs to be this high
+		pll_out = 8000 * 1536;
 		fmt = SND_SOC_DAIFMT_DSP_A | SND_SOC_DAIFMT_IB_NF |
 				SND_SOC_DAIFMT_CBS_CFS;
 	} else {
 		mclk = WM8994_FLL_SRC_MCLK1;
 		pll_in = ARIES_MCLK1_FREQ;
+		pll_out = 8000 * 256;
 		fmt = SND_SOC_DAIFMT_LEFT_J | SND_SOC_DAIFMT_IB_IF |
 			SND_SOC_DAIFMT_CBM_CFM;
 	}
@@ -365,6 +368,7 @@ static struct snd_soc_dai_driver aries_ext_dai[] = {
 	{
 		.name = "aries-modem-dai",
 		.playback = {
+			.stream_name = "Playback",
 			.channels_min = 1,
 			.channels_max = 2,
 			.rate_min = 8000,
@@ -373,6 +377,7 @@ static struct snd_soc_dai_driver aries_ext_dai[] = {
 			.formats = SNDRV_PCM_FMTBIT_S16_LE,
 		},
 		.capture = {
+			.stream_name = "Capture",
 			.channels_min = 1,
 			.channels_max = 2,
 			.rate_min = 8000,
