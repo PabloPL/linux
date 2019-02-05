@@ -274,7 +274,7 @@ static int aries_modem_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_card *card = rtd->card;
 	struct aries_wm8994_data *priv = snd_soc_card_get_drvdata(card);
-	struct snd_soc_dai *codec_dai = rtd->codec_dai;
+	struct snd_soc_dai *codec_dai = rtd->cpu_dai;
 	unsigned int pll_in, pll_out;
 	int mclk, fmt, ret;
 
@@ -368,20 +368,16 @@ static struct snd_soc_dai_driver aries_ext_dai[] = {
 	{
 		.name = "aries-modem-dai",
 		.playback = {
-			.stream_name = "Playback",
+			.stream_name = "Modem Playback",
 			.channels_min = 1,
 			.channels_max = 2,
-			.rate_min = 8000,
-			.rate_max = 8000,
 			.rates = SNDRV_PCM_RATE_8000,
 			.formats = SNDRV_PCM_FMTBIT_S16_LE,
 		},
 		.capture = {
-			.stream_name = "Capture",
+			.stream_name = "Modem Capture",
 			.channels_min = 1,
 			.channels_max = 2,
-			.rate_min = 8000,
-			.rate_max = 8000,
 			.rates = SNDRV_PCM_RATE_8000,
 			.formats = SNDRV_PCM_FMTBIT_S16_LE,
 		},
@@ -389,7 +385,11 @@ static struct snd_soc_dai_driver aries_ext_dai[] = {
 };
 
 static const struct snd_soc_component_driver aries_component = {
-	.name	= "aries-audio",
+	.name = "aries-audio",
+	.idle_bias_on = 1,
+	.use_pmdown_time = 1,
+	.endianness = 1,
+	.non_legacy_dai_naming = 1,
 };
 
 static const struct snd_soc_pcm_stream baseband_params = {
@@ -413,8 +413,14 @@ static struct snd_soc_dai_link aries_dai[] = {
 	{
 		.name = "WM8994 AIF2",
 		.stream_name = "Voice",
-		.codec_dai_name = "wm8994-aif2",
-		.cpu_dai_name = "aries-modem-dai",
+		.cpu_dai_name = "wm8994-aif2",
+#if 0
+		.codec_name = "sound",
+		.codec_dai_name = "aries-modem-dai",
+#else
+		.codec_name = "snd-soc-dummy",
+		.codec_dai_name = "snd-soc-dummy-dai",
+#endif
 		.init = &aries_modem_init,
 		.params = &baseband_params,
 		.ignore_suspend = 1,
@@ -446,7 +452,6 @@ static int aries_audio_probe(struct platform_device *pdev)
 	struct device_node *np = pdev->dev.of_node;
 	struct device_node *cpu_dai_np, *codec_dai_np, *extcon_np;
 	struct snd_soc_card *card = &aries;
-	struct snd_soc_dai_link *dai_link;
 	struct aries_wm8994_data *priv;
 	unsigned int buffer[MAX_ZONES];
 	int ret, i;
@@ -578,10 +583,11 @@ static int aries_audio_probe(struct platform_device *pdev)
 		goto cpu_dai_node_put;
 	}
 
-	for_each_card_prelinks(card, i, dai_link)
-		card->dai_link[i].codec_of_node = codec_dai_np;
+	card->dai_link[0].codec_of_node = codec_dai_np;
 	card->dai_link[0].cpu_of_node = cpu_dai_np;
 	card->dai_link[0].platform_of_node = cpu_dai_np;
+
+	card->dai_link[1].cpu_of_node = codec_dai_np;
 
 	ret = devm_snd_soc_register_component(dev, &aries_component,
 			aries_ext_dai, ARRAY_SIZE(aries_ext_dai));
