@@ -260,7 +260,7 @@ static int aries_hw_free(struct snd_pcm_substream *substream)
 
 	/* disable FLL1 */
 	ret = snd_soc_dai_set_pll(codec_dai, WM8994_FLL1, WM8994_SYSCLK_MCLK1,
-				    0, 0);
+			0, 0);
 
 	return ret;
 }
@@ -270,30 +270,11 @@ static struct snd_soc_ops aries_ops = {
 	.hw_free = aries_hw_free,
 };
 
-
-static int aries_modem_params(struct snd_pcm_substream *substream,
-	struct snd_pcm_hw_params *params)
-{
-	pr_err("MODEM_HW_PARAMS CALLED");
-	return 0;
-}
-
-static int aries_modem_free(struct snd_pcm_substream *substream)
-{
-	pr_err("MODEM_FREE CALLED");
-	return 0;
-}
-
-static struct snd_soc_ops aries_modem_ops = {
-	.hw_params = aries_modem_params,
-	.hw_free = aries_modem_free,
-};
-
 static int aries_modem_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_card *card = rtd->card;
 	struct aries_wm8994_data *priv = snd_soc_card_get_drvdata(card);
-	struct snd_soc_dai *codec_dai = rtd->cpu_dai;
+	struct snd_soc_dai *cpu_dai = rtd->cpu_dai;
 	unsigned int pll_in, pll_out;
 	int mclk, fmt, ret;
 
@@ -308,23 +289,23 @@ static int aries_modem_init(struct snd_soc_pcm_runtime *rtd)
 		mclk = WM8994_FLL_SRC_MCLK1;
 		pll_in = ARIES_MCLK1_FREQ;
 		fmt = SND_SOC_DAIFMT_LEFT_J | SND_SOC_DAIFMT_IB_IF |
-			SND_SOC_DAIFMT_CBM_CFM;
+				SND_SOC_DAIFMT_CBM_CFM;
 	}
 
-	/* set codec DAI configuration */
-	ret = snd_soc_dai_set_fmt(codec_dai, fmt);
+	/* set wm8994 DAI configuration */
+	ret = snd_soc_dai_set_fmt(cpu_dai, fmt);
 	if (ret < 0)
 		return ret;
 
-	/* set the codec FLL */
-	ret = snd_soc_dai_set_pll(codec_dai, WM8994_FLL2, mclk,
-				  pll_in, pll_out);
+	/* set wm8994 FLL */
+	ret = snd_soc_dai_set_pll(cpu_dai, WM8994_FLL2, mclk,
+			pll_in, pll_out);
 	if (ret < 0)
 		return ret;
 
-	/* set the codec system clock */
-	ret = snd_soc_dai_set_sysclk(codec_dai, WM8994_SYSCLK_FLL2,
-				     pll_out, SND_SOC_CLOCK_IN);
+	/* set wm8994 system clock */
+	ret = snd_soc_dai_set_sysclk(cpu_dai, WM8994_SYSCLK_FLL2,
+			pll_out, SND_SOC_CLOCK_IN);
 	if (ret < 0)
 		return ret;
 
@@ -440,7 +421,6 @@ static struct snd_soc_dai_link aries_dai[] = {
 		.codec_name = "sound",
 		.codec_dai_name = "aries-modem-dai",
 		.init = &aries_modem_init,
-		.ops = &aries_modem_ops,
 		.params = &baseband_params,
 		.ignore_suspend = 1,
 	},
