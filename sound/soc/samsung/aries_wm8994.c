@@ -270,6 +270,25 @@ static struct snd_soc_ops aries_ops = {
 	.hw_free = aries_hw_free,
 };
 
+
+static int aries_modem_params(struct snd_pcm_substream *substream,
+	struct snd_pcm_hw_params *params)
+{
+	pr_err("MODEM_HW_PARAMS CALLED");
+	return 0;
+}
+
+static int aries_modem_free(struct snd_pcm_substream *substream)
+{
+	pr_err("MODEM_FREE CALLED");
+	return 0;
+}
+
+static struct snd_soc_ops aries_modem_ops = {
+	.hw_params = aries_modem_params,
+	.hw_free = aries_modem_free,
+};
+
 static int aries_modem_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_card *card = rtd->card;
@@ -278,17 +297,16 @@ static int aries_modem_init(struct snd_soc_pcm_runtime *rtd)
 	unsigned int pll_in, pll_out;
 	int mclk, fmt, ret;
 
+	pll_out = 8000 * 512;
+
 	if (priv->aif2_slave) {
 		mclk = WM8994_FLL_SRC_MCLK2;
 		pll_in = ARIES_MCLK2_FREQ;
-		// TODO - See if this actually needs to be this high
-		pll_out = 8000 * 1536;
 		fmt = SND_SOC_DAIFMT_DSP_A | SND_SOC_DAIFMT_IB_NF |
 				SND_SOC_DAIFMT_CBS_CFS;
 	} else {
 		mclk = WM8994_FLL_SRC_MCLK1;
 		pll_in = ARIES_MCLK1_FREQ;
-		pll_out = 8000 * 256;
 		fmt = SND_SOC_DAIFMT_LEFT_J | SND_SOC_DAIFMT_IB_IF |
 			SND_SOC_DAIFMT_CBM_CFM;
 	}
@@ -316,7 +334,16 @@ static int aries_modem_init(struct snd_soc_pcm_runtime *rtd)
 static int aries_late_probe(struct snd_soc_card *card)
 {
 	struct aries_wm8994_data *priv = snd_soc_card_get_drvdata(card);
+	struct snd_soc_pcm_runtime *rtd;
 	int ret;
+
+	rtd = snd_soc_get_pcm_runtime(card, card->dai_link[0].name);
+
+	/* Initialize AIF1 clock for sysclk */
+	ret = snd_soc_dai_set_sysclk(rtd->codec_dai, WM8994_SYSCLK_MCLK1,
+			ARIES_MCLK1_FREQ, SND_SOC_CLOCK_IN);
+	if (ret < 0)
+		return ret;
 
 	if (priv->usb_extcon) {
 		ret = devm_extcon_register_notifier(card->dev,
@@ -386,10 +413,6 @@ static struct snd_soc_dai_driver aries_ext_dai[] = {
 
 static const struct snd_soc_component_driver aries_component = {
 	.name = "aries-audio",
-	.idle_bias_on = 1,
-	.use_pmdown_time = 1,
-	.endianness = 1,
-	.non_legacy_dai_naming = 1,
 };
 
 static const struct snd_soc_pcm_stream baseband_params = {
@@ -414,14 +437,10 @@ static struct snd_soc_dai_link aries_dai[] = {
 		.name = "WM8994 AIF2",
 		.stream_name = "Voice",
 		.cpu_dai_name = "wm8994-aif2",
-#if 0
 		.codec_name = "sound",
 		.codec_dai_name = "aries-modem-dai",
-#else
-		.codec_name = "snd-soc-dummy",
-		.codec_dai_name = "snd-soc-dummy-dai",
-#endif
 		.init = &aries_modem_init,
+		.ops = &aries_modem_ops,
 		.params = &baseband_params,
 		.ignore_suspend = 1,
 	},
