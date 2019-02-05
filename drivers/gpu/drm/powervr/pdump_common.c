@@ -115,7 +115,7 @@ static IMG_VOID *GetTempBuffer(IMG_VOID)
 					  "PDUMP Temporary Buffer");
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "GetTempBuffer: OSAllocMem failed: %d", eError));
+			PVR_DPF(PVR_DBG_ERROR, "GetTempBuffer: OSAllocMem failed: %d", eError);
 		}
 	}
 
@@ -133,7 +133,7 @@ static IMG_VOID FreeTempBuffer(IMG_VOID)
 					  ghTempBufferBlockAlloc);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "FreeTempBuffer: OSFreeMem failed: %d", eError));
+			PVR_DPF(PVR_DBG_ERROR, "FreeTempBuffer: OSFreeMem failed: %d", eError);
 		}
 		else
 		{
@@ -1398,25 +1398,25 @@ PVRSRV_ERROR PDumpCommentKM(IMG_CHAR *pszComment, IMG_UINT32 ui32Flags)
 #if defined(PDUMP_DEBUG_OUTFILES)
 		if(ui32Flags & PDUMP_FLAGS_CONTINUOUS)
 		{
-			PVR_DPF((PVR_DBG_WARNING, "Incomplete comment, %d: %s (continuous set)",
-					 g_ui32EveryLineCounter, pszComment));
+			PVR_DPF(PVR_DBG_WARNING, "Incomplete comment, %d: %s (continuous set)",
+					 g_ui32EveryLineCounter, pszComment);
 			return PVRSRV_ERROR_PDUMP_BUFFER_FULL;
 		}
 		else if(ui32Flags & PDUMP_FLAGS_PERSISTENT)
 		{
-			PVR_DPF((PVR_DBG_WARNING, "Incomplete comment, %d: %s (persistent set)",
-					 g_ui32EveryLineCounter, pszComment));
+			PVR_DPF(PVR_DBG_WARNING, "Incomplete comment, %d: %s (persistent set)",
+					 g_ui32EveryLineCounter, pszComment);
 			return PVRSRV_ERROR_CMD_NOT_PROCESSED;
 		}
 		else
 		{
-			PVR_DPF((PVR_DBG_WARNING, "Incomplete comment, %d: %s",
-					 g_ui32EveryLineCounter, pszComment));
+			PVR_DPF(PVR_DBG_WARNING, "Incomplete comment, %d: %s",
+					 g_ui32EveryLineCounter, pszComment);
 			return PVRSRV_ERROR_CMD_NOT_PROCESSED;
 		}
 #else
-		PVR_DPF((PVR_DBG_WARNING, "Incomplete comment, %s",
-					 pszComment));
+		PVR_DPF(PVR_DBG_WARNING, "Incomplete comment, %s",
+					 pszComment);
 		return PVRSRV_ERROR_CMD_NOT_PROCESSED;
 #endif
 	}
@@ -1972,7 +1972,7 @@ PVRSRV_ERROR PDumpMemUM(PVRSRV_PER_PROCESS_DATA *psPerProc,
 	PVR_ASSERT(pvAddrUM != IMG_NULL && pvAddrKM != IMG_NULL);
 	if (pvAddrUM == IMG_NULL || pvAddrKM == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PDumpMemUM: Nothing to dump"));
+		PVR_DPF(PVR_DBG_ERROR, "PDumpMemUM: Nothing to dump");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
@@ -1993,7 +1993,7 @@ PVRSRV_ERROR PDumpMemUM(PVRSRV_PER_PROCESS_DATA *psPerProc,
 					   ui32BytesToDump);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PDumpMemUM: OSCopyFromUser failed (%d)", eError));
+			PVR_DPF(PVR_DBG_ERROR, "PDumpMemUM: OSCopyFromUser failed (%d)", eError);
 			return eError;
 		}
 
@@ -2009,7 +2009,7 @@ PVRSRV_ERROR PDumpMemUM(PVRSRV_PER_PROCESS_DATA *psPerProc,
 			
 			if (ui32BytesDumped != 0)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "PDumpMemUM: PDumpMemKM failed (%d)", eError));
+				PVR_DPF(PVR_DBG_ERROR, "PDumpMemUM: PDumpMemKM failed (%d)", eError);
 			}
 			PVR_ASSERT(ui32BytesDumped == 0);
 			return eError;
@@ -2040,7 +2040,7 @@ static PVRSRV_ERROR _PdumpAllocMMUContext(IMG_UINT32 *pui32MMUContextID)
 		}
 	}
 
-	PVR_DPF((PVR_DBG_ERROR, "_PdumpAllocMMUContext: no free MMU context ids"));
+	PVR_DPF(PVR_DBG_ERROR, "_PdumpAllocMMUContext: no free MMU context ids");
 
 	return PVRSRV_ERROR_MMU_CONTEXT_NOT_FOUND;
 }
@@ -2055,7 +2055,7 @@ static PVRSRV_ERROR _PdumpFreeMMUContext(IMG_UINT32 ui32MMUContextID)
 		return PVRSRV_OK;
 	}
 
-	PVR_DPF((PVR_DBG_ERROR, "_PdumpFreeMMUContext: MMU context ids invalid"));
+	PVR_DPF(PVR_DBG_ERROR, "_PdumpFreeMMUContext: MMU context ids invalid");
 
 	return PVRSRV_ERROR_MMU_CONTEXT_NOT_FOUND;
 }
@@ -2079,7 +2079,7 @@ PVRSRV_ERROR PDumpSetMMUContext(PVRSRV_DEVICE_TYPE eDeviceType,
 	eErr = _PdumpAllocMMUContext(&ui32MMUContextID);
 	if(eErr != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PDumpSetMMUContext: _PdumpAllocMMUContext failed: %d", eErr));
+		PVR_DPF(PVR_DBG_ERROR, "PDumpSetMMUContext: _PdumpAllocMMUContext failed: %d", eErr);
 		return eErr;
 	}
 
@@ -2138,7 +2138,7 @@ PVRSRV_ERROR PDumpClearMMUContext(PVRSRV_DEVICE_TYPE eDeviceType,
 	eErr = _PdumpFreeMMUContext(ui32MMUContextID);
 	if(eErr != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PDumpClearMMUContext: _PdumpFreeMMUContext failed: %d", eErr));
+		PVR_DPF(PVR_DBG_ERROR, "PDumpClearMMUContext: _PdumpFreeMMUContext failed: %d", eErr);
 		return eErr;
 	}
 
@@ -2220,7 +2220,7 @@ IMG_EXPORT IMG_VOID PDumpConnectionNotify(IMG_VOID)
 {
 	SYS_DATA			*psSysData;
 	PVRSRV_DEVICE_NODE	*psThis;
-	PVR_DPF((PVR_DBG_WARNING, "PDump has connected."));
+	PVR_DPF(PVR_DBG_WARNING, "PDump has connected.");
 	
 	
 	SysAcquireData(&psSysData);
@@ -2282,7 +2282,7 @@ IMG_UINT32 DbgWrite(PDBG_STREAM psStream, IMG_UINT8 *pui8Data, IMG_UINT32 ui32BC
 			}
 			else
 			{
-				PVR_DPF((PVR_DBG_ERROR, "DbgWrite: Failed to send persistent data"));
+				PVR_DPF(PVR_DBG_ERROR, "DbgWrite: Failed to send persistent data");
 				if( (psCtrl->ui32Flags & DEBUG_FLAGS_READONLY) != 0)
 				{
 					

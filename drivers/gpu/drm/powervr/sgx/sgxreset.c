@@ -312,7 +312,7 @@ static IMG_VOID SGXResetInvalDC(PVRSRV_SGXDEV_INFO	*psDevInfo,
 							MAX_HW_TIME_US/WAIT_TRY_COUNT,
 							IMG_FALSE) != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"Wait for DC invalidate failed."));
+			PVR_DPF(PVR_DBG_ERROR,"Wait for DC invalidate failed.");
 			PVR_DBG_BREAK;
 		}
 
@@ -452,7 +452,7 @@ IMG_VOID SGXReset(PVRSRV_SGXDEV_INFO	*psDevInfo,
 
 
 			sBifFault.uiAddr = OSReadHWReg(psDevInfo->pvRegsBaseKM, EUR_CR_BIF_FAULT);
-			PVR_DPF((PVR_DBG_WARNING, "SGXReset: Page fault 0x%x/0x%x", ui32BifIntStat, sBifFault.uiAddr));
+			PVR_DPF(PVR_DBG_WARNING, "SGXReset: Page fault 0x%x/0x%x", ui32BifIntStat, sBifFault.uiAddr);
 			ui32PDIndex = sBifFault.uiAddr >> (SGX_MMU_PAGE_SHIFT + SGX_MMU_PT_SHIFT);
 			ui32PTIndex = (sBifFault.uiAddr & SGX_MMU_PT_MASK) >> SGX_MMU_PAGE_SHIFT;
 
@@ -512,7 +512,7 @@ IMG_VOID SGXReset(PVRSRV_SGXDEV_INFO	*psDevInfo,
 	
 	SGXResetInvalDC(psDevInfo, ui32PDUMPFlags, IMG_TRUE);
 
-	PVR_DPF((PVR_DBG_MESSAGE,"Soft Reset of SGX"));
+	PVR_DPF(PVR_DBG_MESSAGE,"Soft Reset of SGX");
 
 	
 	ui32RegVal = 0;

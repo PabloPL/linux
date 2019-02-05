@@ -75,7 +75,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVGetDeviceMemHeapsKM(IMG_HANDLE hDevCookie,
 
 	if (hDevCookie == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVGetDeviceMemHeapsKM: hDevCookie invalid"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVGetDeviceMemHeapsKM: hDevCookie invalid");
 		PVR_DBG_BREAK;
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
@@ -138,7 +138,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVCreateDeviceMemContextKM(IMG_HANDLE					hDevCook
 
 	if (hDevCookie == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVCreateDeviceMemContextKM: hDevCookie invalid"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVCreateDeviceMemContextKM: hDevCookie invalid");
 		PVR_DBG_BREAK;
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
@@ -162,7 +162,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVCreateDeviceMemContextKM(IMG_HANDLE					hDevCook
 									  pbCreated);
 	if (hDevMemContext == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVCreateDeviceMemContextKM: Failed BM_CreateContext"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVCreateDeviceMemContextKM: Failed BM_CreateContext");
 		return PVRSRV_ERROR_OUT_OF_MEMORY;
 	}
 
@@ -272,7 +272,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVGetDeviceMemHeapInfoKM(IMG_HANDLE					hDevCookie
 
 	if (hDevCookie == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVGetDeviceMemHeapInfoKM: hDevCookie invalid"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVGetDeviceMemHeapInfoKM: hDevCookie invalid");
 		PVR_DBG_BREAK;
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
@@ -373,7 +373,7 @@ static PVRSRV_ERROR AllocDeviceMem(IMG_HANDLE		hDevCookie,
 					(IMG_VOID **)&psMemInfo, IMG_NULL,
 					"Kernel Memory Info") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"AllocDeviceMem: Failed to alloc memory for block"));
+		PVR_DPF(PVR_DBG_ERROR,"AllocDeviceMem: Failed to alloc memory for block");
 		return (PVRSRV_ERROR_OUT_OF_MEMORY);
 	}
 
@@ -395,7 +395,7 @@ static PVRSRV_ERROR AllocDeviceMem(IMG_HANDLE		hDevCookie,
 
 	if (!bBMError)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"AllocDeviceMem: BM_Alloc Failed"));
+		PVR_DPF(PVR_DBG_ERROR,"AllocDeviceMem: BM_Alloc Failed");
 		OSFreeMem(PVRSRV_PAGEABLE_SELECT, sizeof(PVRSRV_KERNEL_MEM_INFO), psMemInfo, IMG_NULL);
 		
 		return PVRSRV_ERROR_OUT_OF_MEMORY;
@@ -512,14 +512,14 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVAllocSyncInfoKM(IMG_HANDLE					hDevCookie,
 						"Kernel Synchronization Info");
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVAllocSyncInfoKM: Failed to alloc memory"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVAllocSyncInfoKM: Failed to alloc memory");
 		return PVRSRV_ERROR_OUT_OF_MEMORY;
 	}
 
 	eError = OSAtomicAlloc(&psKernelSyncInfo->pvRefCount);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVAllocSyncInfoKM: Failed to allocate atomic"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVAllocSyncInfoKM: Failed to allocate atomic");
 		OSFreeMem(PVRSRV_PAGEABLE_SELECT, sizeof(PVRSRV_KERNEL_SYNC_INFO), psKernelSyncInfo, IMG_NULL);
 		return PVRSRV_ERROR_OUT_OF_MEMORY;
 	}
@@ -547,7 +547,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVAllocSyncInfoKM(IMG_HANDLE					hDevCookie,
 	if (eError != PVRSRV_OK)
 	{
 
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVAllocSyncInfoKM: Failed to alloc memory"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVAllocSyncInfoKM: Failed to alloc memory");
 		OSAtomicFree(psKernelSyncInfo->pvRefCount);
 		OSFreeMem(PVRSRV_PAGEABLE_SELECT, sizeof(PVRSRV_KERNEL_SYNC_INFO), psKernelSyncInfo, IMG_NULL);
 		
@@ -672,22 +672,22 @@ PVRSRV_ERROR _PollUntilAtLeast(volatile IMG_UINT32* pui32WatchedValue,
 				eError = OSEventObjectOpenKM(psSysData->psGlobalEventObject, &hOSEventKM);
 				if (eError != PVRSRV_OK)
 				{
-					PVR_DPF((PVR_DBG_ERROR,
-								"_PollUntilAtLeast: OSEventObjectOpen failed"));
+					PVR_DPF(PVR_DBG_ERROR,
+								"_PollUntilAtLeast: OSEventObjectOpen failed");
 					goto Exit;
 				}
 				eError = OSEventObjectWaitKM(hOSEventKM);
 				if (eError != PVRSRV_OK)
 				{
-					PVR_DPF((PVR_DBG_ERROR,
-								"_PollUntilAtLeast: PVRSRVEventObjectWait failed"));
+					PVR_DPF(PVR_DBG_ERROR,
+								"_PollUntilAtLeast: PVRSRVEventObjectWait failed");
 					goto Exit;
 				}
 				eError = OSEventObjectCloseKM(psSysData->psGlobalEventObject, hOSEventKM);
 				if (eError != PVRSRV_OK)
 				{
-					PVR_DPF((PVR_DBG_ERROR,
-								"_PollUntilAtLeast: OSEventObjectClose failed"));
+					PVR_DPF(PVR_DBG_ERROR,
+								"_PollUntilAtLeast: OSEventObjectClose failed");
 				}
 			}
 		}
@@ -702,7 +702,7 @@ static PVRSRV_ERROR FlushKernelOps(PVRSRV_SYNC_DATA *psSyncData)
 
 	if(!psSyncData)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "FlushKernelOps: invalid psSyncData"));
+		PVR_DPF(PVR_DBG_ERROR, "FlushKernelOps: invalid psSyncData");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
@@ -721,7 +721,7 @@ static PVRSRV_ERROR FlushKernelOps(PVRSRV_SYNC_DATA *psSyncData)
                                WAIT_TRY_COUNT);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "FlushClientOps: Read ops pending timeout"));
+		PVR_DPF(PVR_DBG_ERROR, "FlushClientOps: Read ops pending timeout");
 		PVR_DBG_BREAK; 
 		return eError;
 	}
@@ -732,7 +732,7 @@ static PVRSRV_ERROR FlushKernelOps(PVRSRV_SYNC_DATA *psSyncData)
                                WAIT_TRY_COUNT);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "FlushClientOps: Write ops pending timeout"));
+		PVR_DPF(PVR_DBG_ERROR, "FlushClientOps: Write ops pending timeout");
 		PVR_DBG_BREAK; 
 	}
 
@@ -770,7 +770,7 @@ PVRSRV_ERROR FreeMemCallBackCommon(PVRSRV_KERNEL_MEM_INFO *psMemInfo,
 									 PVRSRV_HANDLE_TYPE_MEM_INFO);
 			if(eError != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "FreeMemCallBackCommon: can't find exported meminfo in the global handle list"));
+				PVR_DPF(PVR_DBG_ERROR, "FreeMemCallBackCommon: can't find exported meminfo in the global handle list");
 				return eError;
 			}
 
@@ -780,7 +780,7 @@ PVRSRV_ERROR FreeMemCallBackCommon(PVRSRV_KERNEL_MEM_INFO *psMemInfo,
 										PVRSRV_HANDLE_TYPE_MEM_INFO);
 			if(eError != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "FreeMemCallBackCommon: PVRSRVReleaseHandle failed for exported meminfo"));
+				PVR_DPF(PVR_DBG_ERROR, "FreeMemCallBackCommon: PVRSRVReleaseHandle failed for exported meminfo");
 				return eError;
 			}
 		}
@@ -807,7 +807,7 @@ PVRSRV_ERROR FreeMemCallBackCommon(PVRSRV_KERNEL_MEM_INFO *psMemInfo,
 				}
 				break;
 			default:
-				PVR_DPF((PVR_DBG_ERROR, "FreeMemCallBackCommon: Unknown memType"));
+				PVR_DPF(PVR_DBG_ERROR, "FreeMemCallBackCommon: Unknown memType");
 				eError = PVRSRV_ERROR_INVALID_MEMINFO;
 		}
 	}
@@ -1070,7 +1070,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVWrapExtMemoryKM(IMG_HANDLE				hDevCookie,
 
 	if (psDeviceNode == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVWrapExtMemoryKM: invalid parameter"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVWrapExtMemoryKM: invalid parameter");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
@@ -1089,7 +1089,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVWrapExtMemoryKM(IMG_HANDLE				hDevCookie,
 						(IMG_VOID **)&psIntSysPAddr, IMG_NULL,
 						"Array of Page Addresses") != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"PVRSRVWrapExtMemoryKM: Failed to alloc memory for block"));
+			PVR_DPF(PVR_DBG_ERROR,"PVRSRVWrapExtMemoryKM: Failed to alloc memory for block");
 			return PVRSRV_ERROR_OUT_OF_MEMORY;
 		}
 
@@ -1099,7 +1099,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVWrapExtMemoryKM(IMG_HANDLE				hDevCookie,
 										&hOSWrapMem);
 		if(eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"PVRSRVWrapExtMemoryKM: Failed to alloc memory for block"));
+			PVR_DPF(PVR_DBG_ERROR,"PVRSRVWrapExtMemoryKM: Failed to alloc memory for block");
 			eError = PVRSRV_ERROR_OUT_OF_MEMORY;
 			goto ErrorExitPhase1;
 		}
@@ -1145,7 +1145,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVWrapExtMemoryKM(IMG_HANDLE				hDevCookie,
 
 	if(hDevMemHeap == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVWrapExtMemoryKM: unable to find mapping heap"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVWrapExtMemoryKM: unable to find mapping heap");
 		eError = PVRSRV_ERROR_UNABLE_TO_FIND_MAPPING_HEAP;
 		goto ErrorExitPhase2;
 	}
@@ -1155,7 +1155,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVWrapExtMemoryKM(IMG_HANDLE				hDevCookie,
 					(IMG_VOID **)&psMemInfo, IMG_NULL,
 					"Kernel Memory Info") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVWrapExtMemoryKM: Failed to alloc memory for block"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVWrapExtMemoryKM: Failed to alloc memory for block");
 		eError = PVRSRV_ERROR_OUT_OF_MEMORY;
 		goto ErrorExitPhase2;
 	}
@@ -1175,7 +1175,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVWrapExtMemoryKM(IMG_HANDLE				hDevCookie,
 					   &hBuffer);
 	if (!bBMError)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVWrapExtMemoryKM: BM_Wrap Failed"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVWrapExtMemoryKM: BM_Wrap Failed");
 		eError = PVRSRV_ERROR_BAD_MAPPING;
 		goto ErrorExitPhase3;
 	}
@@ -1300,7 +1300,7 @@ static PVRSRV_ERROR UnmapDeviceMemoryCallBack(IMG_PVOID  pvParam,
 	eError = FreeDeviceMem(psMapData->psMemInfo);
 	if(eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"UnmapDeviceMemoryCallBack: Failed to free DST meminfo"));
+		PVR_DPF(PVR_DBG_ERROR,"UnmapDeviceMemoryCallBack: Failed to free DST meminfo");
 		return eError;
 	}
 
@@ -1340,7 +1340,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVMapDeviceMemoryKM(PVRSRV_PER_PROCESS_DATA	*psPer
 	
 	if(!psSrcMemInfo || !hDstDevMemHeap || !ppsDstMemInfo)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVMapDeviceMemoryKM: invalid parameters"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVMapDeviceMemoryKM: invalid parameters");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
@@ -1360,7 +1360,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVMapDeviceMemoryKM(PVRSRV_PER_PROCESS_DATA	*psPer
 					(IMG_VOID **)&psSysPAddr, IMG_NULL,
 					"Array of Page Addresses") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVMapDeviceMemoryKM: Failed to alloc memory for block"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVMapDeviceMemoryKM: Failed to alloc memory for block");
 		return PVRSRV_ERROR_OUT_OF_MEMORY;
 	}
 
@@ -1388,7 +1388,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVMapDeviceMemoryKM(PVRSRV_PER_PROCESS_DATA	*psPer
 					(IMG_VOID **)&psMapData, IMG_NULL,
 					"Resource Manager Map Data") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVMapDeviceMemoryKM: Failed to alloc resman map data"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVMapDeviceMemoryKM: Failed to alloc resman map data");
 		eError = PVRSRV_ERROR_OUT_OF_MEMORY;
 		goto ErrorExit;
 	}
@@ -1398,7 +1398,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVMapDeviceMemoryKM(PVRSRV_PER_PROCESS_DATA	*psPer
 					(IMG_VOID **)&psMemInfo, IMG_NULL,
 					"Kernel Memory Info") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVMapDeviceMemoryKM: Failed to alloc memory for block"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVMapDeviceMemoryKM: Failed to alloc memory for block");
 		eError = PVRSRV_ERROR_OUT_OF_MEMORY;
 		goto ErrorExit;
 	}
@@ -1419,7 +1419,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVMapDeviceMemoryKM(PVRSRV_PER_PROCESS_DATA	*psPer
 
 	if (!bBMError)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVMapDeviceMemoryKM: BM_Wrap Failed"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVMapDeviceMemoryKM: BM_Wrap Failed");
 		eError = PVRSRV_ERROR_BAD_MAPPING;
 		goto ErrorExit;
 	}
@@ -1539,7 +1539,7 @@ static PVRSRV_ERROR UnmapDeviceClassMemoryCallBack(IMG_PVOID  pvParam,
 		if (psDeviceNode->pfnFreeMemTilingRange(psDeviceNode,
 												psDCMapInfo->ui32RangeIndex) != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"UnmapDeviceClassMemoryCallBack: FreeMemTilingRange failed"));
+			PVR_DPF(PVR_DBG_ERROR,"UnmapDeviceClassMemoryCallBack: FreeMemTilingRange failed");
 		}
 	}
 #endif
@@ -1582,7 +1582,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVMapDeviceClassMemoryKM(PVRSRV_PER_PROCESS_DATA	*
 
 	if(!hDeviceClassBuffer || !ppsMemInfo || !phOSMapInfo || !hDevMemContext)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVMapDeviceClassMemoryKM: invalid parameters"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVMapDeviceClassMemoryKM: invalid parameters");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
@@ -1592,7 +1592,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVMapDeviceClassMemoryKM(PVRSRV_PER_PROCESS_DATA	*
 					(IMG_VOID **)&psDCMapInfo, IMG_NULL,
 					"PVRSRV_DC_MAPINFO") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVMapDeviceClassMemoryKM: Failed to alloc memory for psDCMapInfo"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVMapDeviceClassMemoryKM: Failed to alloc memory for psDCMapInfo");
 		return PVRSRV_ERROR_OUT_OF_MEMORY;
 	}
 	OSMemSet(psDCMapInfo, 0, sizeof(PVRSRV_DC_MAPINFO));
@@ -1628,7 +1628,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVMapDeviceClassMemoryKM(PVRSRV_PER_PROCESS_DATA	*
 												   &psDCMapInfo->ui32TilingStride);
 	if(eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVMapDeviceClassMemoryKM: unable to get buffer address"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVMapDeviceClassMemoryKM: unable to get buffer address");
 		goto ErrorExitPhase1;
 	}
 
@@ -1663,7 +1663,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVMapDeviceClassMemoryKM(PVRSRV_PER_PROCESS_DATA	*
 
 	if(hDevMemHeap == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVMapDeviceClassMemoryKM: unable to find mapping heap"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVMapDeviceClassMemoryKM: unable to find mapping heap");
 		eError = PVRSRV_ERROR_UNABLE_TO_FIND_RESOURCE;
 		goto ErrorExitPhase1;
 	}
@@ -1678,7 +1678,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVMapDeviceClassMemoryKM(PVRSRV_PER_PROCESS_DATA	*
 					"Kernel Memory Info");
 	if(eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVMapDeviceClassMemoryKM: Failed to alloc memory for block"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVMapDeviceClassMemoryKM: Failed to alloc memory for block");
 		goto ErrorExitPhase1;
 	}
 
@@ -1697,7 +1697,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVMapDeviceClassMemoryKM(PVRSRV_PER_PROCESS_DATA	*
 
 	if (!bBMError)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVMapDeviceClassMemoryKM: BM_Wrap Failed"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVMapDeviceClassMemoryKM: BM_Wrap Failed");
 		
 		eError = PVRSRV_ERROR_BAD_MAPPING;
 		goto ErrorExitPhase2;
@@ -1745,7 +1745,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVMapDeviceClassMemoryKM(PVRSRV_PER_PROCESS_DATA	*
 														&psDCMapInfo->ui32RangeIndex);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"PVRSRVMapDeviceClassMemoryKM: AllocMemTilingRange failed"));
+			PVR_DPF(PVR_DBG_ERROR,"PVRSRVMapDeviceClassMemoryKM: AllocMemTilingRange failed");
 			goto ErrorExitPhase3;
 		}
 	}

@@ -149,7 +149,7 @@ PVRSRV_ERROR PDumpOSBufprintf(IMG_HANDLE hBuf, IMG_UINT32 ui32ScriptSizeMax, IMG
 
 	if (n>=(IMG_INT32)ui32ScriptSizeMax || n==-1)	
 	{
-		PVR_DPF((PVR_DBG_ERROR, "Buffer overflow detected, pdump output may be incomplete."));
+		PVR_DPF(PVR_DBG_ERROR, "Buffer overflow detected, pdump output may be incomplete.");
 
 		return PVRSRV_ERROR_PDUMP_BUF_OVERFLOW;
 	}
@@ -168,7 +168,7 @@ PVRSRV_ERROR PDumpOSVSprintf(IMG_CHAR *pszComment, IMG_UINT32 ui32ScriptSizeMax,
 
 	if (n>=(IMG_INT32)ui32ScriptSizeMax || n==-1)	
 	{
-		PVR_DPF((PVR_DBG_ERROR, "Buffer overflow detected, pdump output may be incomplete."));
+		PVR_DPF(PVR_DBG_ERROR, "Buffer overflow detected, pdump output may be incomplete.");
 
 		return PVRSRV_ERROR_PDUMP_BUF_OVERFLOW;
 	}
@@ -196,7 +196,7 @@ PVRSRV_ERROR PDumpOSSprintf(IMG_CHAR *pszComment, IMG_UINT32 ui32ScriptSizeMax, 
 
 	if (n>=(IMG_INT32)ui32ScriptSizeMax || n==-1)	
 	{
-		PVR_DPF((PVR_DBG_ERROR, "Buffer overflow detected, pdump output may be incomplete."));
+		PVR_DPF(PVR_DBG_ERROR, "Buffer overflow detected, pdump output may be incomplete.");
 
 		return PVRSRV_ERROR_PDUMP_BUF_OVERFLOW;
 	}
@@ -573,7 +573,7 @@ static IMG_BOOL PDumpWriteILock(PDBG_STREAM psStream, IMG_UINT8 *pui8Data, IMG_U
 	IMG_UINT32 ui32Written = 0;
 	if ((psStream == IMG_NULL) || PDumpSuspended() || ((ui32Flags & PDUMP_FLAGS_NEVER) != 0))
 	{
-		PVR_DPF((PVR_DBG_MESSAGE, "PDumpWriteILock: Failed to write 0x%x bytes to stream 0x%x", ui32Count, (IMG_UINT32)psStream));
+		PVR_DPF(PVR_DBG_MESSAGE, "PDumpWriteILock: Failed to write 0x%x bytes to stream 0x%x", ui32Count, (IMG_UINT32)psStream);
 		return IMG_TRUE;
 	}
 

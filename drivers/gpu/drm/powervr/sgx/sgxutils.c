@@ -143,7 +143,7 @@ IMG_VOID SGXTestActivePowerEvent (PVRSRV_DEVICE_NODE	*psDeviceNode,
 
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXTestActivePowerEvent error:%u", eError));
+		PVR_DPF(PVR_DBG_ERROR, "SGXTestActivePowerEvent error:%u", eError);
 	}
 }
 
@@ -254,7 +254,7 @@ PVRSRV_ERROR SGXScheduleCCBCommand(PVRSRV_DEVICE_NODE	*psDeviceNode,
 						  MAX_HW_TIME_US/WAIT_TRY_COUNT,
 						  IMG_FALSE) != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"SGXScheduleCCBCommand: Wait for uKernel to Invalidate BIF cache failed"));
+			PVR_DPF(PVR_DBG_ERROR,"SGXScheduleCCBCommand: Wait for uKernel to Invalidate BIF cache failed");
 			PVR_DBG_BREAK;
 		}
 		#endif
@@ -341,7 +341,7 @@ PVRSRV_ERROR SGXScheduleCCBCommand(PVRSRV_DEVICE_NODE	*psDeviceNode,
 	
 	if(!psSGXCommand)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXScheduleCCBCommand: Wait for CCB space timed out")) ;
+		PVR_DPF(PVR_DBG_ERROR, "SGXScheduleCCBCommand: Wait for CCB space timed out") ;
 		eError = PVRSRV_ERROR_TIMEOUT;
 		goto Exit;
 	}
@@ -362,7 +362,7 @@ PVRSRV_ERROR SGXScheduleCCBCommand(PVRSRV_DEVICE_NODE	*psDeviceNode,
 
 	if (eCmdType >= SGXMKIF_CMD_MAX)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXScheduleCCBCommand: Unknown command type: %d", eCmdType)) ;
+		PVR_DPF(PVR_DBG_ERROR, "SGXScheduleCCBCommand: Unknown command type: %d", eCmdType) ;
 		eError = PVRSRV_ERROR_INVALID_CCB_COMMAND;
 		goto Exit;
 	}
@@ -444,7 +444,7 @@ PVRSRV_ERROR SGXScheduleCCBCommand(PVRSRV_DEVICE_NODE	*psDeviceNode,
 								IMG_FALSE);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXScheduleCCBCommand: Timeout waiting for previous command to be read")) ;
+		PVR_DPF(PVR_DBG_ERROR, "SGXScheduleCCBCommand: Timeout waiting for previous command to be read") ;
 		eError = PVRSRV_ERROR_TIMEOUT;
 		goto Exit;
 	}
@@ -585,8 +585,8 @@ PVRSRV_ERROR SGXScheduleCCBCommandKM(PVRSRV_DEVICE_NODE		*psDeviceNode,
 		}
 		else
 		{
-			PVR_DPF((PVR_DBG_ERROR,"SGXScheduleCCBCommandKM failed to acquire lock - "
-					 "ui32CallerID:%d eError:%u", ui32CallerID, eError));
+			PVR_DPF(PVR_DBG_ERROR,"SGXScheduleCCBCommandKM failed to acquire lock - "
+					 "ui32CallerID:%d eError:%u", ui32CallerID, eError);
 		}
 
 		return eError;
@@ -617,7 +617,7 @@ PVRSRV_ERROR SGXScheduleProcessQueuesKM(PVRSRV_DEVICE_NODE *psDeviceNode)
 	eError = SGXScheduleCCBCommandKM(psDeviceNode, SGXMKIF_CMD_PROCESS_QUEUES, &sCommand, ISR_ID, 0, IMG_NULL, IMG_FALSE);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SGXScheduleProcessQueuesKM failed to schedule CCB command: %u", eError));
+		PVR_DPF(PVR_DBG_ERROR,"SGXScheduleProcessQueuesKM failed to schedule CCB command: %u", eError);
 		return eError;
 	}
 
@@ -673,7 +673,7 @@ PVRSRV_ERROR SGXCleanupRequest(PVRSRV_DEVICE_NODE *psDeviceNode,
 		eError = SGXScheduleCCBCommandKM(psDeviceNode, SGXMKIF_CMD_CLEANUP, &sCommand, KERNEL_ID, 0, IMG_NULL, IMG_FALSE);
 		if (eError != PVRSRV_OK)
 		{
-				PVR_DPF((PVR_DBG_ERROR,"SGXCleanupRequest: Failed to submit clean-up command"));
+				PVR_DPF(PVR_DBG_ERROR,"SGXCleanupRequest: Failed to submit clean-up command");
 				SGXDumpDebugInfo(psDevInfo, IMG_FALSE);
 				PVR_DBG_BREAK;
 				return eError;
@@ -688,7 +688,7 @@ PVRSRV_ERROR SGXCleanupRequest(PVRSRV_DEVICE_NODE *psDeviceNode,
 						  1000,
 						  IMG_TRUE) != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"SGXCleanupRequest: Wait for uKernel to clean up (%u) failed", ui32CleanupType));
+			PVR_DPF(PVR_DBG_ERROR,"SGXCleanupRequest: Wait for uKernel to clean up (%u) failed", ui32CleanupType);
 			eError = PVRSRV_ERROR_TIMEOUT;
 			SGXDumpDebugInfo(psDevInfo, IMG_FALSE);
 			PVR_DBG_BREAK;
@@ -910,7 +910,7 @@ IMG_HANDLE SGXRegisterHWRenderContextKM(IMG_HANDLE				hDeviceNode,
 
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHWRenderContextKM: Couldn't allocate memory for SGX_HW_RENDER_CONTEXT_CLEANUP structure"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHWRenderContextKM: Couldn't allocate memory for SGX_HW_RENDER_CONTEXT_CLEANUP structure");
 		goto exit0;
 	}
 
@@ -932,7 +932,7 @@ IMG_HANDLE SGXRegisterHWRenderContextKM(IMG_HANDLE				hDeviceNode,
 
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHWRenderContextKM: Couldn't allocate device memory for HW Render Context"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHWRenderContextKM: Couldn't allocate device memory for HW Render Context");
 		goto exit1;
 	}
 
@@ -943,7 +943,7 @@ IMG_HANDLE SGXRegisterHWRenderContextKM(IMG_HANDLE				hDeviceNode,
 
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHWRenderContextKM: Couldn't copy user-mode copy of HWContext into device memory"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHWRenderContextKM: Couldn't copy user-mode copy of HWContext into device memory");
 		goto exit2;
 	}
 
@@ -958,7 +958,7 @@ IMG_HANDLE SGXRegisterHWRenderContextKM(IMG_HANDLE				hDeviceNode,
 
     if (eError != PVRSRV_OK)
     {
-        PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHWRenderContextKM: Can't lookup DevMem Context"));
+        PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHWRenderContextKM: Can't lookup DevMem Context");
         goto exit2;
     }
 
@@ -1013,7 +1013,7 @@ IMG_HANDLE SGXRegisterHWRenderContextKM(IMG_HANDLE				hDeviceNode,
 
     if (psResItem == IMG_NULL)
     {
-        PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHWRenderContextKM: ResManRegisterRes failed"));
+        PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHWRenderContextKM: ResManRegisterRes failed");
         goto exit2;
     }
 
@@ -1046,7 +1046,7 @@ PVRSRV_ERROR SGXUnregisterHWRenderContextKM(IMG_HANDLE hHWRenderContext, IMG_BOO
 
 	if (psCleanup == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXUnregisterHWRenderContextKM: invalid parameter"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXUnregisterHWRenderContextKM: invalid parameter");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
@@ -1087,7 +1087,7 @@ IMG_HANDLE SGXRegisterHWTransferContextKM(IMG_HANDLE				hDeviceNode,
 
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHWTransferContextKM: Couldn't allocate memory for SGX_HW_TRANSFER_CONTEXT_CLEANUP structure"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHWTransferContextKM: Couldn't allocate memory for SGX_HW_TRANSFER_CONTEXT_CLEANUP structure");
 		goto exit0;
 	}
 
@@ -1109,7 +1109,7 @@ IMG_HANDLE SGXRegisterHWTransferContextKM(IMG_HANDLE				hDeviceNode,
 
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHWTransferContextKM: Couldn't allocate device memory for HW Render Context"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHWTransferContextKM: Couldn't allocate device memory for HW Render Context");
 		goto exit1;
 	}
 
@@ -1120,7 +1120,7 @@ IMG_HANDLE SGXRegisterHWTransferContextKM(IMG_HANDLE				hDeviceNode,
 
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHWTransferContextKM: Couldn't copy user-mode copy of HWContext into device memory"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHWTransferContextKM: Couldn't copy user-mode copy of HWContext into device memory");
 		goto exit2;
 	}
 
@@ -1135,7 +1135,7 @@ IMG_HANDLE SGXRegisterHWTransferContextKM(IMG_HANDLE				hDeviceNode,
 
     if (eError != PVRSRV_OK)
     {
-        PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHWTransferContextKM: Can't lookup DevMem Context"));
+        PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHWTransferContextKM: Can't lookup DevMem Context");
         goto exit2;
     }
 
@@ -1191,7 +1191,7 @@ IMG_HANDLE SGXRegisterHWTransferContextKM(IMG_HANDLE				hDeviceNode,
 
 	if (psResItem == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHWTransferContextKM: ResManRegisterRes failed"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHWTransferContextKM: ResManRegisterRes failed");
         goto exit2;
     }
 
@@ -1225,7 +1225,7 @@ PVRSRV_ERROR SGXUnregisterHWTransferContextKM(IMG_HANDLE hHWTransferContext, IMG
 
 	if (psCleanup == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXUnregisterHWTransferContextKM: invalid parameter"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXUnregisterHWTransferContextKM: invalid parameter");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
@@ -1254,9 +1254,9 @@ PVRSRV_ERROR SGXSetTransferContextPriorityKM(
         if ((ui32OffsetOfPriorityField + sizeof(ui32Priority)) 
             >= psCleanup->psHWTransferContextMemInfo->uAllocSize)
         {
-            PVR_DPF((
+            PVR_DPF(
                 PVR_DBG_ERROR, 
-                "SGXSetTransferContextPriorityKM: invalid context prioirty offset"));
+                "SGXSetTransferContextPriorityKM: invalid context prioirty offset");
 
             return PVRSRV_ERROR_INVALID_PARAMS;
         }
@@ -1295,9 +1295,9 @@ PVRSRV_ERROR SGXSetRenderContextPriorityKM(
         if ((ui32OffsetOfPriorityField + sizeof(ui32Priority)) 
             >= psCleanup->psHWRenderContextMemInfo->uAllocSize)
         {
-            PVR_DPF((
+            PVR_DPF(
                 PVR_DBG_ERROR, 
-                "SGXSetContextPriorityKM: invalid HWRenderContext prioirty offset"));
+                "SGXSetContextPriorityKM: invalid HWRenderContext prioirty offset");
 
             return PVRSRV_ERROR_INVALID_PARAMS;
         }
@@ -1415,7 +1415,7 @@ IMG_HANDLE SGXRegisterHW2DContextKM(IMG_HANDLE				hDeviceNode,
 
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHW2DContextKM: Couldn't allocate memory for SGX_HW_2D_CONTEXT_CLEANUP structure"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHW2DContextKM: Couldn't allocate memory for SGX_HW_2D_CONTEXT_CLEANUP structure");
 		goto exit0;
 	}
 
@@ -1437,7 +1437,7 @@ IMG_HANDLE SGXRegisterHW2DContextKM(IMG_HANDLE				hDeviceNode,
 
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHW2DContextKM: Couldn't allocate device memory for HW Render Context"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHW2DContextKM: Couldn't allocate device memory for HW Render Context");
 		goto exit1;
 	}
 
@@ -1447,7 +1447,7 @@ IMG_HANDLE SGXRegisterHW2DContextKM(IMG_HANDLE				hDeviceNode,
                             ui32HW2DContextSize);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHW2DContextKM: Couldn't copy user-mode copy of HWContext into device memory"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHW2DContextKM: Couldn't copy user-mode copy of HWContext into device memory");
 		goto exit2;
 	}
  
@@ -1462,7 +1462,7 @@ IMG_HANDLE SGXRegisterHW2DContextKM(IMG_HANDLE				hDeviceNode,
 
     if (eError != PVRSRV_OK)
     {
-        PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHW2DContextKM: Can't lookup DevMem Context"));
+        PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHW2DContextKM: Can't lookup DevMem Context");
         goto exit2;
     }
 
@@ -1517,7 +1517,7 @@ IMG_HANDLE SGXRegisterHW2DContextKM(IMG_HANDLE				hDeviceNode,
 
 	if (psResItem == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXRegisterHW2DContextKM: ResManRegisterRes failed"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXRegisterHW2DContextKM: ResManRegisterRes failed");
         goto exit2;
 	}
 
@@ -1584,7 +1584,7 @@ PVRSRV_ERROR SGX2DQueryBlitsCompleteKM(PVRSRV_SGXDEV_INFO	*psDevInfo,
 
 	PVR_UNREFERENCED_PARAMETER(psDevInfo);
 
-	PVR_DPF((PVR_DBG_CALLTRACE, "SGX2DQueryBlitsCompleteKM: Start"));
+	PVR_DPF(PVR_DBG_CALLTRACE, "SGX2DQueryBlitsCompleteKM: Start");
 
 	ui32ReadOpsPending = psSyncInfo->psSyncData->ui32ReadOpsPending;
 	ui32WriteOpsPending = psSyncInfo->psSyncData->ui32WriteOpsPending;
@@ -1592,7 +1592,7 @@ PVRSRV_ERROR SGX2DQueryBlitsCompleteKM(PVRSRV_SGXDEV_INFO	*psDevInfo,
 	if(SGX2DQuerySyncOpsComplete(psSyncInfo, ui32ReadOpsPending, ui32WriteOpsPending))
 	{
 		
-		PVR_DPF((PVR_DBG_CALLTRACE, "SGX2DQueryBlitsCompleteKM: No wait. Blits complete."));
+		PVR_DPF(PVR_DBG_CALLTRACE, "SGX2DQueryBlitsCompleteKM: No wait. Blits complete.");
 		return PVRSRV_OK;
 	}
 
@@ -1600,12 +1600,12 @@ PVRSRV_ERROR SGX2DQueryBlitsCompleteKM(PVRSRV_SGXDEV_INFO	*psDevInfo,
 	if (!bWaitForComplete)
 	{
 		
-		PVR_DPF((PVR_DBG_CALLTRACE, "SGX2DQueryBlitsCompleteKM: No wait. Ops pending."));
+		PVR_DPF(PVR_DBG_CALLTRACE, "SGX2DQueryBlitsCompleteKM: No wait. Ops pending.");
 		return PVRSRV_ERROR_CMD_NOT_PROCESSED;
 	}
 
 	
-	PVR_DPF((PVR_DBG_MESSAGE, "SGX2DQueryBlitsCompleteKM: Ops pending. Start polling."));
+	PVR_DPF(PVR_DBG_MESSAGE, "SGX2DQueryBlitsCompleteKM: Ops pending. Start polling.");
 
 	LOOP_UNTIL_TIMEOUT(MAX_HW_TIME_US)
 	{
@@ -1614,7 +1614,7 @@ PVRSRV_ERROR SGX2DQueryBlitsCompleteKM(PVRSRV_SGXDEV_INFO	*psDevInfo,
 		if(SGX2DQuerySyncOpsComplete(psSyncInfo, ui32ReadOpsPending, ui32WriteOpsPending))
 		{
 			
-			PVR_DPF((PVR_DBG_CALLTRACE, "SGX2DQueryBlitsCompleteKM: Wait over.  Blits complete."));
+			PVR_DPF(PVR_DBG_CALLTRACE, "SGX2DQueryBlitsCompleteKM: Wait over.  Blits complete.");
 			return PVRSRV_OK;
 		}
 
@@ -1622,7 +1622,7 @@ PVRSRV_ERROR SGX2DQueryBlitsCompleteKM(PVRSRV_SGXDEV_INFO	*psDevInfo,
 	} END_LOOP_UNTIL_TIMEOUT();
 
 	
-	PVR_DPF((PVR_DBG_ERROR,"SGX2DQueryBlitsCompleteKM: Timed out. Ops pending."));
+	PVR_DPF(PVR_DBG_ERROR,"SGX2DQueryBlitsCompleteKM: Timed out. Ops pending.");
 
 #if defined(DEBUG)
 	{
@@ -1716,7 +1716,7 @@ PVRSRV_ERROR SGXContextSuspend(PVRSRV_DEVICE_NODE	*psDeviceNode,
 	eError = SGXScheduleCCBCommandKM(psDeviceNode, SGXMKIF_CMD_CONTEXTSUSPEND, &sCommand, KERNEL_ID, 0, IMG_NULL, IMG_FALSE);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SGXContextSuspend: Failed to submit context suspend command"));
+		PVR_DPF(PVR_DBG_ERROR,"SGXContextSuspend: Failed to submit context suspend command");
 		return eError;
 	}
 

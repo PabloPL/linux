@@ -62,8 +62,8 @@ void PVRSRVExportFDToIONHandles(int fd, struct ion_client **client,
 	psPrivateData = psFile->private_data;
 	if(!psPrivateData)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "%s: struct file* has no private_data; "
-								"invalid export handle", __func__));
+		PVR_DPF(PVR_DBG_ERROR, "%s: struct file* has no private_data; "
+								"invalid export handle", __func__);
 		goto err_fput;
 	}
 
@@ -73,8 +73,8 @@ void PVRSRVExportFDToIONHandles(int fd, struct ion_client **client,
 								PVRSRV_HANDLE_TYPE_MEM_INFO);
 	if(eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "%s: Failed to look up MEM_INFO handle",
-								__func__));
+		PVR_DPF(PVR_DBG_ERROR, "%s: Failed to look up MEM_INFO handle",
+								__func__);
 		goto err_fput;
 	}
 
@@ -83,8 +83,8 @@ void PVRSRVExportFDToIONHandles(int fd, struct ion_client **client,
 
 	if(psLinuxMemArea->eAreaType != LINUX_MEM_AREA_ION)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "%s: Valid handle, but not an ION buffer",
-								__func__));
+		PVR_DPF(PVR_DBG_ERROR, "%s: Valid handle, but not an ION buffer",
+								__func__);
 		goto err_fput;
 	}
 

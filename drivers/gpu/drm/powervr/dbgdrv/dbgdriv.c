@@ -167,7 +167,7 @@ IMG_VOID * IMG_CALLCONV ExtDBGDrivFindStream(IMG_CHAR * pszName, IMG_BOOL bReset
 	}
 	else
 	{
-		PVR_DPF((PVR_DBG_ERROR, "pfnConnectNotifier not initialised.\n"));
+		PVR_DPF(PVR_DBG_ERROR, "pfnConnectNotifier not initialised.\n");
 	}		
 
 	
@@ -384,7 +384,7 @@ IMG_UINT32 IMG_CALLCONV ExtDBGDrivWritePersist(PDBG_STREAM psStream,IMG_UINT8 *p
 	ui32Ret=DBGDrivWritePersist(psStream, pui8InBuf, ui32InBuffSize, ui32Level);
 	if(ui32Ret==0xFFFFFFFFU)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "An error occurred in DBGDrivWritePersist."));
+		PVR_DPF(PVR_DBG_ERROR, "An error occurred in DBGDrivWritePersist.");
 	}
 
 	
@@ -758,7 +758,7 @@ static IMG_UINT32 WriteExpandingBuffer(PDBG_STREAM psStream,IMG_UINT8 * pui8InBu
 
 	if ((psStream->psCtrl->ui32OutMode & DEBUG_OUTMODE_STREAMENABLE) == 0)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "WriteExpandingBuffer: buffer %x is disabled", (IMG_UINTPTR_T) psStream));
+		PVR_DPF(PVR_DBG_ERROR, "WriteExpandingBuffer: buffer %x is disabled", (IMG_UINTPTR_T) psStream);
 		return(0);
 	}
 
@@ -771,7 +771,7 @@ static IMG_UINT32 WriteExpandingBuffer(PDBG_STREAM psStream,IMG_UINT8 * pui8InBu
 
 		if (ui32Space < 32)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "WriteExpandingBuffer: buffer %x is full and isn't expandable", (IMG_UINTPTR_T) psStream));
+			PVR_DPF(PVR_DBG_ERROR, "WriteExpandingBuffer: buffer %x is full and isn't expandable", (IMG_UINTPTR_T) psStream);
 			return(0);
 		}
 	}
@@ -785,8 +785,8 @@ static IMG_UINT32 WriteExpandingBuffer(PDBG_STREAM psStream,IMG_UINT8 * pui8InBu
 
 			ui32NewBufSize = 2 * psStream->ui32Size;
 
-			PVR_DPF((PVR_DBGDRIV_MESSAGE, "Expanding buffer size = %x, new size = %x",
-					psStream->ui32Size, ui32NewBufSize));
+			PVR_DPF(PVR_DBGDRIV_MESSAGE, "Expanding buffer size = %x, new size = %x",
+					psStream->ui32Size, ui32NewBufSize);
 
 			if (ui32InBuffSize > psStream->ui32Size)
 			{
@@ -806,7 +806,7 @@ static IMG_UINT32 WriteExpandingBuffer(PDBG_STREAM psStream,IMG_UINT8 * pui8InBu
 					else
 					{
 						
-						PVR_DPF((PVR_DBG_ERROR, "WriteExpandingBuffer: Unable to expand %x. Out of memory.", (IMG_UINTPTR_T) psStream));
+						PVR_DPF(PVR_DBG_ERROR, "WriteExpandingBuffer: Unable to expand %x. Out of memory.", (IMG_UINTPTR_T) psStream);
 						InvalidateAllStreams();
 						return (0xFFFFFFFFUL);
 					}
@@ -816,8 +816,8 @@ static IMG_UINT32 WriteExpandingBuffer(PDBG_STREAM psStream,IMG_UINT8 * pui8InBu
 			
 
 			ui32Space = SpaceInStream(psStream);
-			PVR_DPF((PVR_DBGDRIV_MESSAGE, "Expanded buffer, free space = %x",
-					ui32Space));
+			PVR_DPF(PVR_DBGDRIV_MESSAGE, "Expanded buffer, free space = %x",
+					ui32Space);
 		}
 	}
 
@@ -879,7 +879,7 @@ IMG_VOID * IMG_CALLCONV DBGDrivCreateStream(IMG_CHAR *		pszName,
 			(!psCtrl)
 		)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"DBGDriv: Couldn't alloc control structs\n\r"));
+		PVR_DPF(PVR_DBG_ERROR,"DBGDriv: Couldn't alloc control structs\n\r");
 		return((IMG_VOID *) 0);
 	}
 
@@ -895,7 +895,7 @@ IMG_VOID * IMG_CALLCONV DBGDrivCreateStream(IMG_CHAR *		pszName,
 
 	if (!pvBase)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"DBGDriv: Couldn't alloc Stream buffer\n\r"));
+		PVR_DPF(PVR_DBG_ERROR,"DBGDriv: Couldn't alloc Stream buffer\n\r");
 		HostNonPageablePageFree(psStream);
 		return((IMG_VOID *) 0);
 	}
@@ -939,7 +939,7 @@ IMG_VOID * IMG_CALLCONV DBGDrivCreateStream(IMG_CHAR *		pszName,
 
 	if (!pvBase)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"DBGDriv: Couldn't alloc InitStream buffer\n\r"));
+		PVR_DPF(PVR_DBG_ERROR,"DBGDriv: Couldn't alloc InitStream buffer\n\r");
 		
 		if ((psStream->psCtrl->ui32Flags & DEBUG_FLAGS_USE_NONPAGED_MEM) != 0)
 		{
@@ -1024,7 +1024,7 @@ void IMG_CALLCONV DBGDrivDestroyStream(PDBG_STREAM psStream)
 	PDBG_LASTFRAME_BUFFER	psLFThis;
 	PDBG_LASTFRAME_BUFFER	psLFPrev;
 
-	PVR_DPF((PVR_DBG_MESSAGE, "DBGDriv: Destroying stream %s\r\n", psStream->szName ));
+	PVR_DPF(PVR_DBG_MESSAGE, "DBGDriv: Destroying stream %s\r\n", psStream->szName );
 
 	
 
@@ -1116,7 +1116,7 @@ void IMG_CALLCONV DBGDrivDestroyStream(PDBG_STREAM psStream)
 
 	if (g_psStreamList == 0)
 	{
-		PVR_DPF((PVR_DBG_MESSAGE,"DBGDriv: Stream list now empty" ));
+		PVR_DPF(PVR_DBG_MESSAGE,"DBGDriv: Stream list now empty" );
 	}
 
 	return;
@@ -1131,9 +1131,9 @@ IMG_VOID * IMG_CALLCONV DBGDrivFindStream(IMG_CHAR * pszName, IMG_BOOL bResetStr
 
 	psStream = 0;
 
-	PVR_DPF((PVR_DBGDRIV_MESSAGE, "PDump client connecting to %s %s",
+	PVR_DPF(PVR_DBGDRIV_MESSAGE, "PDump client connecting to %s %s",
 			pszName,
-			(bResetStream == IMG_TRUE) ? "with reset" : "no reset"));
+			(bResetStream == IMG_TRUE) ? "with reset" : "no reset");
 
 	
 
@@ -1186,10 +1186,10 @@ IMG_VOID * IMG_CALLCONV DBGDrivFindStream(IMG_CHAR * pszName, IMG_BOOL bResetStr
 			
 			
 			psStream->psInitStream->ui32InitPhaseWOff = psStream->psInitStream->ui32WPtr;
-			PVR_DPF((PVR_DBGDRIV_MESSAGE, "Set %s client marker bo %x, total bw %x",
+			PVR_DPF(PVR_DBGDRIV_MESSAGE, "Set %s client marker bo %x, total bw %x",
 					psStream->szName,
 					psStream->psInitStream->ui32InitPhaseWOff,
-					psStream->psInitStream->ui32DataWritten ));
+					psStream->psInitStream->ui32DataWritten );
 		}
 	}
 
@@ -1204,7 +1204,7 @@ static void IMG_CALLCONV DBGDrivInvalidateStream(PDBG_STREAM psStream)
 	IMG_UINT32 ui32WPtr = psStream->ui32WPtr;
 	IMG_PUINT8 pui8Buffer = (IMG_UINT8 *) psStream->pvBase;
 	
-	PVR_DPF((PVR_DBG_ERROR, "DBGDrivInvalidateStream: An error occurred for stream %s\r\n", psStream->szName ));
+	PVR_DPF(PVR_DBG_ERROR, "DBGDrivInvalidateStream: An error occurred for stream %s\r\n", psStream->szName );
 
 	
 
@@ -1223,7 +1223,7 @@ static void IMG_CALLCONV DBGDrivInvalidateStream(PDBG_STREAM psStream)
 	}
 	else
 	{
-		PVR_DPF((PVR_DBG_ERROR, "DBGDrivInvalidateStream: Buffer full."));
+		PVR_DPF(PVR_DBG_ERROR, "DBGDrivInvalidateStream: Buffer full.");
 	}
 
 	while((pszErrorMsg[ui32Off] != 0) && (ui32Off < ui32Space))
@@ -1313,7 +1313,7 @@ IMG_UINT32 IMG_CALLCONV DBGDrivWriteString(PDBG_STREAM psStream,IMG_CHAR * pszSt
 	{
 		if (psStream->psCtrl->ui32OutMode & DEBUG_OUTMODE_STANDARDDBG)
 		{
-			PVR_DPF((PVR_DBG_MESSAGE,"%s: %s\r\n",psStream->szName, pszString));
+			PVR_DPF(PVR_DBG_MESSAGE,"%s: %s\r\n",psStream->szName, pszString);
 		}
 
 		
@@ -1523,23 +1523,23 @@ IMG_UINT32 IMG_CALLCONV DBGDrivWrite(PDBG_STREAM psMainStream,IMG_UINT8 * pui8In
 
 	ui32Space=SpaceInStream(psStream);
 
-	PVR_DPF((PVR_DBGDRIV_MESSAGE, "Recv %d b for %s: Roff = %x, WOff = %x",
+	PVR_DPF(PVR_DBGDRIV_MESSAGE, "Recv %d b for %s: Roff = %x, WOff = %x",
 			ui32InBuffSize,
 			psStream->szName,
 			psStream->ui32RPtr,
-			psStream->ui32WPtr));
+			psStream->ui32WPtr);
 
 	
 
 	if ((psStream->psCtrl->ui32OutMode & DEBUG_OUTMODE_STREAMENABLE) == 0)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "DBGDrivWrite: buffer %x is disabled", (IMG_UINTPTR_T) psStream));
+		PVR_DPF(PVR_DBG_ERROR, "DBGDrivWrite: buffer %x is disabled", (IMG_UINTPTR_T) psStream);
 		return(0);
 	}
 
 	if (ui32Space < 8)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "DBGDrivWrite: buffer %x is full", (IMG_UINTPTR_T) psStream));
+		PVR_DPF(PVR_DBG_ERROR, "DBGDrivWrite: buffer %x is full", (IMG_UINTPTR_T) psStream);
 		return(0);
 	}
 
@@ -1615,15 +1615,15 @@ static IMG_UINT32 DBGDrivWritePersist(PDBG_STREAM psMainStream,IMG_UINT8 * pui8I
 	psStream = psMainStream->psInitStream;
 	if(psStream->bCircularAllowed == IMG_TRUE)
 	{
-		PVR_DPF((PVR_DBG_WARNING, "DBGDrivWritePersist: Init phase is a circular buffer, some data may be lost"));
+		PVR_DPF(PVR_DBG_WARNING, "DBGDrivWritePersist: Init phase is a circular buffer, some data may be lost");
 	}
 
-	PVR_DPF((PVR_DBGDRIV_MESSAGE, "Append %x b to %s: Roff = %x, WOff = %x [bw = %x]",
+	PVR_DPF(PVR_DBGDRIV_MESSAGE, "Append %x b to %s: Roff = %x, WOff = %x [bw = %x]",
 			ui32InBuffSize,
 			psStream->szName,
 			psStream->ui32RPtr,
 			psStream->ui32WPtr,
-			psStream->ui32DataWritten));
+			psStream->ui32DataWritten);
 
 	return( WriteExpandingBuffer(psStream, pui8InBuf, ui32InBuffSize) );
 }
@@ -1636,7 +1636,7 @@ IMG_UINT32 IMG_CALLCONV DBGDrivWrite2(PDBG_STREAM psMainStream,IMG_UINT8 * pui8I
 
 	if (!StreamValidForWrite(psMainStream))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "DBGDrivWrite2: stream not valid"));
+		PVR_DPF(PVR_DBG_ERROR, "DBGDrivWrite2: stream not valid");
 		return(0xFFFFFFFFUL);
 	}
 
@@ -1656,11 +1656,11 @@ IMG_UINT32 IMG_CALLCONV DBGDrivWrite2(PDBG_STREAM psMainStream,IMG_UINT8 * pui8I
 		psStream = psMainStream->psInitStream;
 	}
 
-	PVR_DPF((PVR_DBGDRIV_MESSAGE, "Recv(exp) %d b for %s: Roff = %x, WOff = %x",
+	PVR_DPF(PVR_DBGDRIV_MESSAGE, "Recv(exp) %d b for %s: Roff = %x, WOff = %x",
 			ui32InBuffSize,
 			psStream->szName,
 			psStream->ui32RPtr,
-			psStream->ui32WPtr));
+			psStream->ui32WPtr);
 
 	return( WriteExpandingBuffer(psStream, pui8InBuf, ui32InBuffSize) );
 }
@@ -1674,7 +1674,7 @@ IMG_UINT32 IMG_CALLCONV DBGDrivRead(PDBG_STREAM psMainStream, IMG_BOOL bReadInit
 
 	if (!StreamValidForRead(psMainStream))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "DBGDrivRead: buffer %x is invalid", (IMG_UINTPTR_T) psMainStream));
+		PVR_DPF(PVR_DBG_ERROR, "DBGDrivRead: buffer %x is invalid", (IMG_UINTPTR_T) psMainStream);
 		return(0);
 	}
 
@@ -1721,11 +1721,11 @@ IMG_UINT32 IMG_CALLCONV DBGDrivRead(PDBG_STREAM psMainStream, IMG_BOOL bReadInit
 		ui32Data = ui32OutBuffSize;
 	}
 
-	PVR_DPF((PVR_DBGDRIV_MESSAGE, "Send %x b from %s: Roff = %x, WOff = %x",
+	PVR_DPF(PVR_DBGDRIV_MESSAGE, "Send %x b from %s: Roff = %x, WOff = %x",
 			ui32Data,
 			psStream->szName,
 			psStream->ui32RPtr,
-			psStream->ui32WPtr));
+			psStream->ui32WPtr);
 
 	
 
@@ -1858,7 +1858,7 @@ void IMG_CALLCONV DBGDrivSetFrame(PDBG_STREAM psStream,IMG_UINT32 ui32Frame)
 	{
 		g_bHotKeyRegistered = IMG_FALSE;
 
-		PVR_DPF((PVR_DBG_MESSAGE,"Hotkey pressed (%p)!\n",psStream));
+		PVR_DPF(PVR_DBG_MESSAGE,"Hotkey pressed (%p)!\n",psStream);
 
 		if (!g_bHotKeyPressed)
 		{
@@ -1882,13 +1882,13 @@ void IMG_CALLCONV DBGDrivSetFrame(PDBG_STREAM psStream,IMG_UINT32 ui32Frame)
 				g_ui32HotkeyMiddumpStart = g_ui32HotKeyFrame + 1;
 				g_ui32HotkeyMiddumpEnd = 0xffffffff;
 				g_bHotkeyMiddump = IMG_TRUE;
-				PVR_DPF((PVR_DBG_MESSAGE,"Sampling every %d frame(s)\n", psStream->psCtrl->ui32SampleRate));
+				PVR_DPF(PVR_DBG_MESSAGE,"Sampling every %d frame(s)\n", psStream->psCtrl->ui32SampleRate);
 			}
 			else
 			{
 				
 				g_ui32HotkeyMiddumpEnd = g_ui32HotKeyFrame;
-				PVR_DPF((PVR_DBG_MESSAGE,"Turning off sampling\n"));
+				PVR_DPF(PVR_DBG_MESSAGE,"Turning off sampling\n");
 			}
 		}
 
@@ -2083,9 +2083,9 @@ IMG_VOID IMG_CALLCONV DBGDrivSetStreamOffset(PDBG_STREAM psMainStream, IMG_UINT3
 		psStream = psMainStream->psInitStream;
 	}
 
-	PVR_DPF((PVR_DBGDRIV_MESSAGE, "DBGDrivSetStreamOffset: %s set to %x b",
+	PVR_DPF(PVR_DBGDRIV_MESSAGE, "DBGDrivSetStreamOffset: %s set to %x b",
 			psStream->szName,
-			ui32StreamOffset));
+			ui32StreamOffset);
 	psStream->ui32DataWritten = ui32StreamOffset;
 }
 

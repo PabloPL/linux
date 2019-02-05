@@ -488,8 +488,8 @@ SGXDoKickBW(IMG_UINT32 ui32BridgeID,
 		if(!OSAccessOK(psDoKickIN->sCCBKick.pahDstSyncHandles,
 					   ui32NumDstSyncs * sizeof(IMG_HANDLE)))
 		{
-			PVR_DPF((PVR_DBG_ERROR, "%s: SGXDoKickBW:"
-					" Invalid pasDstSyncHandles pointer", __FUNCTION__));
+			PVR_DPF(PVR_DBG_ERROR, "%s: SGXDoKickBW:"
+					" Invalid pasDstSyncHandles pointer", __FUNCTION__);
 			return -EFAULT;
 		}
 
@@ -1510,7 +1510,7 @@ SGXDevInitPart2BW(IMG_UINT32 ui32BridgeID,
 
 	if (bLookupFailed)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "DevInitSGXPart2BW: A handle lookup failed"));
+		PVR_DPF(PVR_DBG_ERROR, "DevInitSGXPart2BW: A handle lookup failed");
 		psSGXDevInitPart2OUT->eError = PVRSRV_ERROR_INIT2_PHASE_FAILED;
 		return 0;
 	}
@@ -1873,7 +1873,7 @@ SGXDevInitPart2BW(IMG_UINT32 ui32BridgeID,
 
 	if (bReleaseFailed)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "DevInitSGXPart2BW: A handle release failed"));
+		PVR_DPF(PVR_DBG_ERROR, "DevInitSGXPart2BW: A handle release failed");
 		psSGXDevInitPart2OUT->eError = PVRSRV_ERROR_INIT2_PHASE_FAILED;
 		
 		PVR_DBG_BREAK;
@@ -2193,7 +2193,7 @@ SGXDevInitPart2BW(IMG_UINT32 ui32BridgeID,
 
 		}
 
-		PVR_DPF((PVR_DBG_ERROR, "DevInitSGXPart2BW: A dissociate failed"));
+		PVR_DPF(PVR_DBG_ERROR, "DevInitSGXPart2BW: A dissociate failed");
 
 		psSGXDevInitPart2OUT->eError = PVRSRV_ERROR_INIT2_PHASE_FAILED;
 
@@ -2815,8 +2815,8 @@ SGXAddSharedPBDescBW(IMG_UINT32 ui32BridgeID,
 	if(!OSAccessOK(psSGXAddSharedPBDescIN->phKernelMemInfoHandles,
 				   ui32KernelMemInfoHandlesCount * sizeof(IMG_HANDLE)))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "%s: PVRSRV_BRIDGE_SGX_ADDSHAREDPBDESC:"
-				 " Invalid phKernelMemInfos pointer", __FUNCTION__));
+		PVR_DPF(PVR_DBG_ERROR, "%s: PVRSRV_BRIDGE_SGX_ADDSHAREDPBDESC:"
+				 " Invalid phKernelMemInfos pointer", __FUNCTION__);
 		ret = -EFAULT;
 		goto PVRSRV_BRIDGE_SGX_ADDSHAREDPBDESC_RETURN_RESULT;
 	}
@@ -3238,8 +3238,8 @@ SGXPDumpBufferArrayBW(IMG_UINT32 ui32BridgeID,
 
 		if(eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRV_BRIDGE_SGX_PDUMP_BUFFER_ARRAY: "
-					 "PVRSRVLookupHandle failed (%d)", eError));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRV_BRIDGE_SGX_PDUMP_BUFFER_ARRAY: "
+					 "PVRSRVLookupHandle failed (%d)", eError);
 			break;
 		}
 #if defined (SUPPORT_SID_INTERFACE)
@@ -3260,8 +3260,8 @@ SGXPDumpBufferArrayBW(IMG_UINT32 ui32BridgeID,
 
 		if(eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRV_BRIDGE_SGX_PDUMP_BUFFER_ARRAY: "
-					 "PVRSRVLookupHandle failed (%d)", eError));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRV_BRIDGE_SGX_PDUMP_BUFFER_ARRAY: "
+					 "PVRSRVLookupHandle failed (%d)", eError);
 			break;
 		}
 #if defined (SUPPORT_SID_INTERFACE)
@@ -3339,7 +3339,7 @@ SGXPDump3DSignatureRegistersBW(IMG_UINT32 ui32BridgeID,
 						   PVRSRV_HANDLE_TYPE_DEV_NODE);
 	if(psRetOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PDumpTASignatureRegistersBW: hDevCookie lookup failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PDumpTASignatureRegistersBW: hDevCookie lookup failed");
 		goto Exit;
 	}
 
@@ -3360,7 +3360,7 @@ SGXPDump3DSignatureRegistersBW(IMG_UINT32 ui32BridgeID,
 				  (IMG_PVOID *)&pui32Registers, 0,
 				  "Array of Registers") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PDump3DSignatureRegistersBW: OSAllocMem failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PDump3DSignatureRegistersBW: OSAllocMem failed");
 		goto Exit;
 	}
 
@@ -3370,7 +3370,7 @@ SGXPDump3DSignatureRegistersBW(IMG_UINT32 ui32BridgeID,
 					psPDump3DSignatureRegistersIN->pui32Registers,
 					ui32RegisterArraySize) != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PDump3DSignatureRegistersBW: CopyFromUserWrapper failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PDump3DSignatureRegistersBW: CopyFromUserWrapper failed");
 		goto Exit;
 	}
 
@@ -3455,7 +3455,7 @@ SGXPDumpCounterRegistersBW(IMG_UINT32 ui32BridgeID,
 						  psPDumpCounterRegistersIN->hDevCookie,
 						  PVRSRV_HANDLE_TYPE_DEV_NODE) != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXPDumpCounterRegistersBW: hDevCookie lookup failed"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXPDumpCounterRegistersBW: hDevCookie lookup failed");
 		ret = -ENOMEM;
 		goto Exit;
 	}
@@ -3465,7 +3465,7 @@ SGXPDumpCounterRegistersBW(IMG_UINT32 ui32BridgeID,
 				  (IMG_PVOID *)&pui32Registers, 0,
 				  "Array of Registers") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PDumpCounterRegistersBW: OSAllocMem failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PDumpCounterRegistersBW: OSAllocMem failed");
 		ret = -ENOMEM;
 		goto Exit;
 	}
@@ -3476,7 +3476,7 @@ SGXPDumpCounterRegistersBW(IMG_UINT32 ui32BridgeID,
 					psPDumpCounterRegistersIN->pui32Registers,
 					ui32RegisterArraySize) != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PDumpCounterRegistersBW: CopyFromUserWrapper failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PDumpCounterRegistersBW: CopyFromUserWrapper failed");
 		goto Exit;
 	}
 
@@ -3527,7 +3527,7 @@ SGXPDumpTASignatureRegistersBW(IMG_UINT32 ui32BridgeID,
 						   PVRSRV_HANDLE_TYPE_DEV_NODE);
 	if(psRetOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PDumpTASignatureRegistersBW: hDevCookie lookup failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PDumpTASignatureRegistersBW: hDevCookie lookup failed");
 		goto Exit;
 	}
 
@@ -3549,7 +3549,7 @@ SGXPDumpTASignatureRegistersBW(IMG_UINT32 ui32BridgeID,
 				  (IMG_PVOID *)&pui32Registers, 0,
 				  "Array of Registers") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PDumpTASignatureRegistersBW: OSAllocMem failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PDumpTASignatureRegistersBW: OSAllocMem failed");
 		ret = -ENOMEM;
 		goto Exit;
 	}
@@ -3560,7 +3560,7 @@ SGXPDumpTASignatureRegistersBW(IMG_UINT32 ui32BridgeID,
 					psPDumpTASignatureRegistersIN->pui32Registers,
 					ui32RegisterArraySize) != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PDumpTASignatureRegistersBW: CopyFromUserWrapper failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PDumpTASignatureRegistersBW: CopyFromUserWrapper failed");
 		goto Exit;
 	}
 

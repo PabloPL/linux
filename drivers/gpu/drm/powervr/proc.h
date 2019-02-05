@@ -111,6 +111,6 @@ struct proc_dir_entry* CreatePerProcessProcEntrySeq (
 
 IMG_VOID RemoveProcEntrySeq(struct proc_dir_entry* proc_entry, const char *name,
 			    PVR_PROC_SEQ_HANDLERS *handlers);
-IMG_VOID RemovePerProcessProcEntrySeq(struct proc_dir_entry* proc_entry);
+IMG_VOID RemovePerProcessProcEntrySeq(struct proc_dir_entry* proc_entry,const char *name, PVR_PROC_SEQ_HANDLERS *handlers);
 
 #endif

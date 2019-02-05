@@ -78,9 +78,9 @@ SGXFindSharedPBDescKM(PVRSRV_PER_PROCESS_DATA	*psPerProc,
 
 		if(psStubPBDesc->ui32TotalPBSize != ui32TotalPBSize)
 		{
-			PVR_DPF((PVR_DBG_WARNING,
+			PVR_DPF(PVR_DBG_WARNING,
 					"SGXFindSharedPBDescKM: Shared PB requested with different size (0x%x) from existing shared PB (0x%x) - requested size ignored",
-					ui32TotalPBSize, psStubPBDesc->ui32TotalPBSize));
+					ui32TotalPBSize, psStubPBDesc->ui32TotalPBSize);
 		}
 
 		if(OSAllocMem(PVRSRV_OS_PAGEABLE_HEAP,
@@ -90,7 +90,7 @@ SGXFindSharedPBDescKM(PVRSRV_PER_PROCESS_DATA	*psPerProc,
 					  IMG_NULL,
 					  "Array of Kernel Memory Info") != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "SGXFindSharedPBDescKM: OSAllocMem failed"));
+			PVR_DPF(PVR_DBG_ERROR, "SGXFindSharedPBDescKM: OSAllocMem failed");
 
 			eError = PVRSRV_ERROR_OUT_OF_MEMORY;
 			goto ExitNotFound;
@@ -110,7 +110,7 @@ SGXFindSharedPBDescKM(PVRSRV_PER_PROCESS_DATA	*psPerProc,
 					  0);
 			
 
-			PVR_DPF((PVR_DBG_ERROR, "SGXFindSharedPBDescKM: ResManRegisterRes failed"));
+			PVR_DPF(PVR_DBG_ERROR, "SGXFindSharedPBDescKM: ResManRegisterRes failed");
 
 			eError = PVRSRV_ERROR_UNABLE_TO_REGISTER_RESOURCE;
 			goto ExitNotFound;
@@ -150,7 +150,7 @@ SGXFindSharedPBDescKM(PVRSRV_PER_PROCESS_DATA	*psPerProc,
 
 			if (psResItemCreateSharedPB == IMG_NULL)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "SGXFindSharedPBDescKM: ResManRegisterRes failed"));
+				PVR_DPF(PVR_DBG_ERROR, "SGXFindSharedPBDescKM: ResManRegisterRes failed");
 
 				eError = PVRSRV_ERROR_UNABLE_TO_REGISTER_RESOURCE;
 				goto ExitNotFound;
@@ -303,9 +303,9 @@ SGXAddSharedPBDescKM(PVRSRV_PER_PROCESS_DATA	*psPerProc,
 	{
 		if(psStubPBDesc->ui32TotalPBSize != ui32TotalPBSize)
 		{
-			PVR_DPF((PVR_DBG_WARNING,
+			PVR_DPF(PVR_DBG_WARNING,
 					"SGXAddSharedPBDescKM: Shared PB requested with different size (0x%x) from existing shared PB (0x%x) - requested size ignored",
-					ui32TotalPBSize, psStubPBDesc->ui32TotalPBSize));
+					ui32TotalPBSize, psStubPBDesc->ui32TotalPBSize);
 
 		}
 
@@ -317,10 +317,10 @@ SGXAddSharedPBDescKM(PVRSRV_PER_PROCESS_DATA	*psPerProc,
 									  &SGXCleanupSharedPBDescCallback);
 		if (psResItem == IMG_NULL)
 		{
-			PVR_DPF((PVR_DBG_ERROR,
+			PVR_DPF(PVR_DBG_ERROR,
 				"SGXAddSharedPBDescKM: "
 				"Failed to register existing shared "
-				"PBDesc with the resource manager"));
+				"PBDesc with the resource manager");
 			goto NoAddKeepPB;
 		}
 
@@ -338,8 +338,8 @@ SGXAddSharedPBDescKM(PVRSRV_PER_PROCESS_DATA	*psPerProc,
 				  0,
 				  "Stub Parameter Buffer Description") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXAddSharedPBDescKM: Failed to alloc "
-					"StubPBDesc"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXAddSharedPBDescKM: Failed to alloc "
+					"StubPBDesc");
 		eRet = PVRSRV_ERROR_OUT_OF_MEMORY;
 		goto NoAdd;
 	}
@@ -354,9 +354,9 @@ SGXAddSharedPBDescKM(PVRSRV_PER_PROCESS_DATA	*psPerProc,
 				  0,
 				  "Array of Kernel Memory Info") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXAddSharedPBDescKM: "
+		PVR_DPF(PVR_DBG_ERROR, "SGXAddSharedPBDescKM: "
 				 "Failed to alloc "
-				 "StubPBDesc->ppsSubKernelMemInfos"));
+				 "StubPBDesc->ppsSubKernelMemInfos");
 		eRet = PVRSRV_ERROR_OUT_OF_MEMORY;
 		goto NoAdd;
 	}
@@ -400,9 +400,9 @@ SGXAddSharedPBDescKM(PVRSRV_PER_PROCESS_DATA	*psPerProc,
 		if(PVRSRVDissociateMemFromResmanKM(ppsSharedPBDescSubKernelMemInfos[i])
 		   != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "SGXAddSharedPBDescKM: "
+			PVR_DPF(PVR_DBG_ERROR, "SGXAddSharedPBDescKM: "
 					 "Failed to dissociate shared PBDesc "
-					 "from process"));
+					 "from process");
 			goto NoAdd;
 		}
 	}
@@ -416,9 +416,9 @@ SGXAddSharedPBDescKM(PVRSRV_PER_PROCESS_DATA	*psPerProc,
 								  &SGXCleanupSharedPBDescCallback);
 	if (psResItem == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXAddSharedPBDescKM: "
+		PVR_DPF(PVR_DBG_ERROR, "SGXAddSharedPBDescKM: "
 					 "Failed to register shared PBDesc "
-					 " with the resource manager"));
+					 " with the resource manager");
 		goto NoAdd;
 	}
 	psStubPBDesc->hDevCookie = hDevCookie;

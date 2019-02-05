@@ -451,7 +451,7 @@ PVRSRV_ERROR GetHandleStructure(PVRSRV_HANDLE_BASE *psBase, struct sHandle **pps
 	
 	if (!INDEX_IS_VALID(psBase, ui32Index))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "GetHandleStructure: Handle index out of range (%u >= %u)", ui32Index, psBase->ui32TotalHandCount));
+		PVR_DPF(PVR_DBG_ERROR, "GetHandleStructure: Handle index out of range (%u >= %u)", ui32Index, psBase->ui32TotalHandCount);
 #if defined (SUPPORT_SID_INTERFACE)
 		PVR_DBG_BREAK
 #endif
@@ -461,7 +461,7 @@ PVRSRV_ERROR GetHandleStructure(PVRSRV_HANDLE_BASE *psBase, struct sHandle **pps
 	psHandle =  INDEX_TO_HANDLE_STRUCT_PTR(psBase, ui32Index);
 	if (psHandle->eType == PVRSRV_HANDLE_TYPE_NONE)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "GetHandleStructure: Handle not allocated (index: %u)", ui32Index));
+		PVR_DPF(PVR_DBG_ERROR, "GetHandleStructure: Handle not allocated (index: %u)", ui32Index);
 #if defined (SUPPORT_SID_INTERFACE)
 		PVR_DBG_BREAK
 #endif
@@ -471,7 +471,7 @@ PVRSRV_ERROR GetHandleStructure(PVRSRV_HANDLE_BASE *psBase, struct sHandle **pps
 	
 	if (eType != PVRSRV_HANDLE_TYPE_NONE && eType != psHandle->eType)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "GetHandleStructure: Handle type mismatch (%d != %d)", eType, psHandle->eType));
+		PVR_DPF(PVR_DBG_ERROR, "GetHandleStructure: Handle type mismatch (%d != %d)", eType, psHandle->eType);
 #if defined (SUPPORT_SID_INTERFACE)
 		PVR_DBG_BREAK
 #endif
@@ -557,7 +557,7 @@ PVRSRV_ERROR ReallocHandleArray(PVRSRV_HANDLE_BASE *psBase, IMG_UINT32 ui32NewCo
 			"Memory Area");
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "ReallocHandleArray: Couldn't allocate new handle array (%d)", eError));
+			PVR_DPF(PVR_DBG_ERROR, "ReallocHandleArray: Couldn't allocate new handle array (%d)", eError);
 			eReturn = eError;
 			goto error;
 		}
@@ -579,7 +579,7 @@ PVRSRV_ERROR ReallocHandleArray(PVRSRV_HANDLE_BASE *psBase, IMG_UINT32 ui32NewCo
 				psIndex->hBlockAlloc);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "ReallocHandleArray: Couldn't free handle structures (%d)", eError));
+			PVR_DPF(PVR_DBG_ERROR, "ReallocHandleArray: Couldn't free handle structures (%d)", eError);
 		}
 	}
 
@@ -597,7 +597,7 @@ PVRSRV_ERROR ReallocHandleArray(PVRSRV_HANDLE_BASE *psBase, IMG_UINT32 ui32NewCo
 		if (eError != PVRSRV_OK)
 		{
 			psIndex->psHandle = IMG_NULL;
-			PVR_DPF((PVR_DBG_ERROR, "ReallocHandleArray: Couldn't allocate handle structures (%d)", eError));
+			PVR_DPF(PVR_DBG_ERROR, "ReallocHandleArray: Couldn't allocate handle structures (%d)", eError);
 			eReturn = eError;
 		}
 		else
@@ -627,7 +627,7 @@ PVRSRV_ERROR ReallocHandleArray(PVRSRV_HANDLE_BASE *psBase, IMG_UINT32 ui32NewCo
 	
 	if (ui32NewCount > DEBUG_MAX_HANDLE_COUNT)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "ReallocHandleArray: Max handle count (%u) reached", DEBUG_MAX_HANDLE_COUNT));
+		PVR_DPF(PVR_DBG_ERROR, "ReallocHandleArray: Max handle count (%u) reached", DEBUG_MAX_HANDLE_COUNT);
 		eReturn = PVRSRV_ERROR_OUT_OF_MEMORY;
 		goto error;
 	}
@@ -642,7 +642,7 @@ PVRSRV_ERROR ReallocHandleArray(PVRSRV_HANDLE_BASE *psBase, IMG_UINT32 ui32NewCo
 			hOldArrayBlockAlloc);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "ReallocHandleArray: Couldn't free old handle array (%d)", eError));
+			PVR_DPF(PVR_DBG_ERROR, "ReallocHandleArray: Couldn't free old handle array (%d)", eError);
 		}
 	}
 
@@ -718,7 +718,7 @@ error:
 						psIndex->hBlockAlloc);
 				if (eError != PVRSRV_OK)
 				{
-					PVR_DPF((PVR_DBG_ERROR, "ReallocHandleArray: Couldn't free handle structures (%d)", eError));
+					PVR_DPF(PVR_DBG_ERROR, "ReallocHandleArray: Couldn't free handle structures (%d)", eError);
 				}
 			}
 		}
@@ -730,7 +730,7 @@ error:
 			hNewArrayBlockAlloc);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "ReallocHandleArray: Couldn't free new handle array (%d)", eError));
+			PVR_DPF(PVR_DBG_ERROR, "ReallocHandleArray: Couldn't free new handle array (%d)", eError);
 		}
 	}
 
@@ -774,7 +774,7 @@ static PVRSRV_ERROR FreeHandle(PVRSRV_HANDLE_BASE *psBase, struct sHandle *psHan
 	eError = IterateOverChildren(psBase, psHandle, FreeHandle);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "FreeHandle: Error whilst freeing subhandles (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "FreeHandle: Error whilst freeing subhandles (%d)", eError);
 		return eError;
 	}
 
@@ -856,7 +856,7 @@ static PVRSRV_ERROR FreeAllHandles(PVRSRV_HANDLE_BASE *psBase)
 			eError = FreeHandle(psBase, psHandle);
 			if (eError != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "FreeAllHandles: FreeHandle failed (%d)", eError));
+				PVR_DPF(PVR_DBG_ERROR, "FreeAllHandles: FreeHandle failed (%d)", eError);
 				break;
 			}
 
@@ -877,7 +877,7 @@ static PVRSRV_ERROR FreeHandleBase(PVRSRV_HANDLE_BASE *psBase)
 
 	if (HANDLES_BATCHED(psBase))
 	{
-		PVR_DPF((PVR_DBG_WARNING, "FreeHandleBase: Uncommitted/Unreleased handle batch"));
+		PVR_DPF(PVR_DBG_WARNING, "FreeHandleBase: Uncommitted/Unreleased handle batch");
 		PVRSRVReleaseHandleBatch(psBase);
 	}
 
@@ -885,7 +885,7 @@ static PVRSRV_ERROR FreeHandleBase(PVRSRV_HANDLE_BASE *psBase)
 	eError = FreeAllHandles(psBase);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "FreeHandleBase: Couldn't free handles (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "FreeHandleBase: Couldn't free handles (%d)", eError);
 		return eError;
 	}
 
@@ -893,7 +893,7 @@ static PVRSRV_ERROR FreeHandleBase(PVRSRV_HANDLE_BASE *psBase)
 	eError = FreeHandleArray(psBase);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "FreeHandleBase: Couldn't free handle array (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "FreeHandleBase: Couldn't free handle array (%d)", eError);
 		return eError;
 	}
 
@@ -909,7 +909,7 @@ static PVRSRV_ERROR FreeHandleBase(PVRSRV_HANDLE_BASE *psBase)
 		psBase->hBaseBlockAlloc);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "FreeHandleBase: Couldn't free handle base (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "FreeHandleBase: Couldn't free handle base (%d)", eError);
 		return eError;
 	}
 
@@ -957,7 +957,7 @@ static PVRSRV_ERROR IncreaseHandleArraySize(PVRSRV_HANDLE_BASE *psBase, IMG_UINT
 
 		if (ui32DeltaAdjusted < ui32Delta)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "IncreaseHandleArraySize: Maximum handle limit reached (%d)", psBase->ui32MaxIndexPlusOne));
+			PVR_DPF(PVR_DBG_ERROR, "IncreaseHandleArraySize: Maximum handle limit reached (%d)", psBase->ui32MaxIndexPlusOne);
 			return PVRSRV_ERROR_OUT_OF_MEMORY;
 		}
 	}
@@ -968,7 +968,7 @@ static PVRSRV_ERROR IncreaseHandleArraySize(PVRSRV_HANDLE_BASE *psBase, IMG_UINT
 	eError = ReallocHandleArray(psBase, ui32NewTotalHandCount);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "IncreaseHandleArraySize: ReallocHandleArray failed (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "IncreaseHandleArraySize: ReallocHandleArray failed (%d)", eError);
 		return eError;
 	}
 
@@ -985,7 +985,7 @@ static PVRSRV_ERROR EnsureFreeHandles(PVRSRV_HANDLE_BASE *psBase, IMG_UINT32 ui3
 		eError = IncreaseHandleArraySize(psBase, ui32FreeHandDelta);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "EnsureFreeHandles: Couldn't allocate %u handles to ensure %u free handles (IncreaseHandleArraySize failed with error %d)", ui32FreeHandDelta, ui32Free, eError));
+			PVR_DPF(PVR_DBG_ERROR, "EnsureFreeHandles: Couldn't allocate %u handles to ensure %u free handles (IncreaseHandleArraySize failed with error %d)", ui32FreeHandDelta, ui32Free, eError);
 
 			return eError;
 		}
@@ -1023,14 +1023,14 @@ static PVRSRV_ERROR AllocHandle(PVRSRV_HANDLE_BASE *psBase, IMG_HANDLE *phHandle
 
 	if (psBase->ui32FreeHandCount == 0 && HANDLES_BATCHED(psBase))
 	{
-		 PVR_DPF((PVR_DBG_WARNING, "AllocHandle: Handle batch size (%u) was too small, allocating additional space", psBase->ui32HandBatchSize)); 
+		 PVR_DPF(PVR_DBG_WARNING, "AllocHandle: Handle batch size (%u) was too small, allocating additional space", psBase->ui32HandBatchSize); 
 	}
 
 	
 	eError = EnsureFreeHandles(psBase, 1);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "AllocHandle: EnsureFreeHandles failed (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "AllocHandle: EnsureFreeHandles failed (%d)", eError);
 		return eError;
 	}
 	PVR_ASSERT(psBase->ui32FreeHandCount != 0)
@@ -1086,7 +1086,7 @@ static PVRSRV_ERROR AllocHandle(PVRSRV_HANDLE_BASE *psBase, IMG_HANDLE *phHandle
 		
 		if (!HASH_Insert_Extended(psBase->psHashTab, aKey, (IMG_UINTPTR_T)hHandle))
 		{
-			PVR_DPF((PVR_DBG_ERROR, "AllocHandle: Couldn't add handle to hash table"));
+			PVR_DPF(PVR_DBG_ERROR, "AllocHandle: Couldn't add handle to hash table");
 
 			return PVRSRV_ERROR_UNABLE_TO_ADD_HANDLE;
 		}
@@ -1203,7 +1203,7 @@ PVRSRV_ERROR PVRSRVAllocHandle(PVRSRV_HANDLE_BASE *psBase, IMG_HANDLE *phHandle,
 			eError = GetHandleStructure(psBase, &psHandle, hHandle, eType);
 			if (eError != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "PVRSRVAllocHandle: Lookup of existing handle failed"));
+				PVR_DPF(PVR_DBG_ERROR, "PVRSRVAllocHandle: Lookup of existing handle failed");
 				return eError;
 			}
 
@@ -1289,7 +1289,7 @@ PVRSRV_ERROR PVRSRVAllocSubHandle(PVRSRV_HANDLE_BASE *psBase, IMG_HANDLE *phHand
 			eErr = GetHandleStructure(psBase, &psCHandle, hHandle, eType);
 			if (eErr != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "PVRSRVAllocSubHandle: Lookup of existing handle failed"));
+				PVR_DPF(PVR_DBG_ERROR, "PVRSRVAllocSubHandle: Lookup of existing handle failed");
 				return eErr;
 			}
 
@@ -1374,7 +1374,7 @@ PVRSRV_ERROR PVRSRVLookupHandleAnyType(PVRSRV_HANDLE_BASE *psBase, IMG_PVOID *pp
 	eError = GetHandleStructure(psBase, &psHandle, hHandle, PVRSRV_HANDLE_TYPE_NONE);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVLookupHandleAnyType: Error looking up handle (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVLookupHandleAnyType: Error looking up handle (%d)", eError);
 #if defined (SUPPORT_SID_INTERFACE)
 		PVR_DBG_BREAK
 #endif
@@ -1404,7 +1404,7 @@ PVRSRV_ERROR PVRSRVLookupHandle(PVRSRV_HANDLE_BASE *psBase, IMG_PVOID *ppvData, 
 	eError = GetHandleStructure(psBase, &psHandle, hHandle, eType);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVLookupHandle: Error looking up handle (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVLookupHandle: Error looking up handle (%d)", eError);
 #if defined (SUPPORT_SID_INTERFACE)
 		PVR_DBG_BREAK
 #endif
@@ -1434,7 +1434,7 @@ PVRSRV_ERROR PVRSRVLookupSubHandle(PVRSRV_HANDLE_BASE *psBase, IMG_PVOID *ppvDat
 	eError = GetHandleStructure(psBase, &psCHand, hHandle, eType);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVLookupSubHandle: Error looking up subhandle (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVLookupSubHandle: Error looking up subhandle (%d)", eError);
 		return eError;
 	}
 
@@ -1444,7 +1444,7 @@ PVRSRV_ERROR PVRSRVLookupSubHandle(PVRSRV_HANDLE_BASE *psBase, IMG_PVOID *ppvDat
 		eError = GetHandleStructure(psBase, &psPHand, ParentHandle(psPHand), PVRSRV_HANDLE_TYPE_NONE);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRVLookupSubHandle: Subhandle doesn't belong to given ancestor"));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRVLookupSubHandle: Subhandle doesn't belong to given ancestor");
 			return PVRSRV_ERROR_INVALID_SUBHANDLE;
 		}
 	}
@@ -1468,7 +1468,7 @@ PVRSRV_ERROR PVRSRVGetParentHandle(PVRSRV_HANDLE_BASE *psBase, IMG_PVOID *phPare
 	eError = GetHandleStructure(psBase, &psHandle, hHandle, eType);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVGetParentHandle: Error looking up subhandle (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVGetParentHandle: Error looking up subhandle (%d)", eError);
 		return eError;
 	}
 
@@ -1491,7 +1491,7 @@ PVRSRV_ERROR PVRSRVLookupAndReleaseHandle(PVRSRV_HANDLE_BASE *psBase, IMG_PVOID 
 	eError = GetHandleStructure(psBase, &psHandle, hHandle, eType);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVLookupAndReleaseHandle: Error looking up handle (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVLookupAndReleaseHandle: Error looking up handle (%d)", eError);
 #if defined (SUPPORT_SID_INTERFACE)
 		PVR_DBG_BREAK
 #endif
@@ -1519,7 +1519,7 @@ PVRSRV_ERROR PVRSRVReleaseHandle(PVRSRV_HANDLE_BASE *psBase, IMG_HANDLE hHandle,
 	eError = GetHandleStructure(psBase, &psHandle, hHandle, eType);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVReleaseHandle: Error looking up handle (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVReleaseHandle: Error looking up handle (%d)", eError);
 		return eError;
 	}
 
@@ -1534,20 +1534,20 @@ PVRSRV_ERROR PVRSRVNewHandleBatch(PVRSRV_HANDLE_BASE *psBase, IMG_UINT32 ui32Bat
 
 	if (HANDLES_BATCHED(psBase))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVNewHandleBatch: There is a handle batch already in use (size %u)", psBase->ui32HandBatchSize));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVNewHandleBatch: There is a handle batch already in use (size %u)", psBase->ui32HandBatchSize);
 		return  PVRSRV_ERROR_HANDLE_BATCH_IN_USE;
 	}
 
 	if (ui32BatchSize == 0)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVNewHandleBatch: Invalid batch size (%u)", ui32BatchSize));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVNewHandleBatch: Invalid batch size (%u)", ui32BatchSize);
 		return  PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
 	eError = EnsureFreeHandles(psBase, ui32BatchSize);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVNewHandleBatch: EnsureFreeHandles failed (error %d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVNewHandleBatch: EnsureFreeHandles failed (error %d)", eError);
 		return eError;
 	}
 
@@ -1573,7 +1573,7 @@ static PVRSRV_ERROR PVRSRVHandleBatchCommitOrRelease(PVRSRV_HANDLE_BASE *psBase,
 
 	if (!HANDLES_BATCHED(psBase))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVHandleBatchCommitOrRelease: There is no handle batch"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVHandleBatchCommitOrRelease: There is no handle batch");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 
 	}
@@ -1582,7 +1582,7 @@ static PVRSRV_ERROR PVRSRVHandleBatchCommitOrRelease(PVRSRV_HANDLE_BASE *psBase,
 	{
 		if (bCommit)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRVHandleBatchCommitOrRelease: Attempting to commit batch with handle allocation failures."));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRVHandleBatchCommitOrRelease: Attempting to commit batch with handle allocation failures.");
 		}
 		bCommitBatch = IMG_FALSE;
 	}
@@ -1612,7 +1612,7 @@ static PVRSRV_ERROR PVRSRVHandleBatchCommitOrRelease(PVRSRV_HANDLE_BASE *psBase,
 			eError = FreeHandle(psBase, psHandle);
 			if (eError != PVRSRV_OK)
 			{
-				 PVR_DPF((PVR_DBG_ERROR, "PVRSRVHandleBatchCommitOrRelease: Error freeing handle (%d)", eError));
+				 PVR_DPF(PVR_DBG_ERROR, "PVRSRVHandleBatchCommitOrRelease: Error freeing handle (%d)", eError);
 			}
 			PVR_ASSERT(eError == PVRSRV_OK)
 		}
@@ -1632,7 +1632,7 @@ static PVRSRV_ERROR PVRSRVHandleBatchCommitOrRelease(PVRSRV_HANDLE_BASE *psBase,
 
 		PVR_ASSERT(psBase->ui32TotalHandCount > psBase->ui32TotalHandCountPreBatch)
 
-		PVR_DPF((PVR_DBG_WARNING, "PVRSRVHandleBatchCommitOrRelease: The batch size was too small.  Batch size was %u, but needs to be %u", psBase->ui32HandBatchSize,  psBase->ui32HandBatchSize + ui32Delta));
+		PVR_DPF(PVR_DBG_WARNING, "PVRSRVHandleBatchCommitOrRelease: The batch size was too small.  Batch size was %u, but needs to be %u", psBase->ui32HandBatchSize,  psBase->ui32HandBatchSize + ui32Delta);
 
 	}
 #endif
@@ -1668,14 +1668,14 @@ PVRSRV_ERROR PVRSRVSetMaxHandle(PVRSRV_HANDLE_BASE *psBase, IMG_UINT32 ui32MaxHa
 
 	if (HANDLES_BATCHED(psBase))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSetMaxHandle: Limit cannot be set whilst in batch mode"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVSetMaxHandle: Limit cannot be set whilst in batch mode");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
 	
 	if (ui32MaxHandle  == 0 || ui32MaxHandle > DEFAULT_MAX_HANDLE)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSetMaxHandle: Limit must be between %u and %u, inclusive", 0, DEFAULT_MAX_HANDLE));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVSetMaxHandle: Limit must be between %u and %u, inclusive", 0, DEFAULT_MAX_HANDLE);
 
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
@@ -1683,7 +1683,7 @@ PVRSRV_ERROR PVRSRVSetMaxHandle(PVRSRV_HANDLE_BASE *psBase, IMG_UINT32 ui32MaxHa
 	
 	if (psBase->ui32TotalHandCount != 0)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSetMaxHandle: Limit cannot be set because handles have already been allocated"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVSetMaxHandle: Limit cannot be set because handles have already been allocated");
 
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
@@ -1712,14 +1712,14 @@ PVRSRV_ERROR PVRSRVEnableHandlePurging(PVRSRV_HANDLE_BASE *psBase)
 {
 	if (psBase->bPurgingEnabled)
 	{
-		PVR_DPF((PVR_DBG_WARNING, "PVRSRVEnableHandlePurging: Purging already enabled"));
+		PVR_DPF(PVR_DBG_WARNING, "PVRSRVEnableHandlePurging: Purging already enabled");
 		return PVRSRV_OK;
 	}
 
 	
 	if (psBase->ui32TotalHandCount != 0)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVEnableHandlePurging: Handles have already been allocated"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVEnableHandlePurging: Handles have already been allocated");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
@@ -1735,13 +1735,13 @@ PVRSRV_ERROR PVRSRVPurgeHandles(PVRSRV_HANDLE_BASE *psBase)
 
 	if (!psBase->bPurgingEnabled)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVPurgeHandles: Purging not enabled for this handle base"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVPurgeHandles: Purging not enabled for this handle base");
 		return PVRSRV_ERROR_NOT_SUPPORTED;
 	}
 
 	if (HANDLES_BATCHED(psBase))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVPurgeHandles: Purging not allowed whilst in batch mode"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVPurgeHandles: Purging not allowed whilst in batch mode");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
@@ -1786,7 +1786,7 @@ PVRSRV_ERROR PVRSRVAllocHandleBase(PVRSRV_HANDLE_BASE **ppsBase)
 		"Handle Base");
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVAllocHandleBase: Couldn't allocate handle base (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVAllocHandleBase: Couldn't allocate handle base (%d)", eError);
 		return eError;
 	}
 	OSMemSet(psBase, 0, sizeof(*psBase));
@@ -1795,7 +1795,7 @@ PVRSRV_ERROR PVRSRVAllocHandleBase(PVRSRV_HANDLE_BASE **ppsBase)
 	psBase->psHashTab = HASH_Create_Extended(HANDLE_HASH_TAB_INIT_SIZE, sizeof(HAND_KEY), HASH_Func_Default, HASH_Key_Comp_Default);
 	if (psBase->psHashTab == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVAllocHandleBase: Couldn't create data pointer hash table\n"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVAllocHandleBase: Couldn't create data pointer hash table\n");
 		(IMG_VOID)PVRSRVFreeHandleBase(psBase);
 		return PVRSRV_ERROR_UNABLE_TO_CREATE_HASH_TABLE;
 	}
@@ -1818,7 +1818,7 @@ PVRSRV_ERROR PVRSRVFreeHandleBase(PVRSRV_HANDLE_BASE *psBase)
 	eError = FreeHandleBase(psBase);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVFreeHandleBase: FreeHandleBase failed (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVFreeHandleBase: FreeHandleBase failed (%d)", eError);
 	}
 
 	return eError;
@@ -1833,14 +1833,14 @@ PVRSRV_ERROR PVRSRVHandleInit(IMG_VOID)
 	eError = PVRSRVAllocHandleBase(&gpsKernelHandleBase);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVHandleInit: PVRSRVAllocHandleBase failed (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVHandleInit: PVRSRVAllocHandleBase failed (%d)", eError);
 		goto error;
 	}
 
 	eError = PVRSRVEnableHandlePurging(gpsKernelHandleBase);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVHandleInit: PVRSRVEnableHandlePurging failed (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVHandleInit: PVRSRVEnableHandlePurging failed (%d)", eError);
 		goto error;
 	}
 
@@ -1863,7 +1863,7 @@ PVRSRV_ERROR PVRSRVHandleDeInit(IMG_VOID)
 		}
 		else
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRVHandleDeInit: FreeHandleBase failed (%d)", eError));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRVHandleDeInit: FreeHandleBase failed (%d)", eError);
 		}
 	}
 

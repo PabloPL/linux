@@ -152,6 +152,7 @@ static IMG_CHAR *DebugMemAllocRecordTypeToString(DEBUG_MEM_ALLOC_TYPE eAllocType
 
 
 static struct proc_dir_entry *g_SeqFileMemoryRecords;
+static PVR_PROC_SEQ_HANDLERS *g_SeqFileMemoryRecordsHandlers;
 static void* ProcSeqNextMemoryRecords(struct seq_file *sfile,void* el,loff_t off);
 static void ProcSeqShowMemoryRecords(struct seq_file *sfile,void* el);
 static void* ProcSeqOff2ElementMemoryRecords(struct seq_file * sfile, loff_t off);
@@ -186,6 +187,7 @@ static IMG_UINT32 g_LinuxMemAreaHighWaterMark;
 
 
 static struct proc_dir_entry *g_SeqFileMemArea;
+static PVR_PROC_SEQ_HANDLERS *g_SeqFileMemAreaHandlers;
 
 static void* ProcSeqNextMemArea(struct seq_file *sfile,void* el,loff_t off);
 static void ProcSeqShowMemArea(struct seq_file *sfile,void* el);
@@ -394,9 +396,9 @@ DebugMemAllocRecordRemove(DEBUG_MEM_ALLOC_TYPE eAllocType, IMG_VOID *pvKey, IMG_
 												eAllocType,
 												pvKey))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "%s: couldn't find an entry for type=%s with pvKey=%p (called from %s, line %d\n",
+		PVR_DPF(PVR_DBG_ERROR, "%s: couldn't find an entry for type=%s with pvKey=%p (called from %s, line %d\n",
 		__FUNCTION__, DebugMemAllocRecordTypeToString(eAllocType), pvKey,
-		pszFileName, ui32Line));
+		pszFileName, ui32Line);
 	}
 
     LinuxUnLockMutex(&g_sDebugMutex);
@@ -439,9 +441,9 @@ AllocFlagsToPGProt(pgprot_t *pPGProtFlags, IMG_UINT32 ui32AllocFlags)
             PGProtFlags = PGPROT_UC(PAGE_KERNEL);
             break;
         default:
-            PVR_DPF((PVR_DBG_ERROR,
+            PVR_DPF(PVR_DBG_ERROR,
                      "%s: Unknown mapping flags=0x%08x",
-                     __FUNCTION__, ui32AllocFlags));
+                     __FUNCTION__, ui32AllocFlags);
             dump_stack();
             return IMG_FALSE;
     }
@@ -1004,7 +1006,7 @@ NewVMallocLinuxMemArea(IMG_UINT32 ui32Bytes, IMG_UINT32 ui32AreaFlags)
     return psLinuxMemArea;
 
 failed:
-    PVR_DPF((PVR_DBG_ERROR, "%s: failed!", __FUNCTION__));
+    PVR_DPF(PVR_DBG_ERROR, "%s: failed!", __FUNCTION__);
 #if defined(PVR_LINUX_MEM_AREA_USE_VMAP)
     if (ppsPageList)
     {
@@ -1037,8 +1039,8 @@ FreeVMallocLinuxMemArea(LinuxMemArea *psLinuxMemArea)
     DebugLinuxMemAreaRecordRemove(psLinuxMemArea);
 #endif
 
-    PVR_DPF((PVR_DBG_MESSAGE,"%s: pvCpuVAddr: %p",
-             __FUNCTION__, psLinuxMemArea->uData.sVmalloc.pvVmallocAddress));
+    PVR_DPF(PVR_DBG_MESSAGE,"%s: pvCpuVAddr: %p",
+             __FUNCTION__, psLinuxMemArea->uData.sVmalloc.pvVmallocAddress);
 
 #if defined(PVR_LINUX_MEM_AREA_USE_VMAP)
     VUnmapWrapper(psLinuxMemArea->uData.sVmalloc.pvVmallocAddress);
@@ -1118,7 +1120,7 @@ _IORemapWrapper(IMG_CPU_PHYADDR BasePAddr,
             pvIORemapCookie = (IMG_VOID *)IOREMAP_UC(BasePAddr.uiAddr, ui32Bytes);
             break;
         default:
-            PVR_DPF((PVR_DBG_ERROR, "IORemapWrapper: unknown mapping flags"));
+            PVR_DPF(PVR_DBG_ERROR, "IORemapWrapper: unknown mapping flags");
             return NULL;
     }
     
@@ -1399,7 +1401,7 @@ NewAllocPagesLinuxMemArea(IMG_UINT32 ui32Bytes, IMG_UINT32 ui32AreaFlags)
 failed_alloc_pages:
     LinuxMemAreaStructFree(psLinuxMemArea);
 failed_area_alloc:
-    PVR_DPF((PVR_DBG_ERROR, "%s: failed", __FUNCTION__));
+    PVR_DPF(PVR_DBG_ERROR, "%s: failed", __FUNCTION__);
     
     return NULL;
 }
@@ -1454,7 +1456,7 @@ NewIONLinuxMemArea(IMG_UINT32 ui32Bytes, IMG_UINT32 ui32AreaFlags,
     psLinuxMemArea = LinuxMemAreaStructAlloc();
     if (!psLinuxMemArea)
     {
-        PVR_DPF((PVR_DBG_ERROR, "%s: Failed to allocate LinuxMemArea struct", __func__));
+        PVR_DPF(PVR_DBG_ERROR, "%s: Failed to allocate LinuxMemArea struct", __func__);
         goto err_out;
     }
 
@@ -1470,14 +1472,14 @@ NewIONLinuxMemArea(IMG_UINT32 ui32Bytes, IMG_UINT32 ui32AreaFlags,
 
         if (omap_ion_tiler_alloc(gpsIONClient, &asAllocData[i]) < 0)
         {
-            PVR_DPF((PVR_DBG_ERROR, "%s: Failed to allocate via ion_tiler", __func__));
+            PVR_DPF(PVR_DBG_ERROR, "%s: Failed to allocate via ion_tiler", __func__);
             goto err_free;
         }
 
         if (omap_tiler_pages(gpsIONClient, asAllocData[i].handle, &iNumPages[i],
                             &pu32PageAddrs[i]) < 0)
         {
-            PVR_DPF((PVR_DBG_ERROR, "%s: Failed to compute tiler pages", __func__));
+            PVR_DPF(PVR_DBG_ERROR, "%s: Failed to compute tiler pages", __func__);
             goto err_free;
         }
     }
@@ -1490,7 +1492,7 @@ NewIONLinuxMemArea(IMG_UINT32 ui32Bytes, IMG_UINT32 ui32AreaFlags,
     pCPUPhysAddrs = vmalloc(sizeof(IMG_CPU_PHYADDR) * (iNumPages[0] + iNumPages[1]));
     if (!pCPUPhysAddrs)
     {
-        PVR_DPF((PVR_DBG_ERROR, "%s: Failed to allocate page list", __func__));
+        PVR_DPF(PVR_DBG_ERROR, "%s: Failed to allocate page list", __func__);
         goto err_free;
     }
     for(i = 0; i < iNumPages[0]; i++)
@@ -1592,9 +1594,9 @@ LinuxMemAreaOffsetToPage(LinuxMemArea *psLinuxMemArea,
                                             psLinuxMemArea->uData.sSubAlloc.ui32ByteOffset
                                              + ui32ByteOffset);
         default:
-            PVR_DPF((PVR_DBG_ERROR,
+            PVR_DPF(PVR_DBG_ERROR,
                     "%s: Unsupported request for struct page from LinuxMemArea with type=%s",
-                    __FUNCTION__, LinuxMemAreaTypeToString(psLinuxMemArea->eAreaType)));
+                    __FUNCTION__, LinuxMemAreaTypeToString(psLinuxMemArea->eAreaType));
             return NULL;
     }
 }
@@ -1758,8 +1760,8 @@ LinuxMemAreaDeepFree(LinuxMemArea *psLinuxMemArea)
             FreeIONLinuxMemArea(psLinuxMemArea);
             break;
         default:
-            PVR_DPF((PVR_DBG_ERROR, "%s: Unknown are type (%d)\n",
-                     __FUNCTION__, psLinuxMemArea->eAreaType));
+            PVR_DPF(PVR_DBG_ERROR, "%s: Unknown are type (%d)\n",
+                     __FUNCTION__, psLinuxMemArea->eAreaType);
             break;
     }
 }
@@ -1797,20 +1799,20 @@ DebugLinuxMemAreaRecordAdd(LinuxMemArea *psLinuxMemArea, IMG_UINT32 ui32Flags)
     }
     else
     {
-        PVR_DPF((PVR_DBG_ERROR,
+        PVR_DPF(PVR_DBG_ERROR,
                  "%s: failed to allocate linux memory area record.",
-                 __FUNCTION__));
+                 __FUNCTION__);
     }
     
     
     pi8FlagsString = HAPFlagsToString(ui32Flags);
     if (strstr(pi8FlagsString, "UNKNOWN"))
     {
-        PVR_DPF((PVR_DBG_ERROR,
+        PVR_DPF(PVR_DBG_ERROR,
                  "%s: Unexpected flags (0x%08x) associated with psLinuxMemArea @ %p",
                  __FUNCTION__,
                  ui32Flags,
-                 psLinuxMemArea));
+                 psLinuxMemArea);
         
     }
 
@@ -1877,8 +1879,8 @@ DebugLinuxMemAreaRecordRemove(LinuxMemArea *psLinuxMemArea)
 	}
 	else
 	{
-		PVR_DPF((PVR_DBG_ERROR, "%s: couldn't find an entry for psLinuxMemArea=%p\n",
-        	     __FUNCTION__, psLinuxMemArea));
+		PVR_DPF(PVR_DBG_ERROR, "%s: couldn't find an entry for psLinuxMemArea=%p\n",
+        	     __FUNCTION__, psLinuxMemArea);
 	}
 
     LinuxUnLockMutex(&g_sDebugMutex);
@@ -1986,8 +1988,8 @@ LinuxMemAreaToCpuPAddr(LinuxMemArea *psLinuxMemArea, IMG_UINT32 ui32ByteOffset)
         }
         default:
         {
-            PVR_DPF((PVR_DBG_ERROR, "%s: Unknown LinuxMemArea type (%d)\n",
-                     __FUNCTION__, psLinuxMemArea->eAreaType));
+            PVR_DPF(PVR_DBG_ERROR, "%s: Unknown LinuxMemArea type (%d)\n",
+                     __FUNCTION__, psLinuxMemArea->eAreaType);
             PVR_ASSERT(CpuPAddr.uiAddr);
            break;
         }
@@ -2019,8 +2021,8 @@ LinuxMemAreaPhysIsContig(LinuxMemArea *psLinuxMemArea)
             return LinuxMemAreaPhysIsContig(psLinuxMemArea->uData.sSubAlloc.psParentLinuxMemArea);
 
         default:
-            PVR_DPF((PVR_DBG_ERROR, "%s: Unknown LinuxMemArea type (%d)\n",
-                     __FUNCTION__, psLinuxMemArea->eAreaType));
+            PVR_DPF(PVR_DBG_ERROR, "%s: Unknown LinuxMemArea type (%d)\n",
+                     __FUNCTION__, psLinuxMemArea->eAreaType);
 	    break;
     }
     return IMG_FALSE;
@@ -2479,8 +2481,8 @@ HAPFlagsToString(IMG_UINT32 ui32Flags)
         ui32CacheTypeIndex = 2;
     } else {
         ui32CacheTypeIndex = 3;
-        PVR_DPF((PVR_DBG_ERROR, "%s: unknown cache type (%u)",
-                 __FUNCTION__, (ui32Flags & PVRSRV_HAP_CACHETYPE_MASK)));
+        PVR_DPF(PVR_DBG_ERROR, "%s: unknown cache type (%u)",
+                 __FUNCTION__, (ui32Flags & PVRSRV_HAP_CACHETYPE_MASK));
     }
 
     
@@ -2496,15 +2498,15 @@ HAPFlagsToString(IMG_UINT32 ui32Flags)
         ui32MapTypeIndex = 4;
     } else {
         ui32MapTypeIndex = 5;
-        PVR_DPF((PVR_DBG_ERROR, "%s: unknown map type (%u)",
-                 __FUNCTION__, (ui32Flags & PVRSRV_HAP_MAPTYPE_MASK)));
+        PVR_DPF(PVR_DBG_ERROR, "%s: unknown map type (%u)",
+                 __FUNCTION__, (ui32Flags & PVRSRV_HAP_MAPTYPE_MASK));
     }
 
     i32Pos = sprintf(szFlags, "%s|", apszCacheTypes[ui32CacheTypeIndex]);
     if (i32Pos <= 0)
     {
-	PVR_DPF((PVR_DBG_ERROR, "%s: sprintf for cache type %u failed (%d)",
-		__FUNCTION__, ui32CacheTypeIndex, i32Pos));
+	PVR_DPF(PVR_DBG_ERROR, "%s: sprintf for cache type %u failed (%d)",
+		__FUNCTION__, ui32CacheTypeIndex, i32Pos);
 	szFlags[0] = 0;
     }
     else
@@ -2522,11 +2524,11 @@ static IMG_VOID LinuxMMCleanup_MemAreas_ForEachCb(DEBUG_LINUX_MEM_AREA_REC *psCu
 	LinuxMemArea *psLinuxMemArea;
 
 	psLinuxMemArea = psCurrentRecord->psLinuxMemArea;
-	PVR_DPF((PVR_DBG_ERROR, "%s: BUG!: Cleaning up Linux memory area (%p), type=%s, size=%d bytes",
+	PVR_DPF(PVR_DBG_ERROR, "%s: BUG!: Cleaning up Linux memory area (%p), type=%s, size=%d bytes",
 				__FUNCTION__,
 				psCurrentRecord->psLinuxMemArea,
 				LinuxMemAreaTypeToString(psCurrentRecord->psLinuxMemArea->eAreaType),
-				psCurrentRecord->psLinuxMemArea->ui32ByteSize));
+				psCurrentRecord->psLinuxMemArea->ui32ByteSize);
 	
 	LinuxMemAreaDeepFree(psLinuxMemArea);
 }
@@ -2537,7 +2539,7 @@ static IMG_VOID LinuxMMCleanup_MemRecords_ForEachVa(DEBUG_MEM_ALLOC_REC *psCurre
 
 {
 	
-	PVR_DPF((PVR_DBG_ERROR, "%s: BUG!: Cleaning up memory: "
+	PVR_DPF(PVR_DBG_ERROR, "%s: BUG!: Cleaning up memory: "
 							"type=%s "
 							"CpuVAddr=%p "
 							"CpuPAddr=0x%08x, "
@@ -2547,7 +2549,7 @@ static IMG_VOID LinuxMMCleanup_MemRecords_ForEachVa(DEBUG_MEM_ALLOC_REC *psCurre
 			psCurrentRecord->pvCpuVAddr,
 			psCurrentRecord->ulCpuPAddr,
 			psCurrentRecord->pszFileName,
-			psCurrentRecord->ui32Line));
+			psCurrentRecord->ui32Line);
 	switch (psCurrentRecord->eAllocType)
 	{
 		case DEBUG_MEM_ALLOC_TYPE_KMALLOC:
@@ -2599,15 +2601,15 @@ LinuxMMCleanup(IMG_VOID)
     {
         if (g_LinuxMemAreaCount)
         {
-            PVR_DPF((PVR_DBG_ERROR, "%s: BUG!: There are %d LinuxMemArea allocation unfreed (%d bytes)",
-                    __FUNCTION__, g_LinuxMemAreaCount, g_LinuxMemAreaWaterMark));
+            PVR_DPF(PVR_DBG_ERROR, "%s: BUG!: There are %d LinuxMemArea allocation unfreed (%d bytes)",
+                    __FUNCTION__, g_LinuxMemAreaCount, g_LinuxMemAreaWaterMark);
         }
 		
 	List_DEBUG_LINUX_MEM_AREA_REC_ForEach(g_LinuxMemAreaRecords, LinuxMMCleanup_MemAreas_ForEachCb);
 
 	if (g_SeqFileMemArea)
 	{
-	    RemoveProcEntrySeq(g_SeqFileMemArea);
+	    RemoveProcEntrySeq(g_SeqFileMemArea, "mem_areas", g_SeqFileMemAreaHandlers);
 	}
     }
 #endif
@@ -2630,7 +2632,7 @@ LinuxMMCleanup(IMG_VOID)
 
 		if (g_SeqFileMemoryRecords)
 		{
-			RemoveProcEntrySeq(g_SeqFileMemoryRecords);
+			RemoveProcEntrySeq(g_SeqFileMemoryRecords, "meminfo", g_SeqFileMemoryRecordsHandlers);
 		}
     }
 #endif
@@ -2661,7 +2663,8 @@ LinuxMMInit(IMG_VOID)
 									ProcSeqNextMemArea,
 									ProcSeqShowMemArea,
 									ProcSeqOff2ElementMemArea,
-									ProcSeqStartstopDebugMutex
+									ProcSeqStartstopDebugMutex,
+                                    &g_SeqFileMemAreaHandlers
 								  );
 		if (!g_SeqFileMemArea)
 		{
@@ -2679,7 +2682,8 @@ LinuxMMInit(IMG_VOID)
 									ProcSeqNextMemoryRecords,
 									ProcSeqShowMemoryRecords, 
 									ProcSeqOff2ElementMemoryRecords,
-									ProcSeqStartstopDebugMutex
+									ProcSeqStartstopDebugMutex,
+                                    &g_SeqFileMemoryRecordsHandlers
 								  );
         	if (!g_SeqFileMemoryRecords)
 		{
@@ -2691,7 +2695,7 @@ LinuxMMInit(IMG_VOID)
     g_PsLinuxMemAreaCache = KMemCacheCreateWrapper("img-mm", sizeof(LinuxMemArea), 0, 0);
     if (!g_PsLinuxMemAreaCache)
     {
-        PVR_DPF((PVR_DBG_ERROR,"%s: failed to allocate mem area kmem_cache", __FUNCTION__));
+        PVR_DPF(PVR_DBG_ERROR,"%s: failed to allocate mem area kmem_cache", __FUNCTION__);
         goto failed;
     }
 
@@ -2710,7 +2714,7 @@ LinuxMMInit(IMG_VOID)
     g_PsLinuxPagePoolCache = KMemCacheCreateWrapper("img-mm-pool", sizeof(LinuxPagePoolEntry), 0, 0);
     if (!g_PsLinuxPagePoolCache)
     {
-        PVR_DPF((PVR_DBG_ERROR,"%s: failed to allocate page pool kmem_cache", __FUNCTION__));
+        PVR_DPF(PVR_DBG_ERROR,"%s: failed to allocate page pool kmem_cache", __FUNCTION__);
         goto failed;
     }
 #endif

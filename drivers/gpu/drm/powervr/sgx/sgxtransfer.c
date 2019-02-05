@@ -86,7 +86,7 @@ IMG_EXPORT PVRSRV_ERROR SGXSubmitTransferKM(IMG_HANDLE hDevHandle, PVRSRV_TRANSF
 
 	if (!CCB_OFFSET_IS_VALID(SGXMKIF_TRANSFERCMD_SHARED, psCCBMemInfo, psKick, ui32SharedCmdCCBOffset))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXSubmitTransferKM: Invalid CCB offset"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXSubmitTransferKM: Invalid CCB offset");
 		PVR_TTRACE(PVRSRV_TRACE_GROUP_TRANSFER, PVRSRV_TRACE_CLASS_FUNCTION_EXIT,
 				TRANSFER_TOKEN_SUBMIT);
 		return PVRSRV_ERROR_INVALID_PARAMS;
@@ -152,7 +152,7 @@ IMG_EXPORT PVRSRV_ERROR SGXSubmitTransferKM(IMG_HANDLE hDevHandle, PVRSRV_TRANSF
 
 				if (psSyncInfo->sWriteOpsCompleteDevVAddr.uiAddr == psMySyncInfo->sWriteOpsCompleteDevVAddr.uiAddr)
 				{
-					PVR_DPF((PVR_DBG_WARNING, "SGXSubmitTransferKM : Same src synchronized multiple times!"));
+					PVR_DPF(PVR_DBG_WARNING, "SGXSubmitTransferKM : Same src synchronized multiple times!");
 					abSrcSyncEnable[loop] = IMG_FALSE;
 					break;
 				}
@@ -177,7 +177,7 @@ IMG_EXPORT PVRSRV_ERROR SGXSubmitTransferKM(IMG_HANDLE hDevHandle, PVRSRV_TRANSF
 
 				if (psSyncInfo->sWriteOpsCompleteDevVAddr.uiAddr == psMySyncInfo->sWriteOpsCompleteDevVAddr.uiAddr)
 				{
-					PVR_DPF((PVR_DBG_WARNING, "SGXSubmitTransferKM : Same dst synchronized multiple times!"));
+					PVR_DPF(PVR_DBG_WARNING, "SGXSubmitTransferKM : Same dst synchronized multiple times!");
 					abDstSyncEnable[loop] = IMG_FALSE;
 					break;
 				}
@@ -448,7 +448,7 @@ IMG_EXPORT PVRSRV_ERROR SGXSubmitTransferKM(IMG_HANDLE hDevHandle, PVRSRV_TRANSF
 
 	else if (PVRSRV_OK != eError)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXSubmitTransferKM: SGXScheduleCCBCommandKM failed."));
+		PVR_DPF(PVR_DBG_ERROR, "SGXSubmitTransferKM: SGXScheduleCCBCommandKM failed.");
 		PVR_TTRACE(PVRSRV_TRACE_GROUP_TRANSFER, PVRSRV_TRACE_CLASS_FUNCTION_EXIT,
 				TRANSFER_TOKEN_SUBMIT);
 		return eError;
@@ -529,7 +529,7 @@ IMG_EXPORT PVRSRV_ERROR SGXSubmit2DKM(IMG_HANDLE hDevHandle, PVRSRV_2D_SGX_KICK 
 
 	if (!CCB_OFFSET_IS_VALID(SGXMKIF_2DCMD_SHARED, psCCBMemInfo, psKick, ui32SharedCmdCCBOffset))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXSubmit2DKM: Invalid CCB offset"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXSubmit2DKM: Invalid CCB offset");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 	

@@ -90,7 +90,7 @@ PVRSRV_ERROR LinuxEventObjectListCreate(IMG_HANDLE *phEventObjectList)
 		(IMG_VOID **)&psEventObjectList, IMG_NULL,
 		"Linux Event Object List") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "LinuxEventObjectCreate: failed to allocate memory for event list"));		
+		PVR_DPF(PVR_DBG_ERROR, "LinuxEventObjectCreate: failed to allocate memory for event list");		
 		return PVRSRV_ERROR_OUT_OF_MEMORY;	
 	}
 
@@ -118,7 +118,7 @@ PVRSRV_ERROR LinuxEventObjectListDestroy(IMG_HANDLE hEventObjectList)
 
 		if (!bListEmpty) 
 		{
-			 PVR_DPF((PVR_DBG_ERROR, "LinuxEventObjectListDestroy: Event List is not empty"));
+			 PVR_DPF(PVR_DBG_ERROR, "LinuxEventObjectListDestroy: Event List is not empty");
 			 return PVRSRV_ERROR_UNABLE_TO_DESTROY_EVENT;
 		}
 
@@ -138,7 +138,7 @@ PVRSRV_ERROR LinuxEventObjectDelete(IMG_HANDLE hOSEventObjectList, IMG_HANDLE hO
 		{
 			PVRSRV_LINUX_EVENT_OBJECT *psLinuxEventObject = (PVRSRV_LINUX_EVENT_OBJECT *)hOSEventObject; 
 #if defined(DEBUG)
-			PVR_DPF((PVR_DBG_MESSAGE, "LinuxEventObjectListDelete: Event object waits: %u", psLinuxEventObject->ui32Stats));
+			PVR_DPF(PVR_DBG_MESSAGE, "LinuxEventObjectListDelete: Event object waits: %u", psLinuxEventObject->ui32Stats);
 #endif
 			if(ResManFreeResByPtr(psLinuxEventObject->hResItem, CLEANUP_WITH_POLL) != PVRSRV_OK)
 			{
@@ -166,7 +166,7 @@ static PVRSRV_ERROR LinuxEventObjectDeleteCallback(IMG_PVOID pvParam, IMG_UINT32
 	write_unlock_irqrestore(&psLinuxEventObjectList->sLock, ulLockFlags);
 
 #if defined(DEBUG)
-	PVR_DPF((PVR_DBG_MESSAGE, "LinuxEventObjectDeleteCallback: Event object waits: %u", psLinuxEventObject->ui32Stats));
+	PVR_DPF(PVR_DBG_MESSAGE, "LinuxEventObjectDeleteCallback: Event object waits: %u", psLinuxEventObject->ui32Stats);
 #endif	
 
 	OSFreeMem(PVRSRV_OS_NON_PAGEABLE_HEAP, sizeof(PVRSRV_LINUX_EVENT_OBJECT), psLinuxEventObject, IMG_NULL);
@@ -185,7 +185,7 @@ PVRSRV_ERROR LinuxEventObjectAdd(IMG_HANDLE hOSEventObjectList, IMG_HANDLE *phOS
 	psPerProc = PVRSRVPerProcessData(ui32PID);
 	if (psPerProc == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "LinuxEventObjectAdd: Couldn't find per-process data"));
+		PVR_DPF(PVR_DBG_ERROR, "LinuxEventObjectAdd: Couldn't find per-process data");
 		return PVRSRV_ERROR_OUT_OF_MEMORY;
 	}
 
@@ -194,7 +194,7 @@ PVRSRV_ERROR LinuxEventObjectAdd(IMG_HANDLE hOSEventObjectList, IMG_HANDLE *phOS
 		(IMG_VOID **)&psLinuxEventObject, IMG_NULL,
 		"Linux Event Object") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "LinuxEventObjectAdd: failed to allocate memory "));		
+		PVR_DPF(PVR_DBG_ERROR, "LinuxEventObjectAdd: failed to allocate memory ");		
 		return PVRSRV_ERROR_OUT_OF_MEMORY;	
 	}
 	

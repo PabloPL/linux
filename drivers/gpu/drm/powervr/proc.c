@@ -89,6 +89,7 @@ static PVR_PROC_SEQ_HANDLERS *g_pProcSysNodesHandlers;
 
 #ifdef DEBUG
 static struct proc_dir_entry* g_pProcDebugLevel;
+static PVR_PROC_SEQ_HANDLERS *g_pProcDebugLevelHandlers;
 #endif
 
 #ifdef PVR_MANUAL_POWER_CONTROL
@@ -218,7 +219,7 @@ static struct proc_dir_entry* CreateProcEntryInDirSeq(
 
     if (!dir)
     {
-        PVR_DPF((PVR_DBG_ERROR, "CreateProcEntryInDirSeq: cannot make proc entry /proc/%s/%s: no parent", PVRProcDirRoot, name));
+        PVR_DPF(PVR_DBG_ERROR, "CreateProcEntryInDirSeq: cannot make proc entry /proc/%s/%s: no parent", PVRProcDirRoot, name);
         return NULL;
     }
 
@@ -252,9 +253,9 @@ static struct proc_dir_entry* CreateProcEntryInDirSeq(
 		*handlers = seq_handlers;
 		return file;
 	} else
-		kfree(seq_handlers)
+		kfree(seq_handlers);
 
-    PVR_DPF((PVR_DBG_ERROR, "CreateProcEntryInDirSeq: cannot make proc entry /proc/%s/%s: no memory", PVRProcDirRoot, name));
+    PVR_DPF(PVR_DBG_ERROR, "CreateProcEntryInDirSeq: cannot make proc entry /proc/%s/%s: no memory", PVRProcDirRoot, name);
     return NULL;
 }
 
@@ -322,7 +323,7 @@ struct proc_dir_entry* CreatePerProcessProcEntrySeq (
 
     if (!dir)
     {
-        PVR_DPF((PVR_DBG_ERROR, "CreatePerProcessProcEntrySeq: /proc/%s doesn't exist", PVRProcDirRoot));
+        PVR_DPF(PVR_DBG_ERROR, "CreatePerProcessProcEntrySeq: /proc/%s doesn't exist", PVRProcDirRoot);
         return NULL;
     }
 
@@ -331,7 +332,7 @@ struct proc_dir_entry* CreatePerProcessProcEntrySeq (
     psPerProc = PVRSRVPerProcessPrivateData(ui32PID);
     if (!psPerProc)
     {
-        PVR_DPF((PVR_DBG_ERROR, "CreatePerProcessProcEntrySeq: no per process data"));
+        PVR_DPF(PVR_DBG_ERROR, "CreatePerProcessProcEntrySeq: no per process data");
 
         return NULL;
     }
@@ -345,7 +346,7 @@ struct proc_dir_entry* CreatePerProcessProcEntrySeq (
 
 		if (ret <=0 || ret >= (IMG_INT)sizeof(dirname))
 		{
-			PVR_DPF((PVR_DBG_ERROR, "CreatePerProcessProcEntries: couldn't generate per process proc directory name \"%u\"", ui32PID));
+			PVR_DPF(PVR_DBG_ERROR, "CreatePerProcessProcEntries: couldn't generate per process proc directory name \"%u\"", ui32PID);
 			return NULL;
 		}
 		else
@@ -353,8 +354,8 @@ struct proc_dir_entry* CreatePerProcessProcEntrySeq (
 			psPerProc->psProcDir = proc_mkdir(dirname, dir);
 			if (!psPerProc->psProcDir)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "CreatePerProcessProcEntries: couldn't create per process proc directory /proc/%s/%u",
-						PVRProcDirRoot, ui32PID));
+				PVR_DPF(PVR_DBG_ERROR, "CreatePerProcessProcEntries: couldn't create per process proc directory /proc/%s/%u",
+						PVRProcDirRoot, ui32PID);
 				return NULL;
 			}
 		}
@@ -370,14 +371,14 @@ IMG_VOID RemoveProcEntrySeq( struct proc_dir_entry* proc_entry, const char *name
 {
     if (dir)
     {
-        PVR_DPF((PVR_DBG_MESSAGE, "Removing /proc/%s/%s", PVRProcDirRoot, name));
+        PVR_DPF(PVR_DBG_MESSAGE, "Removing /proc/%s/%s", PVRProcDirRoot, name);
 
         remove_proc_entry(name, dir);
 		kfree( handlers );
     }
 }
 
-IMG_VOID RemovePerProcessProcEntrySeq(struct proc_dir_entry* proc_entry)
+IMG_VOID RemovePerProcessProcEntrySeq(struct proc_dir_entry* proc_entry, const char *name, PVR_PROC_SEQ_HANDLERS *handlers)
 {
     PVRSRV_ENV_PER_PROCESS_DATA *psPerProc;
 
@@ -387,8 +388,8 @@ IMG_VOID RemovePerProcessProcEntrySeq(struct proc_dir_entry* proc_entry)
         psPerProc = PVRSRVFindPerProcessPrivateData();
         if (!psPerProc)
         {
-            PVR_DPF((PVR_DBG_ERROR, "CreatePerProcessProcEntries: can't "
-                                    "remove %s, no per process data", proc_entry->name));
+            PVR_DPF(PVR_DBG_ERROR, "CreatePerProcessProcEntries: can't "
+                                    "remove %s, no per process data", name);
             return;
         }
     }
@@ -414,7 +415,7 @@ static IMG_INT CreateProcEntryInDir(struct proc_dir_entry *pdir, const IMG_CHAR 
 
     if (!pdir)
     {
-        PVR_DPF((PVR_DBG_ERROR, "CreateProcEntryInDir: parent directory doesn't exist"));
+        PVR_DPF(PVR_DBG_ERROR, "CreateProcEntryInDir: parent directory doesn't exist");
 
         return -ENOMEM;
     }
@@ -439,12 +440,12 @@ static IMG_INT CreateProcEntryInDir(struct proc_dir_entry *pdir, const IMG_CHAR 
         file->owner = THIS_MODULE;
 #endif
 
-		PVR_DPF((PVR_DBG_MESSAGE, "Created proc entry %s in %s", name, pdir->name));
+		PVR_DPF(PVR_DBG_MESSAGE, "Created proc entry %s", name);
 
         return 0;
     }
 
-    PVR_DPF((PVR_DBG_ERROR, "CreateProcEntry: cannot create proc entry %s in %s", name, pdir->name));
+    PVR_DPF(PVR_DBG_ERROR, "CreateProcEntry: cannot create proc entry %s", name);
 
     return -ENOMEM;
 }
@@ -463,7 +464,7 @@ IMG_INT CreatePerProcessProcEntry(const IMG_CHAR * name, read_proc_t rhandler, w
 
     if (!dir)
     {
-        PVR_DPF((PVR_DBG_ERROR, "CreatePerProcessProcEntries: /proc/%s doesn't exist", PVRProcDirRoot));
+        PVR_DPF(PVR_DBG_ERROR, "CreatePerProcessProcEntries: /proc/%s doesn't exist", PVRProcDirRoot);
 
         return -ENOMEM;
     }
@@ -473,7 +474,7 @@ IMG_INT CreatePerProcessProcEntry(const IMG_CHAR * name, read_proc_t rhandler, w
     psPerProc = PVRSRVPerProcessPrivateData(ui32PID);
     if (!psPerProc)
     {
-        PVR_DPF((PVR_DBG_ERROR, "CreatePerProcessProcEntries: no per process data"));
+        PVR_DPF(PVR_DBG_ERROR, "CreatePerProcessProcEntries: no per process data");
 
         return -ENOMEM;
     }
@@ -487,7 +488,7 @@ IMG_INT CreatePerProcessProcEntry(const IMG_CHAR * name, read_proc_t rhandler, w
 
 		if (ret <=0 || ret >= (IMG_INT)sizeof(dirname))
 		{
-			PVR_DPF((PVR_DBG_ERROR, "CreatePerProcessProcEntries: couldn't generate per process proc directory name \"%u\"", ui32PID));
+			PVR_DPF(PVR_DBG_ERROR, "CreatePerProcessProcEntries: couldn't generate per process proc directory name \"%u\"", ui32PID);
 
 					return -ENOMEM;
 		}
@@ -496,7 +497,7 @@ IMG_INT CreatePerProcessProcEntry(const IMG_CHAR * name, read_proc_t rhandler, w
 			psPerProc->psProcDir = proc_mkdir(dirname, dir);
 			if (!psPerProc->psProcDir)
 			{
-			PVR_DPF((PVR_DBG_ERROR, "CreatePerProcessProcEntries: couldn't create per process proc directory /proc/%s/%u", PVRProcDirRoot, ui32PID));
+			PVR_DPF(PVR_DBG_ERROR, "CreatePerProcessProcEntries: couldn't create per process proc directory /proc/%s/%u", PVRProcDirRoot, ui32PID);
 
 			return -ENOMEM;
 			}
@@ -525,7 +526,7 @@ IMG_INT CreateProcReadEntry(const IMG_CHAR * name, pvr_read_proc_t handler)
 
     if (!dir)
     {
-        PVR_DPF((PVR_DBG_ERROR, "CreateProcReadEntry: cannot make proc entry /proc/%s/%s: no parent", PVRProcDirRoot, name));
+        PVR_DPF(PVR_DBG_ERROR, "CreateProcReadEntry: cannot make proc entry /proc/%s/%s: no parent", PVRProcDirRoot, name);
 
         return -ENOMEM;
     }
@@ -541,7 +542,7 @@ IMG_INT CreateProcReadEntry(const IMG_CHAR * name, pvr_read_proc_t handler)
         return 0;
     }
 
-    PVR_DPF((PVR_DBG_ERROR, "CreateProcReadEntry: cannot make proc entry /proc/%s/%s: no memory", PVRProcDirRoot, name));
+    PVR_DPF(PVR_DBG_ERROR, "CreateProcReadEntry: cannot make proc entry /proc/%s/%s: no memory", PVRProcDirRoot, name);
 
     return -ENOMEM;
 }
@@ -553,7 +554,7 @@ IMG_INT CreateProcEntries(IMG_VOID)
 
     if (!dir)
     {
-        PVR_DPF((PVR_DBG_ERROR, "CreateProcEntries: cannot make /proc/%s directory", PVRProcDirRoot));
+        PVR_DPF(PVR_DBG_ERROR, "CreateProcEntries: cannot make /proc/%s directory", PVRProcDirRoot);
 
         return -ENOMEM;
     }
@@ -564,7 +565,7 @@ IMG_INT CreateProcEntries(IMG_VOID)
 
 	if(!g_pProcQueue || !g_pProcVersion || !g_pProcSysNodes)
     {
-        PVR_DPF((PVR_DBG_ERROR, "CreateProcEntries: couldn't make /proc/%s files", PVRProcDirRoot));
+        PVR_DPF(PVR_DBG_ERROR, "CreateProcEntries: couldn't make /proc/%s files", PVRProcDirRoot);
 
         return -ENOMEM;
     }
@@ -575,10 +576,11 @@ IMG_INT CreateProcEntries(IMG_VOID)
 	g_pProcDebugLevel = CreateProcEntrySeq("debug_level", NULL, NULL,
 											ProcSeqShowDebugLevel,
 											ProcSeq1ElementOff2Element, NULL,
-										    (IMG_VOID*)PVRDebugProcSetLevel);
+										    (IMG_VOID*)PVRDebugProcSetLevel,
+											&g_pProcDebugLevelHandlers);
 	if(!g_pProcDebugLevel)
     {
-        PVR_DPF((PVR_DBG_ERROR, "CreateProcEntries: couldn't make /proc/%s/debug_level", PVRProcDirRoot));
+        PVR_DPF(PVR_DBG_ERROR, "CreateProcEntries: couldn't make /proc/%s/debug_level", PVRProcDirRoot);
 
         return -ENOMEM;
     }
@@ -590,7 +592,7 @@ IMG_INT CreateProcEntries(IMG_VOID)
 										    PVRProcSetPowerLevel);
 	if(!g_pProcPowerLevel)
     {
-        PVR_DPF((PVR_DBG_ERROR, "CreateProcEntries: couldn't make /proc/%s/power_control", PVRProcDirRoot));
+        PVR_DPF(PVR_DBG_ERROR, "CreateProcEntries: couldn't make /proc/%s/power_control", PVRProcDirRoot);
 
         return -ENOMEM;
     }
@@ -606,7 +608,7 @@ IMG_VOID RemoveProcEntry(const IMG_CHAR * name)
     if (dir)
     {
         remove_proc_entry(name, dir);
-        PVR_DPF((PVR_DBG_MESSAGE, "Removing /proc/%s/%s", PVRProcDirRoot, name));
+        PVR_DPF(PVR_DBG_MESSAGE, "Removing /proc/%s/%s", PVRProcDirRoot, name);
     }
 }
 
@@ -621,8 +623,8 @@ IMG_VOID RemovePerProcessProcEntry(const IMG_CHAR *name)
         psPerProc = PVRSRVFindPerProcessPrivateData();
         if (!psPerProc)
         {
-            PVR_DPF((PVR_DBG_ERROR, "CreatePerProcessProcEntries: can't "
-                                    "remove %s, no per process data", name));
+            PVR_DPF(PVR_DBG_ERROR, "CreatePerProcessProcEntries: can't "
+                                    "remove %s, no per process data", name);
             return;
         }
     }
@@ -631,7 +633,7 @@ IMG_VOID RemovePerProcessProcEntry(const IMG_CHAR *name)
     {
         remove_proc_entry(name, psPerProc->psProcDir);
 
-        PVR_DPF((PVR_DBG_MESSAGE, "Removing proc entry %s from %s", name, psPerProc->psProcDir->name));
+        PVR_DPF(PVR_DBG_MESSAGE, "Removing proc entry %s", name);
     }
 }
 
@@ -644,7 +646,7 @@ IMG_VOID RemovePerProcessProcDir(PVRSRV_ENV_PER_PROCESS_DATA *psPerProc)
 IMG_VOID RemoveProcEntries(IMG_VOID)
 {
 #ifdef DEBUG
-	RemoveProcEntrySeq( g_pProcDebugLevel );
+	RemoveProcEntrySeq( g_pProcDebugLevel, "debug_level", g_pProcDebugLevelHandlers );
 #ifdef PVR_MANUAL_POWER_CONTROL
 	RemoveProcEntrySeq( g_pProcPowerLevel );
 #endif 

@@ -66,7 +66,7 @@ PVRSRV_ERROR AllocateDeviceID(SYS_DATA *psSysData, IMG_UINT32 *pui32DevID)
 		psDeviceWalker++;
 	}
 
-	PVR_DPF((PVR_DBG_ERROR,"AllocateDeviceID: No free and valid device IDs available!"));
+	PVR_DPF(PVR_DBG_ERROR,"AllocateDeviceID: No free and valid device IDs available!");
 
 	
 	PVR_ASSERT(psDeviceWalker < psDeviceEnd);
@@ -98,7 +98,7 @@ PVRSRV_ERROR FreeDeviceID(SYS_DATA *psSysData, IMG_UINT32 ui32DevID)
 		psDeviceWalker++;
 	}
 
-	PVR_DPF((PVR_DBG_ERROR,"FreeDeviceID: no matching dev ID that is in use!"));
+	PVR_DPF(PVR_DBG_ERROR,"FreeDeviceID: no matching dev ID that is in use!");
 
 	
 	PVR_ASSERT(psDeviceWalker < psDeviceEnd);
@@ -120,8 +120,8 @@ IMG_UINT32 ReadHWReg(IMG_PVOID pvLinRegBaseAddr, IMG_UINT32 ui32Offset)
 IMG_EXPORT
 IMG_VOID WriteHWReg(IMG_PVOID pvLinRegBaseAddr, IMG_UINT32 ui32Offset, IMG_UINT32 ui32Value)
 {
-	PVR_DPF((PVR_DBG_MESSAGE,"WriteHWReg Base:%x, Offset: %x, Value %x",
-			(IMG_UINTPTR_T)pvLinRegBaseAddr,ui32Offset,ui32Value));
+	PVR_DPF(PVR_DBG_MESSAGE,"WriteHWReg Base:%x, Offset: %x, Value %x",
+			(IMG_UINTPTR_T)pvLinRegBaseAddr,ui32Offset,ui32Value);
 
 	*(IMG_UINT32*)((IMG_UINTPTR_T)pvLinRegBaseAddr+ui32Offset) = ui32Value;
 }
@@ -168,7 +168,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVEnumerateDevicesKM(IMG_UINT32 *pui32NumDevices,
 
 	if (!pui32NumDevices || !psDevIdList)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVEnumerateDevicesKM: Invalid params"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVEnumerateDevicesKM: Invalid params");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
@@ -282,7 +282,7 @@ IMG_VOID IMG_CALLCONV PVRSRVDeInit(PSYS_DATA psSysData)
 
 	if (psSysData == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVDeInit: PVRSRVHandleDeInit failed - invalid param"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVDeInit: PVRSRVHandleDeInit failed - invalid param");
 		return;
 	}
 
@@ -315,13 +315,13 @@ IMG_VOID IMG_CALLCONV PVRSRVDeInit(PSYS_DATA psSysData)
 	eError = PVRSRVHandleDeInit();
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVDeInit: PVRSRVHandleDeInit failed"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVDeInit: PVRSRVHandleDeInit failed");
 	}
 
 	eError = PVRSRVPerProcessDataDeInit();
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVDeInit: PVRSRVPerProcessDataDeInit failed"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVDeInit: PVRSRVPerProcessDataDeInit failed");
 	}
 
 	ResManDeInit();
@@ -342,7 +342,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVRegisterDevice(PSYS_DATA psSysData,
 					 (IMG_VOID **)&psDeviceNode, IMG_NULL,
 					 "Device Node") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVRegisterDevice : Failed to alloc memory for psDeviceNode"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVRegisterDevice : Failed to alloc memory for psDeviceNode");
 		return (PVRSRV_ERROR_OUT_OF_MEMORY);
 	}
 	OSMemSet (psDeviceNode, 0, sizeof(PVRSRV_DEVICE_NODE));
@@ -353,7 +353,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVRegisterDevice(PSYS_DATA psSysData,
 		OSFreeMem(PVRSRV_OS_NON_PAGEABLE_HEAP,
 					sizeof(PVRSRV_DEVICE_NODE), psDeviceNode, IMG_NULL);
 		
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVRegisterDevice : Failed to register device"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVRegisterDevice : Failed to register device");
 		return (PVRSRV_ERROR_DEVICE_REGISTER_FAILED);
 	}
 
@@ -385,7 +385,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVInitialiseDevice (IMG_UINT32 ui32DevIndex)
 	SYS_DATA			*psSysData;
 	PVRSRV_ERROR		eError;
 
-	PVR_DPF((PVR_DBG_MESSAGE, "PVRSRVInitialiseDevice"));
+	PVR_DPF(PVR_DBG_MESSAGE, "PVRSRVInitialiseDevice");
 
 	SysAcquireData(&psSysData);
 
@@ -398,7 +398,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVInitialiseDevice (IMG_UINT32 ui32DevIndex)
 	if(!psDeviceNode)
 	{
 		
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVInitialiseDevice: requested device is not present"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVInitialiseDevice: requested device is not present");
 		return PVRSRV_ERROR_INIT_FAILURE;
 	}
 	PVR_ASSERT (psDeviceNode->ui32RefCount > 0);
@@ -408,7 +408,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVInitialiseDevice (IMG_UINT32 ui32DevIndex)
 	eError = PVRSRVResManConnect(IMG_NULL, &psDeviceNode->hResManContext);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVInitialiseDevice: Failed PVRSRVResManConnect call"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVInitialiseDevice: Failed PVRSRVResManConnect call");
 		return eError;
 	}
 
@@ -418,7 +418,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVInitialiseDevice (IMG_UINT32 ui32DevIndex)
 		eError = psDeviceNode->pfnInitDevice(psDeviceNode);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"PVRSRVInitialiseDevice: Failed InitDevice call"));
+			PVR_DPF(PVR_DBG_ERROR,"PVRSRVInitialiseDevice: Failed InitDevice call");
 			return eError;
 		}
 	}
@@ -435,7 +435,7 @@ static PVRSRV_ERROR PVRSRVFinaliseSystem_SetPowerState_AnyCb(PVRSRV_DEVICE_NODE 
 										 KERNEL_ID, IMG_FALSE);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVFinaliseSystem: Failed PVRSRVSetDevicePowerStateKM call (device index: %d)", psDeviceNode->sDevId.ui32DeviceIndex));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVFinaliseSystem: Failed PVRSRVSetDevicePowerStateKM call (device index: %d)", psDeviceNode->sDevId.ui32DeviceIndex);
 	}
 	return eError;
 }
@@ -446,7 +446,7 @@ static PVRSRV_ERROR PVRSRVFinaliseSystem_CompatCheck_AnyCb(PVRSRV_DEVICE_NODE *p
 	eError = PVRSRVDevInitCompatCheck(psDeviceNode);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVFinaliseSystem: Failed PVRSRVDevInitCompatCheck call (device index: %d)", psDeviceNode->sDevId.ui32DeviceIndex));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVFinaliseSystem: Failed PVRSRVDevInitCompatCheck call (device index: %d)", psDeviceNode->sDevId.ui32DeviceIndex);
 	}
 	return eError;
 }
@@ -457,7 +457,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVFinaliseSystem(IMG_BOOL bInitSuccessful)
 	SYS_DATA		*psSysData;
 	PVRSRV_ERROR		eError;
 
-	PVR_DPF((PVR_DBG_MESSAGE, "PVRSRVFinaliseSystem"));
+	PVR_DPF(PVR_DBG_MESSAGE, "PVRSRVFinaliseSystem");
 
 	SysAcquireData(&psSysData);
 
@@ -466,7 +466,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVFinaliseSystem(IMG_BOOL bInitSuccessful)
 		eError = SysFinalise();
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"PVRSRVFinaliseSystem: SysFinalise failed (%d)", eError));
+			PVR_DPF(PVR_DBG_ERROR,"PVRSRVFinaliseSystem: SysFinalise failed (%d)", eError);
 			return eError;
 		}
 
@@ -535,7 +535,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVAcquireDeviceDataKM (IMG_UINT32			ui32DevIndex,
 	PVRSRV_DEVICE_NODE	*psDeviceNode;
 	SYS_DATA			*psSysData;
 
-	PVR_DPF((PVR_DBG_MESSAGE, "PVRSRVAcquireDeviceDataKM"));
+	PVR_DPF(PVR_DBG_MESSAGE, "PVRSRVAcquireDeviceDataKM");
 
 	SysAcquireData(&psSysData);
 
@@ -549,7 +549,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVAcquireDeviceDataKM (IMG_UINT32			ui32DevIndex,
 	if (!psDeviceNode)
 	{
 		
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVAcquireDeviceDataKM: requested device is not present"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVAcquireDeviceDataKM: requested device is not present");
 		return PVRSRV_ERROR_INIT_FAILURE;
 	}
 
@@ -581,7 +581,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVDeinitialiseDevice(IMG_UINT32 ui32DevIndex)
 
 	if (!psDeviceNode)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVDeinitialiseDevice: requested device %d is not present", ui32DevIndex));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVDeinitialiseDevice: requested device %d is not present", ui32DevIndex);
 		return PVRSRV_ERROR_DEVICEID_NOT_FOUND;
 	}
 
@@ -593,7 +593,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVDeinitialiseDevice(IMG_UINT32 ui32DevIndex)
 										 IMG_FALSE);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVDeinitialiseDevice: Failed PVRSRVSetDevicePowerStateKM call"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVDeinitialiseDevice: Failed PVRSRVSetDevicePowerStateKM call");
 		return eError;
 	}
 
@@ -605,7 +605,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVDeinitialiseDevice(IMG_UINT32 ui32DevIndex)
 									 IMG_NULL, 0);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVDeinitialiseDevice: Failed ResManFreeResByCriteria call"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVDeinitialiseDevice: Failed ResManFreeResByCriteria call");
 		return eError;
 	}
 
@@ -616,7 +616,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVDeinitialiseDevice(IMG_UINT32 ui32DevIndex)
 		eError = psDeviceNode->pfnDeInitDevice(psDeviceNode);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"PVRSRVDeinitialiseDevice: Failed DeInitDevice call"));
+			PVR_DPF(PVR_DBG_ERROR,"PVRSRVDeinitialiseDevice: Failed DeInitDevice call");
 			return eError;
 		}
 	}
@@ -699,8 +699,8 @@ PVRSRV_ERROR IMG_CALLCONV PollForValueKM (volatile IMG_UINT32*	pui32LinMemAddr,
 			}
 		} END_LOOP_UNTIL_TIMEOUT();
 	
-		PVR_DPF((PVR_DBG_ERROR,"PollForValueKM: Timeout. Expected 0x%x but found 0x%x (mask 0x%x).",
-				ui32Value, ui32ActualValue, ui32Mask));
+		PVR_DPF(PVR_DBG_ERROR,"PollForValueKM: Timeout. Expected 0x%x but found 0x%x (mask 0x%x).",
+				ui32Value, ui32ActualValue, ui32Mask);
 	}
 #endif 
 
@@ -825,7 +825,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVGetMiscInfoKM(PVRSRV_MISC_INFO *psMiscInfo)
 
 	if(!psMiscInfo)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVGetMiscInfoKM: invalid parameters"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVGetMiscInfoKM: invalid parameters");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
@@ -842,7 +842,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVGetMiscInfoKM(PVRSRV_MISC_INFO *psMiscInfo)
 										|PVRSRV_MISC_INFO_FREEMEM_PRESENT
 										|PVRSRV_MISC_INFO_GET_REF_COUNT_PRESENT))
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVGetMiscInfoKM: invalid state request flags"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVGetMiscInfoKM: invalid state request flags");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
@@ -1007,16 +1007,16 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVGetMiscInfoKM(PVRSRV_MISC_INFO *psMiscInfo)
 			if(!psMiscInfo->sCacheOpCtl.u.psKernelMemInfo)
 #endif
 			{
-				PVR_DPF((PVR_DBG_WARNING, "PVRSRVGetMiscInfoKM: "
-						 "Ignoring non-deferred cache op with no meminfo"));
+				PVR_DPF(PVR_DBG_WARNING, "PVRSRVGetMiscInfoKM: "
+						 "Ignoring non-deferred cache op with no meminfo");
 				return PVRSRV_ERROR_INVALID_PARAMS;
 			}
 
 			if(psSysData->ePendingCacheOpType != PVRSRV_MISC_INFO_CPUCACHEOP_NONE)
 			{
-				PVR_DPF((PVR_DBG_WARNING, "PVRSRVGetMiscInfoKM: "
+				PVR_DPF(PVR_DBG_WARNING, "PVRSRVGetMiscInfoKM: "
 						 "Deferred cache op is pending. It is unlikely you want "
-						 "to combine deferred cache ops with immediate ones"));
+						 "to combine deferred cache ops with immediate ones");
 			}
 
 #if defined (SUPPORT_SID_INTERFACE)
@@ -1030,8 +1030,8 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVGetMiscInfoKM(PVRSRV_MISC_INFO *psMiscInfo)
 								  psMiscInfo->sCacheOpCtl.u.psKernelMemInfo,
 								  PVRSRV_HANDLE_TYPE_MEM_INFO) != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "PVRSRVGetMiscInfoKM: "
-						 "Can't find kernel meminfo"));
+				PVR_DPF(PVR_DBG_ERROR, "PVRSRVGetMiscInfoKM: "
+						 "Can't find kernel meminfo");
 				return PVRSRV_ERROR_INVALID_PARAMS;
 			}
 #endif
@@ -1077,8 +1077,8 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVGetMiscInfoKM(PVRSRV_MISC_INFO *psMiscInfo)
 							  psMiscInfo->sGetRefCountCtl.u.psKernelMemInfo,
 							  PVRSRV_HANDLE_TYPE_MEM_INFO) != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRVGetMiscInfoKM: "
-									"Can't find kernel meminfo"));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRVGetMiscInfoKM: "
+									"Can't find kernel meminfo");
 			return PVRSRV_ERROR_INVALID_PARAMS;
 		}
 
@@ -1106,7 +1106,7 @@ IMG_BOOL IMG_CALLCONV PVRSRVDeviceLISR(PVRSRV_DEVICE_NODE *psDeviceNode)
 
 	if(!psDeviceNode)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVDeviceLISR: Invalid params\n"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVDeviceLISR: Invalid params\n");
 		goto out;
 	}
 	psSysData = psDeviceNode->psSysData;
@@ -1162,7 +1162,7 @@ IMG_BOOL IMG_CALLCONV PVRSRVSystemLISR(IMG_VOID *pvSysData)
 	IMG_UINT32			ui32ClearInterrupts = 0;
 	if(!psSysData)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSystemLISR: Invalid params\n"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVSystemLISR: Invalid params\n");
 	}
 	else
 	{
@@ -1199,7 +1199,7 @@ IMG_VOID IMG_CALLCONV PVRSRVMISR(IMG_VOID *pvSysData)
 	SYS_DATA			*psSysData = pvSysData;
 	if(!psSysData)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVMISR: Invalid params\n"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVMISR: Invalid params\n");
 		return;
 	}
 
@@ -1270,7 +1270,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVSaveRestoreLiveSegments(IMG_HANDLE hArena, IMG_P
 				return (PVRSRV_ERROR_OUT_OF_MEMORY);
 			}
 
-			PVR_DPF((PVR_DBG_MESSAGE, "PVRSRVSaveRestoreLiveSegments: Base %08x size %08x", sSegDetails.sCpuPhyAddr.uiAddr, sSegDetails.uiSize));
+			PVR_DPF(PVR_DBG_MESSAGE, "PVRSRVSaveRestoreLiveSegments: Base %08x size %08x", sSegDetails.sCpuPhyAddr.uiAddr, sSegDetails.uiSize);
 
 			
 			pvLocalMemCPUVAddr = OSMapPhysToLin(sSegDetails.sCpuPhyAddr,
@@ -1279,7 +1279,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVSaveRestoreLiveSegments(IMG_HANDLE hArena, IMG_P
 									IMG_NULL);
 			if (pvLocalMemCPUVAddr == IMG_NULL)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "PVRSRVSaveRestoreLiveSegments: Failed to map local memory to host"));
+				PVR_DPF(PVR_DBG_ERROR, "PVRSRVSaveRestoreLiveSegments: Failed to map local memory to host");
 				return (PVRSRV_ERROR_OUT_OF_MEMORY);
 			}
 
@@ -1300,7 +1300,7 @@ PVRSRV_ERROR IMG_CALLCONV PVRSRVSaveRestoreLiveSegments(IMG_HANDLE hArena, IMG_P
 
 				if (uiSize != sSegDetails.uiSize)
 				{
-					PVR_DPF((PVR_DBG_ERROR, "PVRSRVSaveRestoreLiveSegments: Segment size error"));
+					PVR_DPF(PVR_DBG_ERROR, "PVRSRVSaveRestoreLiveSegments: Segment size error");
 				}
 				else
 				{

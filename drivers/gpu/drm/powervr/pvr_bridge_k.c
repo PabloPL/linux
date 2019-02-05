@@ -66,6 +66,7 @@
 #if defined(DEBUG_BRIDGE_KM)
 
 static struct proc_dir_entry *g_ProcBridgeStats =0;
+static PVR_PROC_SEQ_HANDLERS *g_ProcBridgeStatsHandlers;
 static void* ProcSeqNextBridgeStats(struct seq_file *sfile,void* el,loff_t off);
 static void ProcSeqShowBridgeStats(struct seq_file *sfile,void* el);
 static void* ProcSeqOff2ElementBridgeStats(struct seq_file * sfile, loff_t off);
@@ -90,7 +91,8 @@ LinuxBridgeInit(IMG_VOID)
 												  ProcSeqNextBridgeStats,
 												  ProcSeqShowBridgeStats,
 												  ProcSeqOff2ElementBridgeStats,
-												  ProcSeqStartstopBridgeStats
+												  ProcSeqStartstopBridgeStats,
+												  &g_ProcBridgeStatsHandlers
 						  						 );
 		if(!g_ProcBridgeStats)
 		{
@@ -105,7 +107,7 @@ IMG_VOID
 LinuxBridgeDeInit(IMG_VOID)
 {
 #if defined(DEBUG_BRIDGE_KM)
-    RemoveProcEntrySeq(g_ProcBridgeStats);
+    RemoveProcEntrySeq(g_ProcBridgeStats, "bridge_stats", g_ProcBridgeStatsHandlers);
 #endif
 }
 
@@ -212,8 +214,8 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 	if(!OSAccessOK(psBridgePackageUM,
 				   sizeof(PVRSRV_BRIDGE_PACKAGE)))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "%s: Received invalid pointer to function arguments",
-				 __FUNCTION__));
+		PVR_DPF(PVR_DBG_ERROR, "%s: Received invalid pointer to function arguments",
+				 __FUNCTION__);
 
 		goto unlock_and_return;
 	}
@@ -241,16 +243,16 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 									PVRSRV_HANDLE_TYPE_PERPROC_DATA);
 		if(eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "%s: Invalid kernel services handle (%d)",
-					 __FUNCTION__, eError));
+			PVR_DPF(PVR_DBG_ERROR, "%s: Invalid kernel services handle (%d)",
+					 __FUNCTION__, eError);
 			goto unlock_and_return;
 		}
 
 		if(psPerProc->ui32PID != ui32PID)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "%s: Process %d tried to access data "
+			PVR_DPF(PVR_DBG_ERROR, "%s: Process %d tried to access data "
 					 "belonging to process %d", __FUNCTION__, ui32PID,
-					 psPerProc->ui32PID));
+					 psPerProc->ui32PID);
 			goto unlock_and_return;
 		}
 	}
@@ -260,8 +262,8 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 		psPerProc = PVRSRVPerProcessData(ui32PID);
 		if(psPerProc == IMG_NULL)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRV_BridgeDispatchKM: "
-					 "Couldn't create per-process data area"));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRV_BridgeDispatchKM: "
+					 "Couldn't create per-process data area");
 			goto unlock_and_return;
 		}
 	}
@@ -276,8 +278,8 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 
 			if(psPrivateData->hKernelMemInfo)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "%s: Can only export one MemInfo "
-						 "per file descriptor", __FUNCTION__));
+				PVR_DPF(PVR_DBG_ERROR, "%s: Can only export one MemInfo "
+						 "per file descriptor", __FUNCTION__);
 				err = -EINVAL;
 				goto unlock_and_return;
 			}
@@ -292,8 +294,8 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 
 			if(!psPrivateData->hKernelMemInfo)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "%s: File descriptor has no "
-						 "associated MemInfo handle", __FUNCTION__));
+				PVR_DPF(PVR_DBG_ERROR, "%s: File descriptor has no "
+						 "associated MemInfo handle", __FUNCTION__);
 				err = -EINVAL;
 				goto unlock_and_return;
 			}
@@ -312,8 +314,8 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 
 			if(psPrivateData->hKernelMemInfo)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "%s: Import/Export handle tried "
-						 "to use privileged service", __FUNCTION__));
+				PVR_DPF(PVR_DBG_ERROR, "%s: Import/Export handle tried "
+						 "to use privileged service", __FUNCTION__);
 				goto unlock_and_return;
 			}
 			break;
@@ -339,7 +341,7 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 			psEnvPerProc = (PVRSRV_ENV_PER_PROCESS_DATA *)PVRSRVProcessPrivateData(psPerProc);
 			if (psEnvPerProc == IMG_NULL)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "%s: Process private data not allocated", __FUNCTION__));
+				PVR_DPF(PVR_DBG_ERROR, "%s: Process private data not allocated", __FUNCTION__);
 				err = -EFAULT;
 				goto unlock_and_return;
 			}
@@ -360,7 +362,7 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 
 			if (!authenticated)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "%s: Not authenticated for mapping device or device class memory", __FUNCTION__));
+				PVR_DPF(PVR_DBG_ERROR, "%s: Not authenticated for mapping device or device class memory", __FUNCTION__);
 				err = -EPERM;
 				goto unlock_and_return;
 			}
@@ -397,7 +399,7 @@ PVRSRV_BridgeDispatchKM(struct file *pFile, unsigned int unref__ ioctlCmd, unsig
 								  hMemInfo,
 								  PVRSRV_HANDLE_TYPE_MEM_INFO) != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "%s: Failed to look up export handle", __FUNCTION__));
+				PVR_DPF(PVR_DBG_ERROR, "%s: Failed to look up export handle", __FUNCTION__);
 				err = -EFAULT;
 				goto unlock_and_return;
 			}

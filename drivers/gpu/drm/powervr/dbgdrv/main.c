@@ -164,7 +164,7 @@ static int __init dbgdrv_init(void)
 
 	if (AssignedMajorNumber <= 0)
 	{
-		PVR_DPF((PVR_DBG_ERROR," unable to get major\n"));
+		PVR_DPF(PVR_DBG_ERROR," unable to get major\n");
 		goto ErrDestroyEventObjects;
 	}
 
@@ -173,8 +173,8 @@ static int __init dbgdrv_init(void)
 	psDbgDrvClass = class_create(THIS_MODULE, DRVNAME);
 	if (IS_ERR(psDbgDrvClass))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "%s: unable to create class (%ld)",
-				 __func__, PTR_ERR(psDbgDrvClass)));
+		PVR_DPF(PVR_DBG_ERROR, "%s: unable to create class (%ld)",
+				 __func__, PTR_ERR(psDbgDrvClass));
 		goto ErrUnregisterCharDev;
 	}
 
@@ -185,8 +185,8 @@ static int __init dbgdrv_init(void)
 						  DRVNAME);
 	if (IS_ERR(psDev))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "%s: unable to create device (%ld)",
-								__func__, PTR_ERR(psDev)));
+		PVR_DPF(PVR_DBG_ERROR, "%s: unable to create device (%ld)",
+								__func__, PTR_ERR(psDev));
 		goto ErrDestroyClass;
 	}
 #endif 
@@ -221,14 +221,14 @@ long dbgdrv_ioctl(struct file *file, unsigned int ioctlCmd, unsigned long arg)
 
 	if((pIP->ui32InBufferSize > (PAGE_SIZE >> 1) ) || (pIP->ui32OutBufferSize > (PAGE_SIZE >> 1)))
 	{
-		PVR_DPF((PVR_DBG_ERROR,"Sizes of the buffers are too large, cannot do ioctl\n"));
+		PVR_DPF(PVR_DBG_ERROR,"Sizes of the buffers are too large, cannot do ioctl\n");
 		return -1;
 	}
 
 	buffer = (char *) HostPageablePageAlloc(1);
 	if(!buffer)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"Failed to allocate buffer, cannot do ioctl\n"));
+		PVR_DPF(PVR_DBG_ERROR,"Failed to allocate buffer, cannot do ioctl\n");
 		return -EFAULT;
 	}
 

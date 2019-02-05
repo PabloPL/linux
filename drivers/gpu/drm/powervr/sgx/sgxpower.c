@@ -46,7 +46,7 @@ static PVRSRV_ERROR SGXAddTimer(PVRSRV_DEVICE_NODE		*psDeviceNode,
 						  1000 * 50 / psSGXTimingInfo->ui32uKernelFreq);
 	if(*phTimer == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SGXAddTimer : Failed to register timer callback function"));
+		PVR_DPF(PVR_DBG_ERROR,"SGXAddTimer : Failed to register timer callback function");
 		return PVRSRV_ERROR_OUT_OF_MEMORY;
 	}
 
@@ -96,7 +96,7 @@ static PVRSRV_ERROR SGXUpdateTimingInfo(PVRSRV_DEVICE_NODE	*psDeviceNode)
 					eError = OSRemoveTimer(psDevInfo->hTimer);
 					if (eError != PVRSRV_OK)
 					{
-						PVR_DPF((PVR_DBG_ERROR,"SGXUpdateTimingInfo: Failed to remove timer"));
+						PVR_DPF(PVR_DBG_ERROR,"SGXUpdateTimingInfo: Failed to remove timer");
 					}
 					psDevInfo->hTimer = hNewTimer;
 				}
@@ -172,7 +172,7 @@ static IMG_VOID SGXStartTimer(PVRSRV_SGXDEV_INFO	*psDevInfo)
 	eError = OSEnableTimer(psDevInfo->hTimer);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SGXStartTimer : Failed to enable host timer"));
+		PVR_DPF(PVR_DBG_ERROR,"SGXStartTimer : Failed to enable host timer");
 	}
 	#else
 	PVR_UNREFERENCED_PARAMETER(psDevInfo);
@@ -201,7 +201,7 @@ static IMG_VOID SGXPollForClockGating (PVRSRV_SGXDEV_INFO	*psDevInfo,
 						MAX_HW_TIME_US/WAIT_TRY_COUNT,
 						IMG_FALSE) != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SGXPollForClockGating: %s failed.", pszComment));
+		PVR_DPF(PVR_DBG_ERROR,"SGXPollForClockGating: %s failed.", pszComment);
 		SGXDumpDebugInfo(psDevInfo, IMG_FALSE);
 		PVR_DBG_BREAK;
 	}
@@ -232,7 +232,7 @@ PVRSRV_ERROR SGXPrePowerState (IMG_HANDLE				hDevHandle,
 		eError = OSDisableTimer(psDevInfo->hTimer);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"SGXPrePowerState: Failed to disable timer"));
+			PVR_DPF(PVR_DBG_ERROR,"SGXPrePowerState: Failed to disable timer");
 			return eError;
 		}
 		#endif 
@@ -257,7 +257,7 @@ PVRSRV_ERROR SGXPrePowerState (IMG_HANDLE				hDevHandle,
 		eError = SGXScheduleCCBCommand(psDeviceNode, SGXMKIF_CMD_POWER, &sCommand, KERNEL_ID, 0, IMG_NULL, IMG_FALSE);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"SGXPrePowerState: Failed to submit power down command"));
+			PVR_DPF(PVR_DBG_ERROR,"SGXPrePowerState: Failed to submit power down command");
 			return eError;
 		}
 
@@ -270,7 +270,7 @@ PVRSRV_ERROR SGXPrePowerState (IMG_HANDLE				hDevHandle,
 							MAX_HW_TIME_US/WAIT_TRY_COUNT,
 							IMG_FALSE) != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"SGXPrePowerState: Wait for SGX ukernel power transition failed."));
+			PVR_DPF(PVR_DBG_ERROR,"SGXPrePowerState: Wait for SGX ukernel power transition failed.");
 			SGXDumpDebugInfo(psDevInfo, IMG_FALSE);
 			PVR_DBG_BREAK;
 		}
@@ -321,7 +321,7 @@ PVRSRV_ERROR SGXPrePowerState (IMG_HANDLE				hDevHandle,
 			eError = SGXDeinitialise(psDevInfo);
 			if (eError != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR,"SGXPrePowerState: SGXDeinitialise failed: %u", eError));
+				PVR_DPF(PVR_DBG_ERROR,"SGXPrePowerState: SGXDeinitialise failed: %u", eError);
 				return eError;
 			}
 		}
@@ -362,7 +362,7 @@ PVRSRV_ERROR SGXPostPowerState (IMG_HANDLE				hDevHandle,
 			eError = SGXUpdateTimingInfo(psDeviceNode);
 			if (eError != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR,"SGXPostPowerState: SGXUpdateTimingInfo failed"));
+				PVR_DPF(PVR_DBG_ERROR,"SGXPostPowerState: SGXUpdateTimingInfo failed");
 				return eError;
 			}
 
@@ -371,7 +371,7 @@ PVRSRV_ERROR SGXPostPowerState (IMG_HANDLE				hDevHandle,
 			eError = SGXInitialise(psDevInfo, IMG_FALSE);
 			if (eError != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR,"SGXPostPowerState: SGXInitialise failed"));
+				PVR_DPF(PVR_DBG_ERROR,"SGXPostPowerState: SGXInitialise failed");
 				return eError;
 			}
 		}
@@ -385,7 +385,7 @@ PVRSRV_ERROR SGXPostPowerState (IMG_HANDLE				hDevHandle,
 			eError = SGXScheduleCCBCommand(psDeviceNode, SGXMKIF_CMD_POWER, &sCommand, ISR_ID, 0, IMG_NULL, IMG_FALSE);
 			if (eError != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR,"SGXPostPowerState failed to schedule CCB command: %u", eError));
+				PVR_DPF(PVR_DBG_ERROR,"SGXPostPowerState failed to schedule CCB command: %u", eError);
 				return eError;
 			}
 		}
@@ -425,8 +425,8 @@ PVRSRV_ERROR SGXPreClockSpeedChange (IMG_HANDLE				hDevHandle,
 		}
 	}
 
-	PVR_DPF((PVR_DBG_MESSAGE,"SGXPreClockSpeedChange: SGX clock speed was %uHz",
-			psDevInfo->ui32CoreClockSpeed));
+	PVR_DPF(PVR_DBG_MESSAGE,"SGXPreClockSpeedChange: SGX clock speed was %uHz",
+			psDevInfo->ui32CoreClockSpeed);
 
 	return PVRSRV_OK;
 }
@@ -451,7 +451,7 @@ PVRSRV_ERROR SGXPostClockSpeedChange (IMG_HANDLE				hDevHandle,
 		eError = SGXUpdateTimingInfo(psDeviceNode);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"SGXPostPowerState: SGXUpdateTimingInfo failed"));
+			PVR_DPF(PVR_DBG_ERROR,"SGXPostPowerState: SGXUpdateTimingInfo failed");
 			return eError;
 		}
 
@@ -474,8 +474,8 @@ PVRSRV_ERROR SGXPostClockSpeedChange (IMG_HANDLE				hDevHandle,
 		}
 	}
 
-	PVR_DPF((PVR_DBG_MESSAGE,"SGXPostClockSpeedChange: SGX clock speed changed from %uHz to %uHz",
-			ui32OldClockSpeed, psDevInfo->ui32CoreClockSpeed));
+	PVR_DPF(PVR_DBG_MESSAGE,"SGXPostClockSpeedChange: SGX clock speed changed from %uHz to %uHz",
+			ui32OldClockSpeed, psDevInfo->ui32CoreClockSpeed);
 
 	return PVRSRV_OK;
 }

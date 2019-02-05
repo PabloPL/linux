@@ -542,7 +542,7 @@ PVRSRVAllocDeviceMemBW(IMG_UINT32 ui32BridgeID,
 		if(!OSAccessOK(psAllocDeviceMemIN->pvPrivData,
 					   psAllocDeviceMemIN->ui32PrivDataLength))
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRVAllocDeviceMemBW: Access check failed for pvPrivData"));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRVAllocDeviceMemBW: Access check failed for pvPrivData");
 			return -EFAULT;
 		}
 	}
@@ -768,7 +768,7 @@ PVRSRVExportDeviceMemBW(IMG_UINT32 ui32BridgeID,
 
 	if(psExportDeviceMemOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVExportDeviceMemBW: can't find devcookie"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVExportDeviceMemBW: can't find devcookie");
 		return 0;
 	}
 
@@ -785,7 +785,7 @@ PVRSRVExportDeviceMemBW(IMG_UINT32 ui32BridgeID,
 
 	if(psExportDeviceMemOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVExportDeviceMemBW: can't find kernel meminfo"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVExportDeviceMemBW: can't find kernel meminfo");
 		return 0;
 	}
 
@@ -798,7 +798,7 @@ PVRSRVExportDeviceMemBW(IMG_UINT32 ui32BridgeID,
 	if(psExportDeviceMemOUT->eError == PVRSRV_OK)
 	{
 		
-		PVR_DPF((PVR_DBG_MESSAGE, "PVRSRVExportDeviceMemBW: allocation is already exported"));
+		PVR_DPF(PVR_DBG_MESSAGE, "PVRSRVExportDeviceMemBW: allocation is already exported");
 		return 0;
 	}
 
@@ -810,7 +810,7 @@ PVRSRVExportDeviceMemBW(IMG_UINT32 ui32BridgeID,
 													PVRSRV_HANDLE_ALLOC_FLAG_NONE);
 	if (psExportDeviceMemOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVExportDeviceMemBW: failed to allocate handle from global handle list"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVExportDeviceMemBW: failed to allocate handle from global handle list");
 		return 0;
 	}
 
@@ -860,7 +860,7 @@ PVRSRVMapDeviceMemoryBW(IMG_UINT32 ui32BridgeID,
 	
 	if (psSrcKernelMemInfo->sShareMemWorkaround.bInUse)
 	{
-		PVR_DPF((PVR_DBG_MESSAGE, "using the mem wrap workaround."));
+		PVR_DPF(PVR_DBG_MESSAGE, "using the mem wrap workaround.");
 
 		
 
@@ -873,7 +873,7 @@ PVRSRVMapDeviceMemoryBW(IMG_UINT32 ui32BridgeID,
 		psMapDevMemOUT->eError = BM_XProcWorkaroundSetShareIndex(psSrcKernelMemInfo->sShareMemWorkaround.ui32ShareIndex);
 		if(psMapDevMemOUT->eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRVMapDeviceMemoryBW(): failed to recycle shared buffer"));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRVMapDeviceMemoryBW(): failed to recycle shared buffer");
 			return 0;
 		}
 
@@ -893,7 +893,7 @@ PVRSRVMapDeviceMemoryBW(IMG_UINT32 ui32BridgeID,
 		BM_XProcWorkaroundUnsetShareIndex(psSrcKernelMemInfo->sShareMemWorkaround.ui32ShareIndex);
 		if(psMapDevMemOUT->eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRVMapDeviceMemoryBW: Failed to create allocation for cross-process memory map"));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRVMapDeviceMemoryBW: Failed to create allocation for cross-process memory map");
 			return 0;
 		}
 
@@ -1043,7 +1043,7 @@ PVRSRVUnmapDeviceMemoryBW(IMG_UINT32 ui32BridgeID,
 		psRetOUT->eError = PVRSRVFreeDeviceMemKM(psKernelMemInfo->sShareMemWorkaround.hDevCookieInt, psKernelMemInfo);
 		if(psRetOUT->eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRVUnmapDeviceMemoryBW: internal error, should expect FreeDeviceMem to fail"));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRVUnmapDeviceMemoryBW: internal error, should expect FreeDeviceMem to fail");
 			return 0;
 		}
 	}
@@ -2173,7 +2173,7 @@ PVRSRVGetMiscInfoBW(IMG_UINT32 ui32BridgeID,
 		if(eError != PVRSRV_OK)
 		{
 			
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRVGetMiscInfoBW Error copy to user"));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRVGetMiscInfoBW Error copy to user");
 			return -EFAULT;
 		}
 	}
@@ -2994,7 +2994,7 @@ PVRSRVSwapToDCBuffer2BW(IMG_UINT32 ui32BridgeID,
 						   PVRSRV_HANDLE_TYPE_DISP_INFO);
 	if(psRetOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Failed to look up DISP_INFO handle"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Failed to look up DISP_INFO handle");
 		return 0;
 	}
 
@@ -3006,21 +3006,21 @@ PVRSRVSwapToDCBuffer2BW(IMG_UINT32 ui32BridgeID,
 							  psSwapDispClassBufferIN->hDeviceKM);
 	if(psRetOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Failed to look up DISP_BUFFER handle"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Failed to look up DISP_BUFFER handle");
 		return 0;
 	}
 
 	if(!OSAccessOK(psSwapDispClassBufferIN->ppsKernelMemInfos,
 				   sizeof(IMG_HANDLE) * psSwapDispClassBufferIN->ui32NumMemInfos))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Access check failed for ppsKernelMemInfos"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Access check failed for ppsKernelMemInfos");
 		return -EFAULT;
 	}
 
 	if(!OSAccessOK(psSwapDispClassBufferIN->ppsKernelSyncInfos,
 				   sizeof(IMG_HANDLE) * psSwapDispClassBufferIN->ui32NumMemInfos))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Access check failed for ppsKernelSyncInfos"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Access check failed for ppsKernelSyncInfos");
 		return -EFAULT;
 	}
 
@@ -3036,7 +3036,7 @@ PVRSRVSwapToDCBuffer2BW(IMG_UINT32 ui32BridgeID,
 							   PVRSRV_HANDLE_TYPE_MEM_INFO);
 		if(psRetOUT->eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Failed to look up MEM_INFO handle"));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Failed to look up MEM_INFO handle");
 			return 0;
 		}
 
@@ -3047,7 +3047,7 @@ PVRSRVSwapToDCBuffer2BW(IMG_UINT32 ui32BridgeID,
 							   PVRSRV_HANDLE_TYPE_SYNC_INFO);
 		if(psRetOUT->eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Failed to look up SYNC_INFO handle"));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Failed to look up SYNC_INFO handle");
 			return 0;
 		}
 
@@ -3062,7 +3062,7 @@ PVRSRVSwapToDCBuffer2BW(IMG_UINT32 ui32BridgeID,
 					  (IMG_VOID **)&pvPrivData, IMG_NULL,
 					  "Swap Command Private Data") != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"PVRSRVSwapToDCBuffer2BW: Failed to allocate private data space"));
+			PVR_DPF(PVR_DBG_ERROR,"PVRSRVSwapToDCBuffer2BW: Failed to allocate private data space");
 			return -ENOMEM;
 		}
 
@@ -3072,7 +3072,7 @@ PVRSRVSwapToDCBuffer2BW(IMG_UINT32 ui32BridgeID,
 							   psSwapDispClassBufferIN->pvPrivData,
 							   psSwapDispClassBufferIN->ui32PrivDataLength) != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Failed to copy private data"));
+			PVR_DPF(PVR_DBG_ERROR, "PVRSRVSwapToDCBuffer2BW: Failed to copy private data");
 			OSFreeMem(PVRSRV_OS_PAGEABLE_HEAP,
 					  psSwapDispClassBufferIN->ui32PrivDataLength,
 					  pvPrivData, IMG_NULL);
@@ -3579,13 +3579,13 @@ DummyBW(IMG_UINT32 ui32BridgeID,
 	PVR_UNREFERENCED_PARAMETER(psPerProc);
 
 #if defined(DEBUG_BRIDGE_KM)
-	PVR_DPF((PVR_DBG_ERROR, "%s: BRIDGE ERROR: BridgeID %u (%s) mapped to "
+	PVR_DPF(PVR_DBG_ERROR, "%s: BRIDGE ERROR: BridgeID %u (%s) mapped to "
 			 "Dummy Wrapper (probably not what you want!)",
-			 __FUNCTION__, ui32BridgeID, g_BridgeDispatchTable[ui32BridgeID].pszIOCName));
+			 __FUNCTION__, ui32BridgeID, g_BridgeDispatchTable[ui32BridgeID].pszIOCName);
 #else
-	PVR_DPF((PVR_DBG_ERROR, "%s: BRIDGE ERROR: BridgeID %u mapped to "
+	PVR_DPF(PVR_DBG_ERROR, "%s: BRIDGE ERROR: BridgeID %u mapped to "
 			 "Dummy Wrapper (probably not what you want!)",
-			 __FUNCTION__, ui32BridgeID));
+			 __FUNCTION__, ui32BridgeID);
 #endif
 	return -ENOTTY;
 }
@@ -3607,22 +3607,22 @@ _SetDispatchTableEntry(IMG_UINT32 ui32Index,
 
 #if defined(DEBUG_BRIDGE_KM_DISPATCH_TABLE)
 	
-	PVR_DPF((PVR_DBG_WARNING, "%s: %d %s %s", __FUNCTION__, ui32Index, pszIOCName, pszFunctionName));
+	PVR_DPF(PVR_DBG_WARNING, "%s: %d %s %s", __FUNCTION__, ui32Index, pszIOCName, pszFunctionName);
 #endif
 
 	
 	if(g_BridgeDispatchTable[ui32Index].pfFunction)
 	{
 #if defined(DEBUG_BRIDGE_KM)
-		PVR_DPF((PVR_DBG_ERROR,
+		PVR_DPF(PVR_DBG_ERROR,
 				 "%s: BUG!: Adding dispatch table entry for %s clobbers an existing entry for %s",
-				 __FUNCTION__, pszIOCName, g_BridgeDispatchTable[ui32Index].pszIOCName));
+				 __FUNCTION__, pszIOCName, g_BridgeDispatchTable[ui32Index].pszIOCName);
 #else
-		PVR_DPF((PVR_DBG_ERROR,
+		PVR_DPF(PVR_DBG_ERROR,
 				 "%s: BUG!: Adding dispatch table entry for %s clobbers an existing entry (index=%u)",
-				 __FUNCTION__, pszIOCName, ui32Index));
+				 __FUNCTION__, pszIOCName, ui32Index);
 #endif
-		PVR_DPF((PVR_DBG_ERROR, "NOTE: Enabling DEBUG_BRIDGE_KM_DISPATCH_TABLE may help debug this issue."));
+		PVR_DPF(PVR_DBG_ERROR, "NOTE: Enabling DEBUG_BRIDGE_KM_DISPATCH_TABLE may help debug this issue.");
 	}
 
 	
@@ -3631,16 +3631,16 @@ _SetDispatchTableEntry(IMG_UINT32 ui32Index,
 		(ui32Index <= ui32PrevIndex)))
 	{
 #if defined(DEBUG_BRIDGE_KM)
-		PVR_DPF((PVR_DBG_WARNING,
+		PVR_DPF(PVR_DBG_WARNING,
 				 "%s: There is a gap in the dispatch table between indices %u (%s) and %u (%s)",
 				 __FUNCTION__, ui32PrevIndex, g_BridgeDispatchTable[ui32PrevIndex].pszIOCName,
-				 ui32Index, pszIOCName));
+				 ui32Index, pszIOCName);
 #else
-		PVR_DPF((PVR_DBG_WARNING,
+		PVR_DPF(PVR_DBG_WARNING,
 				 "%s: There is a gap in the dispatch table between indices %u and %u (%s)",
-				 __FUNCTION__, (IMG_UINT)ui32PrevIndex, (IMG_UINT)ui32Index, pszIOCName));
+				 __FUNCTION__, (IMG_UINT)ui32PrevIndex, (IMG_UINT)ui32Index, pszIOCName);
 #endif
-		PVR_DPF((PVR_DBG_ERROR, "NOTE: Enabling DEBUG_BRIDGE_KM_DISPATCH_TABLE may help debug this issue."));
+		PVR_DPF(PVR_DBG_ERROR, "NOTE: Enabling DEBUG_BRIDGE_KM_DISPATCH_TABLE may help debug this issue.");
 	}
 
 	g_BridgeDispatchTable[ui32Index].pfFunction = pfFunction;
@@ -3989,7 +3989,7 @@ static PVRSRV_ERROR ModifyCompleteSyncOpsCallBack(IMG_PVOID		pvParam,
 
 	if (!pvParam)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "ModifyCompleteSyncOpsCallBack: invalid parameter"));
+		PVR_DPF(PVR_DBG_ERROR, "ModifyCompleteSyncOpsCallBack: invalid parameter");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
@@ -4007,20 +4007,20 @@ static PVRSRV_ERROR ModifyCompleteSyncOpsCallBack(IMG_PVOID		pvParam,
 			{
 				goto OpFlushedComplete;
 			}
-			PVR_DPF((PVR_DBG_WARNING, "ModifyCompleteSyncOpsCallBack: waiting for current Ops to flush"));
+			PVR_DPF(PVR_DBG_WARNING, "ModifyCompleteSyncOpsCallBack: waiting for current Ops to flush");
             OSSleepms(1);
 		} END_LOOP_UNTIL_TIMEOUT();
 
-		PVR_DPF((PVR_DBG_ERROR, "ModifyCompleteSyncOpsCallBack: timeout whilst waiting for current Ops to flush."));
-		PVR_DPF((PVR_DBG_ERROR, "  Write ops pending snapshot = %d, write ops complete = %d",
+		PVR_DPF(PVR_DBG_ERROR, "ModifyCompleteSyncOpsCallBack: timeout whilst waiting for current Ops to flush.");
+		PVR_DPF(PVR_DBG_ERROR, "  Write ops pending snapshot = %d, write ops complete = %d",
 				 psModSyncOpInfo->ui32WriteOpsPendingSnapShot,
-				 psModSyncOpInfo->psKernelSyncInfo->psSyncData->ui32WriteOpsComplete));
-		PVR_DPF((PVR_DBG_ERROR, "  Read ops pending snapshot = %d, read ops complete = %d",
+				 psModSyncOpInfo->psKernelSyncInfo->psSyncData->ui32WriteOpsComplete);
+		PVR_DPF(PVR_DBG_ERROR, "  Read ops pending snapshot = %d, read ops complete = %d",
 				 psModSyncOpInfo->ui32ReadOpsPendingSnapShot,
-				 psModSyncOpInfo->psKernelSyncInfo->psSyncData->ui32ReadOpsComplete));
-		PVR_DPF((PVR_DBG_ERROR, "  Read ops pending snapshot = %d, read ops2 complete = %d",
+				 psModSyncOpInfo->psKernelSyncInfo->psSyncData->ui32ReadOpsComplete);
+		PVR_DPF(PVR_DBG_ERROR, "  Read ops pending snapshot = %d, read ops2 complete = %d",
 				 psModSyncOpInfo->ui32ReadOps2PendingSnapShot,
-				 psModSyncOpInfo->psKernelSyncInfo->psSyncData->ui32ReadOps2Complete));
+				 psModSyncOpInfo->psKernelSyncInfo->psSyncData->ui32ReadOps2Complete);
 		return PVRSRV_ERROR_TIMEOUT;
 
 OpFlushedComplete:
@@ -4099,7 +4099,7 @@ PVRSRVDestroySyncInfoModObjBW(IMG_UINT32                                        
 																	PVRSRV_HANDLE_TYPE_SYNC_INFO_MOD_OBJ);
 	if (psDestroySyncInfoModObjOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVDestroySyncInfoModObjBW: PVRSRVLookupHandle failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVDestroySyncInfoModObjBW: PVRSRVLookupHandle failed");
 		return 0;
 	}
 
@@ -4118,14 +4118,14 @@ PVRSRVDestroySyncInfoModObjBW(IMG_UINT32                                        
 
 	if (psDestroySyncInfoModObjOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVDestroySyncInfoModObjBW: PVRSRVReleaseHandle failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVDestroySyncInfoModObjBW: PVRSRVReleaseHandle failed");
 		return 0;
 	}
 
     psDestroySyncInfoModObjOUT->eError = ResManFreeResByPtr(psModSyncOpInfo->hResItem, CLEANUP_WITH_POLL);
 	if (psDestroySyncInfoModObjOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVDestroySyncInfoModObjBW: ResManFreeResByPtr failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVDestroySyncInfoModObjBW: ResManFreeResByPtr failed");
 		return 0;
 	}
 
@@ -4150,7 +4150,7 @@ PVRSRVModifyPendingSyncOpsBW(IMG_UINT32									ui32BridgeID,
 													PVRSRV_HANDLE_TYPE_SYNC_INFO_MOD_OBJ);
 	if (psModifySyncOpsOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVModifyPendingSyncOpsBW: PVRSRVLookupHandle failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVModifyPendingSyncOpsBW: PVRSRVLookupHandle failed");
 		return 0;
 	}
 
@@ -4160,7 +4160,7 @@ PVRSRVModifyPendingSyncOpsBW(IMG_UINT32									ui32BridgeID,
 													PVRSRV_HANDLE_TYPE_SYNC_INFO);
 	if (psModifySyncOpsOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVModifyPendingSyncOpsBW: PVRSRVLookupHandle failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVModifyPendingSyncOpsBW: PVRSRVLookupHandle failed");
 		return 0;
 	}
 
@@ -4168,7 +4168,7 @@ PVRSRVModifyPendingSyncOpsBW(IMG_UINT32									ui32BridgeID,
 	{
 		
 		psModifySyncOpsOUT->eError = PVRSRV_ERROR_RETRY;
-		PVR_DPF((PVR_DBG_VERBOSE, "PVRSRVModifyPendingSyncOpsBW: SyncInfo Modification object is not empty"));
+		PVR_DPF(PVR_DBG_VERBOSE, "PVRSRVModifyPendingSyncOpsBW: SyncInfo Modification object is not empty");
 		return 0;
 	}
 
@@ -4176,7 +4176,7 @@ PVRSRVModifyPendingSyncOpsBW(IMG_UINT32									ui32BridgeID,
 	if (psKernelSyncInfo == IMG_NULL)
 	{
 		psModifySyncOpsOUT->eError = PVRSRV_ERROR_INVALID_PARAMS;
-		PVR_DPF((PVR_DBG_VERBOSE, "PVRSRVModifyPendingSyncOpsBW: SyncInfo bad handle"));
+		PVR_DPF(PVR_DBG_VERBOSE, "PVRSRVModifyPendingSyncOpsBW: SyncInfo bad handle");
 		return 0;
 	}
 
@@ -4210,7 +4210,7 @@ PVRSRVModifyPendingSyncOpsBW(IMG_UINT32									ui32BridgeID,
 
 	if (psModifySyncOpsOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVModifyPendingSyncOpsBW: PVRSRVLookupHandle failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVModifyPendingSyncOpsBW: PVRSRVLookupHandle failed");
 		return 0;
 	}
 
@@ -4234,7 +4234,7 @@ PVRSRVModifyCompleteSyncOpsBW(IMG_UINT32							ui32BridgeID,
 													PVRSRV_HANDLE_TYPE_SYNC_INFO_MOD_OBJ);
 	if (psModifySyncOpsOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVModifyCompleteSyncOpsBW: PVRSRVLookupHandle failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVModifyCompleteSyncOpsBW: PVRSRVLookupHandle failed");
 		return 0;
 	}
 
@@ -4249,7 +4249,7 @@ PVRSRVModifyCompleteSyncOpsBW(IMG_UINT32							ui32BridgeID,
 
 	if (psModifySyncOpsOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVModifyCompleteSyncOpsBW: DoModifyCompleteSyncOps failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVModifyCompleteSyncOpsBW: DoModifyCompleteSyncOps failed");
 		return 0;
 	}
 
@@ -4279,7 +4279,7 @@ PVRSRVSyncOpsTakeTokenBW(IMG_UINT32									ui32BridgeID,
 													   PVRSRV_HANDLE_TYPE_SYNC_INFO);
 	if (psSyncOpsTakeTokenOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSyncOpsTakeTokenBW: PVRSRVLookupHandle failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVSyncOpsTakeTokenBW: PVRSRVLookupHandle failed");
 		return 0;
 	}
 
@@ -4312,7 +4312,7 @@ PVRSRVSyncOpsFlushToTokenBW(IMG_UINT32                                         u
 														  PVRSRV_HANDLE_TYPE_SYNC_INFO);
 	if (psSyncOpsFlushToTokenOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSyncOpsFlushToTokenBW: PVRSRVLookupHandle failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVSyncOpsFlushToTokenBW: PVRSRVLookupHandle failed");
 		return 0;
 	}
 
@@ -4327,7 +4327,7 @@ PVRSRVSyncOpsFlushToTokenBW(IMG_UINT32                                         u
 
 	if (psSyncOpsFlushToTokenOUT->eError != PVRSRV_OK && psSyncOpsFlushToTokenOUT->eError != PVRSRV_ERROR_RETRY)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSyncOpsFlushToTokenBW: DoQuerySyncOpsSatisfied failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVSyncOpsFlushToTokenBW: DoQuerySyncOpsSatisfied failed");
 		return 0;
 	}
 
@@ -4351,7 +4351,7 @@ PVRSRVSyncOpsFlushToModObjBW(IMG_UINT32                                         
 														   PVRSRV_HANDLE_TYPE_SYNC_INFO_MOD_OBJ);
 	if (psSyncOpsFlushToModObjOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSyncOpsFlushToModObjBW: PVRSRVLookupHandle failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVSyncOpsFlushToModObjBW: PVRSRVLookupHandle failed");
 		return 0;
 	}
 
@@ -4369,7 +4369,7 @@ PVRSRVSyncOpsFlushToModObjBW(IMG_UINT32                                         
 
 	if (psSyncOpsFlushToModObjOUT->eError != PVRSRV_OK && psSyncOpsFlushToModObjOUT->eError != PVRSRV_ERROR_RETRY)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSyncOpsFlushToModObjBW: DoQuerySyncOpsSatisfied failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVSyncOpsFlushToModObjBW: DoQuerySyncOpsSatisfied failed");
 		return 0;
 	}
 
@@ -4395,7 +4395,7 @@ PVRSRVSyncOpsFlushToDeltaBW(IMG_UINT32                                         u
 														  PVRSRV_HANDLE_TYPE_SYNC_INFO);
 	if (psSyncOpsFlushToDeltaOUT->eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVSyncOpsFlushToDeltaBW: PVRSRVLookupHandle failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVSyncOpsFlushToDeltaBW: PVRSRVLookupHandle failed");
 		return 0;
 	}
 
@@ -4547,7 +4547,7 @@ PVRSRVFreeSyncInfoBW(IMG_UINT32                                          ui32Bri
 								PVRSRV_HANDLE_TYPE_SYNC_INFO);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVFreeSyncInfoBW: PVRSRVLookupHandle failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVFreeSyncInfoBW: PVRSRVLookupHandle failed");
 		psFreeSyncInfoOUT->eError = eError;
 		return 0;
 	}
@@ -4558,7 +4558,7 @@ PVRSRVFreeSyncInfoBW(IMG_UINT32                                          ui32Bri
 
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVFreeSyncInfoBW: PVRSRVReleaseHandle failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVFreeSyncInfoBW: PVRSRVReleaseHandle failed");
 		psFreeSyncInfoOUT->eError = eError;
 		return 0;
 	}
@@ -4566,7 +4566,7 @@ PVRSRVFreeSyncInfoBW(IMG_UINT32                                          ui32Bri
     eError = ResManFreeResByPtr(psSyncInfo->hResItem, CLEANUP_WITH_POLL);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVFreeSyncInfoBW: ResManFreeResByPtr failed"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVFreeSyncInfoBW: ResManFreeResByPtr failed");
 		psFreeSyncInfoOUT->eError = eError;
 		return 0;
 	}
@@ -4760,9 +4760,9 @@ IMG_INT BridgedDispatchKM(PVRSRV_PER_PROCESS_DATA * psPerProc,
 	IMG_INT      err          = -EFAULT;
 
 #if defined(DEBUG_TRACE_BRIDGE_KM)
-	PVR_DPF((PVR_DBG_ERROR, "%s: %s",
+	PVR_DPF(PVR_DBG_ERROR, "%s: %s",
 			 __FUNCTION__,
-			 g_BridgeDispatchTable[ui32BridgeID].pszIOCName));
+			 g_BridgeDispatchTable[ui32BridgeID].pszIOCName);
 #endif
 
 #if defined(DEBUG_BRIDGE_KM)
@@ -4776,8 +4776,8 @@ IMG_INT BridgedDispatchKM(PVRSRV_PER_PROCESS_DATA * psPerProc,
 		{
 			if(!PVRSRVGetInitServerState(PVRSRV_INIT_SERVER_SUCCESSFUL))
 			{
-				PVR_DPF((PVR_DBG_ERROR, "%s: Initialisation failed.  Driver unusable.",
-						 __FUNCTION__));
+				PVR_DPF(PVR_DBG_ERROR, "%s: Initialisation failed.  Driver unusable.",
+						 __FUNCTION__);
 				goto return_fault;
 			}
 		}
@@ -4785,8 +4785,8 @@ IMG_INT BridgedDispatchKM(PVRSRV_PER_PROCESS_DATA * psPerProc,
 		{
 			if(PVRSRVGetInitServerState(PVRSRV_INIT_SERVER_RUNNING))
 			{
-				PVR_DPF((PVR_DBG_ERROR, "%s: Initialisation is in progress",
-						 __FUNCTION__));
+				PVR_DPF(PVR_DBG_ERROR, "%s: Initialisation is in progress",
+						 __FUNCTION__);
 				goto return_fault;
 			}
 			else
@@ -4800,8 +4800,8 @@ IMG_INT BridgedDispatchKM(PVRSRV_PER_PROCESS_DATA * psPerProc,
 					case PVRSRV_GET_BRIDGE_ID(PVRSRV_BRIDGE_INITSRV_DISCONNECT):
 						break;
 					default:
-						PVR_DPF((PVR_DBG_ERROR, "%s: Driver initialisation not completed yet.",
-								 __FUNCTION__));
+						PVR_DPF(PVR_DBG_ERROR, "%s: Driver initialisation not completed yet.",
+								 __FUNCTION__);
 						goto return_fault;
 				}
 			}
@@ -4832,7 +4832,7 @@ IMG_INT BridgedDispatchKM(PVRSRV_PER_PROCESS_DATA * psPerProc,
 			if(!OSAccessOK(psBridgePackageKM->pvParamIn,
 						   psBridgePackageKM->ui32InBufferSize))
 			{
-				PVR_DPF((PVR_DBG_ERROR, "%s: Invalid pvParamIn pointer", __FUNCTION__));
+				PVR_DPF(PVR_DBG_ERROR, "%s: Invalid pvParamIn pointer", __FUNCTION__);
 			}
 
 			if(CopyFromUserWrapper(psPerProc,
@@ -4853,8 +4853,8 @@ IMG_INT BridgedDispatchKM(PVRSRV_PER_PROCESS_DATA * psPerProc,
 
 	if(ui32BridgeID >= (BRIDGE_DISPATCH_TABLE_ENTRY_COUNT))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "%s: ui32BridgeID = %d is out if range!",
-				 __FUNCTION__, ui32BridgeID));
+		PVR_DPF(PVR_DBG_ERROR, "%s: ui32BridgeID = %d is out if range!",
+				 __FUNCTION__, ui32BridgeID);
 		goto return_fault;
 	}
 	pfBridgeHandler =

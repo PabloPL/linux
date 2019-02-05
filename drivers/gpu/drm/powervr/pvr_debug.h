@@ -139,7 +139,7 @@ IMG_IMPORT IMG_VOID IMG_CALLCONV PVRSRVDebugAssertFail(const IMG_CHAR *pszFile,
 	#define PVR_DBG_ALLOC		DBGPRIV_ALLOC,__FILE__, __LINE__
 	#define PVR_DBGDRIV_MESSAGE	DBGPRIV_DBGDRV_MESSAGE, "", 0
 
-	#define PVR_DPF(X)			PVRSRVDebugPrintf X
+	#define PVR_DPF			PVRSRVDebugPrintf
 
 #endif /* defined(PVRSRV_NEW_PVR_DPF) */
 

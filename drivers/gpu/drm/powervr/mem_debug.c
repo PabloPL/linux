@@ -67,55 +67,55 @@ extern "C"
 		
 		if (pvCpuVAddr == IMG_NULL)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "Pointer 0x%X : null pointer"
+			PVR_DPF(PVR_DBG_ERROR, "Pointer 0x%X : null pointer"
 					 " - referenced %s:%d - allocated %s:%d",
 					 pvCpuVAddr,
 					 pszFileName, uLine,
-					 psInfo->sFileName, psInfo->uLineNo));
+					 psInfo->sFileName, psInfo->uLineNo);
 			while (STOP_ON_ERROR);
 		}
 
 		
 		if (((IMG_UINT32)pvCpuVAddr&3) != 0)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "Pointer 0x%X : invalid alignment"
+			PVR_DPF(PVR_DBG_ERROR, "Pointer 0x%X : invalid alignment"
 					 " - referenced %s:%d - allocated %s:%d",
 					 pvCpuVAddr,
 					 pszFileName, uLine,
-					 psInfo->sFileName, psInfo->uLineNo));
+					 psInfo->sFileName, psInfo->uLineNo);
 			while (STOP_ON_ERROR);
 		}
 
 		
 		if (!MemCheck((IMG_PVOID)psInfo->sGuardRegionBefore, 0xB1, sizeof(psInfo->sGuardRegionBefore)))
 		{
-			PVR_DPF((PVR_DBG_ERROR, "Pointer 0x%X : guard region before overwritten"
+			PVR_DPF(PVR_DBG_ERROR, "Pointer 0x%X : guard region before overwritten"
 					 " - referenced %s:%d - allocated %s:%d",
 					 pvCpuVAddr,
 					 pszFileName, uLine,
-					 psInfo->sFileName, psInfo->uLineNo));
+					 psInfo->sFileName, psInfo->uLineNo);
 			while (STOP_ON_ERROR);
 		}
 
 		
 		if (uSize != psInfo->uSize)
 		{
-			PVR_DPF((PVR_DBG_WARNING, "Pointer 0x%X : supplied size was different to stored size (0x%X != 0x%X)"
+			PVR_DPF(PVR_DBG_WARNING, "Pointer 0x%X : supplied size was different to stored size (0x%X != 0x%X)"
 					 " - referenced %s:%d - allocated %s:%d",
 					 pvCpuVAddr, uSize, psInfo->uSize,
 					 pszFileName, uLine,
-					 psInfo->sFileName, psInfo->uLineNo));
+					 psInfo->sFileName, psInfo->uLineNo);
 			while (STOP_ON_ERROR);
 		}
 
 		
 		if ((0x01234567 ^ psInfo->uSizeParityCheck) != psInfo->uSize)
 		{
-			PVR_DPF((PVR_DBG_WARNING, "Pointer 0x%X : stored size parity error (0x%X != 0x%X)"
+			PVR_DPF(PVR_DBG_WARNING, "Pointer 0x%X : stored size parity error (0x%X != 0x%X)"
 					 " - referenced %s:%d - allocated %s:%d",
 					 pvCpuVAddr, psInfo->uSize, 0x01234567 ^ psInfo->uSizeParityCheck,
 					 pszFileName, uLine,
-					 psInfo->sFileName, psInfo->uLineNo));
+					 psInfo->sFileName, psInfo->uLineNo);
 			while (STOP_ON_ERROR);
 		}
 		else
@@ -129,22 +129,22 @@ extern "C"
 		{
 			if (!MemCheck((IMG_VOID*)((IMG_UINT32)pvCpuVAddr + uSize), 0xB2, TEST_BUFFER_PADDING_AFTER))
 			{
-				PVR_DPF((PVR_DBG_ERROR, "Pointer 0x%X : guard region after overwritten"
+				PVR_DPF(PVR_DBG_ERROR, "Pointer 0x%X : guard region after overwritten"
 						 " - referenced from %s:%d - allocated from %s:%d",
 						 pvCpuVAddr,
 						 pszFileName, uLine,
-						 psInfo->sFileName, psInfo->uLineNo));
+						 psInfo->sFileName, psInfo->uLineNo);
 			}
 		}
 
 		
 		if (psInfo->eValid != isAllocated)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "Pointer 0x%X : not allocated (freed? %d)"
+			PVR_DPF(PVR_DBG_ERROR, "Pointer 0x%X : not allocated (freed? %d)"
 					 " - referenced %s:%d - freed %s:%d",
 					 pvCpuVAddr, psInfo->eValid == isFree,
 					 pszFileName, uLine,
-					 psInfo->sFileName, psInfo->uLineNo));
+					 psInfo->sFileName, psInfo->uLineNo);
 			while (STOP_ON_ERROR);
 		}
 	}

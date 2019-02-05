@@ -77,7 +77,7 @@ IMG_VOID RegisterKeyPressed(IMG_UINT32 dwui32ScanCode, PHOTKEYINFO pInfo)
 
 	if (dwui32ScanCode == g_PrivateHotKeyData.ui32ScanCode)
 	{
-		PVR_DPF((PVR_DBG_MESSAGE,"PDUMP Hotkey pressed !\n"));
+		PVR_DPF(PVR_DBG_MESSAGE,"PDUMP Hotkey pressed !\n");
 
 		psStream = (PDBG_STREAM) g_PrivateHotKeyData.sHotKeyInfo.pvStream;
 
@@ -106,7 +106,7 @@ IMG_VOID ActivateHotKeys(PDBG_STREAM psStream)
 	{
 		if (g_PrivateHotKeyData.ui32ScanCode != 0)
 		{
-			PVR_DPF((PVR_DBG_MESSAGE,"Activate HotKey for PDUMP.\n"));
+			PVR_DPF(PVR_DBG_MESSAGE,"Activate HotKey for PDUMP.\n");
 
 			
 
@@ -125,7 +125,7 @@ IMG_VOID DeactivateHotKeys(IMG_VOID)
 {
 	if (g_PrivateHotKeyData.sHotKeyInfo.hHotKey != 0)
 	{
-		PVR_DPF((PVR_DBG_MESSAGE,"Deactivate HotKey.\n"));
+		PVR_DPF(PVR_DBG_MESSAGE,"Deactivate HotKey.\n");
 
 		RemoveHotKey(g_PrivateHotKeyData.sHotKeyInfo.hHotKey);
 		g_PrivateHotKeyData.sHotKeyInfo.hHotKey = 0;

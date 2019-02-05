@@ -55,7 +55,7 @@ IMG_UINT32 PVRSRVTimeNow(IMG_VOID)
 
 		if (bFirstTime)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"PVRSRVTimeNow: No timer register set up"));
+			PVR_DPF(PVR_DBG_ERROR,"PVRSRVTimeNow: No timer register set up");
 
 			bFirstTime = IMG_FALSE;
 		}
@@ -85,7 +85,7 @@ static IMG_UINT32 PVRSRVGetCPUFreq(IMG_VOID)
 
 	ui32Time2 = PVRSRVTimeNow();
 
-	PVR_DPF((PVR_DBG_WARNING, "PVRSRVGetCPUFreq: timer frequency = %d Hz", ui32Time2 - ui32Time1));
+	PVR_DPF(PVR_DBG_WARNING, "PVRSRVGetCPUFreq: timer frequency = %d Hz", ui32Time2 - ui32Time1);
 
 	return (ui32Time2 - ui32Time1);
 }
@@ -137,7 +137,7 @@ IMG_VOID PVRSRVOutputMetricTotals(IMG_VOID)
 
 	if (!ui32TicksPerMS)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVOutputMetricTotals: Failed to get CPU Freq"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVOutputMetricTotals: Failed to get CPU Freq");
 		return;
 	}
 
@@ -145,14 +145,14 @@ IMG_VOID PVRSRVOutputMetricTotals(IMG_VOID)
 	{
 		if (asTimers[ui32Loop].ui32Count & 0x80000000L)
 		{
-			PVR_DPF((PVR_DBG_WARNING,"PVRSRVOutputMetricTotals: Timer %u is still ON", ui32Loop));
+			PVR_DPF(PVR_DBG_WARNING,"PVRSRVOutputMetricTotals: Timer %u is still ON", ui32Loop);
 		}
 	}
 #if 0
 	
-	PVR_DPF((PVR_DBG_ERROR," Timer(%u): Total = %u",PVRSRV_TIMER_EXAMPLE_1, PVRSRV_TIMER_TOTAL_IN_TICKS(PVRSRV_TIMER_EXAMPLE_1)));
-	PVR_DPF((PVR_DBG_ERROR," Timer(%u): Time = %ums",PVRSRV_TIMER_EXAMPLE_1, PVRSRV_TIMER_TOTAL_IN_MS(PVRSRV_TIMER_EXAMPLE_1)));
-	PVR_DPF((PVR_DBG_ERROR," Timer(%u): Count = %u",PVRSRV_TIMER_EXAMPLE_1, PVRSRV_TIMER_COUNT(PVRSRV_TIMER_EXAMPLE_1)));
+	PVR_DPF(PVR_DBG_ERROR," Timer(%u): Total = %u",PVRSRV_TIMER_EXAMPLE_1, PVRSRV_TIMER_TOTAL_IN_TICKS(PVRSRV_TIMER_EXAMPLE_1));
+	PVR_DPF(PVR_DBG_ERROR," Timer(%u): Time = %ums",PVRSRV_TIMER_EXAMPLE_1, PVRSRV_TIMER_TOTAL_IN_MS(PVRSRV_TIMER_EXAMPLE_1));
+	PVR_DPF(PVR_DBG_ERROR," Timer(%u): Count = %u",PVRSRV_TIMER_EXAMPLE_1, PVRSRV_TIMER_COUNT(PVRSRV_TIMER_EXAMPLE_1));
 #endif
 }
 

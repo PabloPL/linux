@@ -66,7 +66,7 @@ PVRSRVAllocSharedSysMemoryKM(PVRSRV_PER_PROCESS_DATA	*psPerProc,
 				  (IMG_VOID **)&psKernelMemInfo, IMG_NULL,
 				  "Kernel Memory Info") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVAllocSharedSysMemoryKM: Failed to alloc memory for meminfo"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVAllocSharedSysMemoryKM: Failed to alloc memory for meminfo");
 		return PVRSRV_ERROR_OUT_OF_MEMORY;
 	}
 
@@ -86,7 +86,7 @@ PVRSRVAllocSharedSysMemoryKM(PVRSRV_PER_PROCESS_DATA	*psPerProc,
 					&psKernelMemInfo->sMemBlk.hOSMemHandle)
 		!= PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVAllocSharedSysMemoryKM: Failed to alloc memory for block"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVAllocSharedSysMemoryKM: Failed to alloc memory for block");
 		OSFreeMem(PVRSRV_OS_PAGEABLE_HEAP,
 				  sizeof(PVRSRV_KERNEL_MEM_INFO),
 				  psKernelMemInfo,
@@ -142,7 +142,7 @@ PVRSRVDissociateMemFromResmanKM(PVRSRV_KERNEL_MEM_INFO *psKernelMemInfo)
 
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"PVRSRVDissociateMemFromResmanKM: ResManDissociateRes failed"));
+			PVR_DPF(PVR_DBG_ERROR,"PVRSRVDissociateMemFromResmanKM: ResManDissociateRes failed");
 			PVR_DBG_BREAK;
 			return eError;
 		}

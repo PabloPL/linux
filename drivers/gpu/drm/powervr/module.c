@@ -303,7 +303,7 @@ static int __devinit PVRSRVDriverProbe(LDM_DEV *pDevice, const struct pci_device
 									 "pvr");
 	if (IS_ERR_OR_NULL(gpsIONClient))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRSRVDriverProbe: Couldn't create ion client"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRSRVDriverProbe: Couldn't create ion client");
 		return PTR_ERR(gpsIONClient);
 	}
 #endif 
@@ -499,7 +499,7 @@ static int PVRSRVOpen(struct inode unref__ * pInode, struct file *pFile)
 	psEnvPerProc = PVRSRVPerProcessPrivateData(ui32PID);
 	if (psEnvPerProc == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "%s: No per-process private data", __FUNCTION__));
+		PVR_DPF(PVR_DBG_ERROR, "%s: No per-process private data", __FUNCTION__);
 		goto err_unlock;
 	}
 #endif
@@ -565,7 +565,7 @@ static int PVRSRVRelease(struct inode unref__ * pInode, struct file *pFile)
 								  psPrivateData->hKernelMemInfo,
 								  PVRSRV_HANDLE_TYPE_MEM_INFO) != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "%s: Failed to look up export handle", __FUNCTION__));
+				PVR_DPF(PVR_DBG_ERROR, "%s: Failed to look up export handle", __FUNCTION__);
 				err = -EFAULT;
 				goto err_unlock;
 			}
@@ -580,7 +580,7 @@ static int PVRSRVRelease(struct inode unref__ * pInode, struct file *pFile)
 			if(FreeMemCallBackCommon(psKernelMemInfo, 0,
 									 PVRSRV_FREE_CALLBACK_ORIGIN_EXTERNAL) != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "%s: FreeMemCallBackCommon failed", __FUNCTION__));
+				PVR_DPF(PVR_DBG_ERROR, "%s: FreeMemCallBackCommon failed", __FUNCTION__);
 				err = -EFAULT;
 				goto err_unlock;
 			}
@@ -662,7 +662,7 @@ static int __init PVRCore_Init(void)
 #if defined(PVR_LDM_PLATFORM_MODULE) || defined(SUPPORT_DRI_DRM_PLUGIN)
 	if ((error = platform_driver_register(&powervr_driver)) != 0)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRCore_Init: unable to register platform driver (%d)", error));
+		PVR_DPF(PVR_DBG_ERROR, "PVRCore_Init: unable to register platform driver (%d)", error);
 
 		goto init_failed;
 	}
@@ -672,7 +672,7 @@ static int __init PVRCore_Init(void)
 	{
 		platform_driver_unregister(&powervr_driver);
 
-		PVR_DPF((PVR_DBG_ERROR, "PVRCore_Init: unable to register platform device (%d)", error));
+		PVR_DPF(PVR_DBG_ERROR, "PVRCore_Init: unable to register platform device (%d)", error);
 
 		goto init_failed;
 	}
@@ -682,7 +682,7 @@ static int __init PVRCore_Init(void)
 #if defined(PVR_LDM_PCI_MODULE)
 	if ((error = pci_register_driver(&powervr_driver)) != 0)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRCore_Init: unable to register PCI driver (%d)", error));
+		PVR_DPF(PVR_DBG_ERROR, "PVRCore_Init: unable to register PCI driver (%d)", error));
 
 		goto init_failed;
 	}
@@ -710,7 +710,7 @@ static int __init PVRCore_Init(void)
 
 	if (AssignedMajorNumber <= 0)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRCore_Init: unable to get major number"));
+		PVR_DPF(PVR_DBG_ERROR, "PVRCore_Init: unable to get major number");
 
 		error = -EBUSY;
 		goto sys_deinit;
@@ -724,7 +724,7 @@ static int __init PVRCore_Init(void)
 
 	if (IS_ERR(psPvrClass))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRCore_Init: unable to create class (%ld)", PTR_ERR(psPvrClass)));
+		PVR_DPF(PVR_DBG_ERROR, "PVRCore_Init: unable to create class (%ld)", PTR_ERR(psPvrClass));
 		error = -EBUSY;
 		goto unregister_device;
 	}
@@ -736,7 +736,7 @@ static int __init PVRCore_Init(void)
 				  DEVNAME);
 	if (IS_ERR(psDev))
 	{
-		PVR_DPF((PVR_DBG_ERROR, "PVRCore_Init: unable to create device (%ld)", PTR_ERR(psDev)));
+		PVR_DPF(PVR_DBG_ERROR, "PVRCore_Init: unable to create device (%ld)", PTR_ERR(psDev));
 		error = -EBUSY;
 		goto destroy_class;
 	}
@@ -821,7 +821,7 @@ static void __exit PVRCore_Cleanup(void)
 #else	
 								)
 	{
-		PVR_DPF((PVR_DBG_ERROR," can't unregister device major %d", AssignedMajorNumber));
+		PVR_DPF(PVR_DBG_ERROR," can't unregister device major %d", AssignedMajorNumber);
 	}
 #endif	
 #endif	

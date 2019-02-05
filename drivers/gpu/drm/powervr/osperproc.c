@@ -48,7 +48,7 @@ PVRSRV_ERROR OSPerProcessPrivateDataInit(IMG_HANDLE *phOsPrivateData)
 	{
 		*phOsPrivateData = IMG_NULL;
 
-		PVR_DPF((PVR_DBG_ERROR, "%s: OSAllocMem failed (%d)", __FUNCTION__, eError));
+		PVR_DPF(PVR_DBG_ERROR, "%s: OSAllocMem failed (%d)", __FUNCTION__, eError);
 		return eError;
 	}
 
@@ -94,7 +94,7 @@ PVRSRV_ERROR OSPerProcessPrivateDataDeInit(IMG_HANDLE hOsPrivateData)
 
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "%s: OSFreeMem failed (%d)", __FUNCTION__, eError));
+		PVR_DPF(PVR_DBG_ERROR, "%s: OSFreeMem failed (%d)", __FUNCTION__, eError);
 	}
 
 	return PVRSRV_OK;

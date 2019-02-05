@@ -49,8 +49,8 @@ PVRSRV_ERROR PVRSRVSetInitServerState(PVRSRV_INIT_SERVER_STATE eInitServerState,
 			gbInitSuccessful = bState;
 			break;
 		default:
-			PVR_DPF((PVR_DBG_ERROR,
-				"PVRSRVSetInitServerState : Unknown state %x", eInitServerState));
+			PVR_DPF(PVR_DBG_ERROR,
+				"PVRSRVSetInitServerState : Unknown state %x", eInitServerState);
 			return PVRSRV_ERROR_UNKNOWN_INIT_SERVER_STATE;
 	}
 
@@ -74,8 +74,8 @@ IMG_BOOL PVRSRVGetInitServerState(PVRSRV_INIT_SERVER_STATE eInitServerState)
 			bReturnVal = gbInitSuccessful;
 			break;
 		default:
-			PVR_DPF((PVR_DBG_ERROR,
-				"PVRSRVGetInitServerState : Unknown state %x", eInitServerState));
+			PVR_DPF(PVR_DBG_ERROR,
+				"PVRSRVGetInitServerState : Unknown state %x", eInitServerState);
 			bReturnVal = IMG_FALSE;
 	}
 
@@ -352,8 +352,8 @@ Exit:
 
 	if(eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,
-				"PVRSRVSetDevicePowerStateKM : Transition to %d FAILED 0x%x", eNewPowerState, eError));
+		PVR_DPF(PVR_DBG_ERROR,
+				"PVRSRVSetDevicePowerStateKM : Transition to %d FAILED 0x%x", eNewPowerState, eError);
 	}
 
 	if (!bRetainMutex || (eError != PVRSRV_OK))
@@ -416,9 +416,9 @@ PVRSRV_ERROR PVRSRVSystemPrePowerStateKM(PVRSRV_SYS_POWER_STATE eNewSysPowerStat
 
 ErrorExit:
 
-	PVR_DPF((PVR_DBG_ERROR,
+	PVR_DPF(PVR_DBG_ERROR,
 			"PVRSRVSystemPrePowerStateKM: Transition from %d to %d FAILED 0x%x",
-			psSysData->eCurrentPowerState, eNewSysPowerState, eError));
+			psSysData->eCurrentPowerState, eNewSysPowerState, eError);
 
 	
 	psSysData->eFailedPowerState = eNewSysPowerState;
@@ -469,9 +469,9 @@ PVRSRV_ERROR PVRSRVSystemPostPowerStateKM(PVRSRV_SYS_POWER_STATE eNewSysPowerSta
 		}
 	}
 
-	PVR_DPF((PVR_DBG_MESSAGE,
+	PVR_DPF(PVR_DBG_MESSAGE,
 			"PVRSRVSystemPostPowerStateKM: System Power Transition from %d to %d OK",
-			psSysData->eCurrentPowerState, eNewSysPowerState));
+			psSysData->eCurrentPowerState, eNewSysPowerState);
 
 	psSysData->eCurrentPowerState = eNewSysPowerState;
 
@@ -520,9 +520,9 @@ PVRSRV_ERROR PVRSRVSetPowerStateKM(PVRSRV_SYS_POWER_STATE eNewSysPowerState)
 
 ErrorExit:
 
-	PVR_DPF((PVR_DBG_ERROR,
+	PVR_DPF(PVR_DBG_ERROR,
 			"PVRSRVSetPowerStateKM: Transition from %d to %d FAILED 0x%x",
-			psSysData->eCurrentPowerState, eNewSysPowerState, eError));
+			psSysData->eCurrentPowerState, eNewSysPowerState, eError);
 
 	
 	psSysData->eFailedPowerState = eNewSysPowerState;
@@ -558,7 +558,7 @@ PVRSRV_ERROR PVRSRVRegisterPowerDevice(IMG_UINT32					ui32DeviceIndex,
 						 "Power Device");
 	if(eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"PVRSRVRegisterPowerDevice: Failed to alloc PVRSRV_POWER_DEV"));
+		PVR_DPF(PVR_DBG_ERROR,"PVRSRVRegisterPowerDevice: Failed to alloc PVRSRV_POWER_DEV");
 		return eError;
 	}
 
@@ -645,7 +645,7 @@ PVRSRV_ERROR PVRSRVDevicePreClockSpeedChange(IMG_UINT32	ui32DeviceIndex,
 		eError = PVRSRVPowerLock(KERNEL_ID, IMG_FALSE);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,	"PVRSRVDevicePreClockSpeedChange : failed to acquire lock, error:0x%x", eError));
+			PVR_DPF(PVR_DBG_ERROR,	"PVRSRVDevicePreClockSpeedChange : failed to acquire lock, error:0x%x", eError);
 			return eError;
 		}
 	}
@@ -663,9 +663,9 @@ PVRSRV_ERROR PVRSRVDevicePreClockSpeedChange(IMG_UINT32	ui32DeviceIndex,
 														   psPowerDevice->eCurrentPowerState);
 			if (eError != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR,
+				PVR_DPF(PVR_DBG_ERROR,
 						"PVRSRVDevicePreClockSpeedChange : Device %u failed, error:0x%x",
-						ui32DeviceIndex, eError));
+						ui32DeviceIndex, eError);
 			}
 	}
 
@@ -703,9 +703,9 @@ IMG_VOID PVRSRVDevicePostClockSpeedChange(IMG_UINT32	ui32DeviceIndex,
 														psPowerDevice->eCurrentPowerState);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,
+			PVR_DPF(PVR_DBG_ERROR,
 					"PVRSRVDevicePostClockSpeedChange : Device %u failed, error:0x%x",
-					ui32DeviceIndex, eError));
+					ui32DeviceIndex, eError);
 		}
 	}
 

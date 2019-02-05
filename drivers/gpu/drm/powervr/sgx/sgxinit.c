@@ -77,10 +77,10 @@ static const IMG_CHAR *SGXUKernelStatusString(IMG_UINT32 code)
 {	\
 	if (psSGXStructSizes->ui32Sizeof_##NAME != psDevInfo->sSGXStructSizes.ui32Sizeof_##NAME) \
 	{	\
-		PVR_DPF((PVR_DBG_ERROR, "SGXDevInitCompatCheck: Size check failed for SGXMKIF_%s (client) = %d bytes, (ukernel) = %d bytes\n", \
+		PVR_DPF(PVR_DBG_ERROR, "SGXDevInitCompatCheck: Size check failed for SGXMKIF_%s (client) = %d bytes, (ukernel) = %d bytes\n", \
 			VAR(NAME), \
 			psDevInfo->sSGXStructSizes.ui32Sizeof_##NAME, \
-			psSGXStructSizes->ui32Sizeof_##NAME )); \
+			psSGXStructSizes->ui32Sizeof_##NAME ); \
 		bStructSizesFailed = IMG_TRUE; \
 	}	\
 }
@@ -203,7 +203,7 @@ static PVRSRV_ERROR InitDevInfo(PVRSRV_PER_PROCESS_DATA *psPerProc,
 						"SGX Circular Command Buffer Info");
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"InitDevInfo: Failed to alloc memory"));
+		PVR_DPF(PVR_DBG_ERROR,"InitDevInfo: Failed to alloc memory");
 		goto failed_allockernelccb;
 	}
 
@@ -287,7 +287,7 @@ static PVRSRV_ERROR SGXRunScript(PVRSRV_SGXDEV_INFO *psDevInfo, SGX_INIT_COMMAND
 			
 			default:
 			{
-				PVR_DPF((PVR_DBG_ERROR,"SGXRunScript: PC %d: Illegal command: %d", ui32PC, psComm->eOp));
+				PVR_DPF(PVR_DBG_ERROR,"SGXRunScript: PC %d: Illegal command: %d", ui32PC, psComm->eOp);
 				return PVRSRV_ERROR_UNKNOWN_SCRIPT_OPERATION;
 			}
 		}
@@ -324,7 +324,7 @@ static PVRSRV_ERROR SGX_AllocMemTilingRangeInt(PVRSRV_SGXDEV_INFO *psDevInfo,
 		}
 	}
 
-	PVR_DPF((PVR_DBG_ERROR,"SGX_AllocMemTilingRange: all tiling ranges in use"));
+	PVR_DPF(PVR_DBG_ERROR,"SGX_AllocMemTilingRange: all tiling ranges in use");
 	return PVRSRV_ERROR_EXCEEDED_HW_LIMITS;
 
 RangeAllocated:
@@ -332,13 +332,13 @@ RangeAllocated:
 	
 	if(ui32Start & ~SGX_BIF_TILING_ADDR_MASK)
 	{
-		PVR_DPF((PVR_DBG_WARNING,"SGX_AllocMemTilingRangeInt: Tiling range start (0x%08X) fails"
-						"alignment test", ui32Start));
+		PVR_DPF(PVR_DBG_WARNING,"SGX_AllocMemTilingRangeInt: Tiling range start (0x%08X) fails"
+						"alignment test", ui32Start);
 	}
 	if((ui32End + 0x00001000) & ~SGX_BIF_TILING_ADDR_MASK)
 	{
-		PVR_DPF((PVR_DBG_WARNING,"SGX_AllocMemTilingRangeInt: Tiling range end (0x%08X) fails"
-						"alignment test", ui32End));
+		PVR_DPF(PVR_DBG_WARNING,"SGX_AllocMemTilingRangeInt: Tiling range end (0x%08X) fails"
+						"alignment test", ui32End);
 	}
 
 	ui32Offset = EUR_CR_BIF_TILE0 + (i<<2);
@@ -389,7 +389,7 @@ PVRSRV_ERROR SGXInitialise(PVRSRV_SGXDEV_INFO	*psDevInfo,
 	eError = SGXRunScript(psDevInfo, psDevInfo->sScripts.asInitCommandsPart1, SGX_MAX_INIT_COMMANDS);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SGXInitialise: SGXRunScript (part 1) failed (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR,"SGXInitialise: SGXRunScript (part 1) failed (%d)", eError);
 		return eError;
 	}
 	PDUMPCOMMENTWITHFLAGS(PDUMP_FLAGS_CONTINUOUS, "End of SGX initialisation script part 1\n");
@@ -449,8 +449,8 @@ PVRSRV_ERROR SGXInitialise(PVRSRV_SGXDEV_INFO	*psDevInfo,
 						NULL);
 				if(eError != PVRSRV_OK)
 				{
-					PVR_DPF((PVR_DBG_ERROR, "Unable to allocate SGX BIF tiling range for heap: %s",
-											psDeviceMemoryHeap[i].pszName));
+					PVR_DPF(PVR_DBG_ERROR, "Unable to allocate SGX BIF tiling range for heap: %s",
+											psDeviceMemoryHeap[i].pszName);
 					break;
 				}
 			}
@@ -464,7 +464,7 @@ PVRSRV_ERROR SGXInitialise(PVRSRV_SGXDEV_INFO	*psDevInfo,
 	eError = SGXRunScript(psDevInfo, psDevInfo->sScripts.asInitCommandsPart2, SGX_MAX_INIT_COMMANDS);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SGXInitialise: SGXRunScript (part 2) failed (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR,"SGXInitialise: SGXRunScript (part 2) failed (%d)", eError);
 		return eError;
 	}
 	PDUMPCOMMENTWITHFLAGS(PDUMP_FLAGS_CONTINUOUS, "End of SGX initialisation script part 2\n");
@@ -531,7 +531,7 @@ PVRSRV_ERROR SGXInitialise(PVRSRV_SGXDEV_INFO	*psDevInfo,
 					   MAX_HW_TIME_US/WAIT_TRY_COUNT,
 					   IMG_FALSE) != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXInitialise: Wait for uKernel initialisation failed"));
+		PVR_DPF(PVR_DBG_ERROR, "SGXInitialise: Wait for uKernel initialisation failed");
 		#if !defined(FIX_HW_BRN_23281)
 		SGXDumpDebugInfo(psDevInfo, IMG_FALSE);
 		PVR_DBG_BREAK;
@@ -581,7 +581,7 @@ PVRSRV_ERROR SGXDeinitialise(IMG_HANDLE hDevCookie)
 	eError = SGXRunScript(psDevInfo, psDevInfo->sScripts.asDeinitCommands, SGX_MAX_DEINIT_COMMANDS);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SGXDeinitialise: SGXRunScript failed (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR,"SGXDeinitialise: SGXRunScript failed (%d)", eError);
 		return eError;
 	}
 
@@ -632,7 +632,7 @@ static PVRSRV_ERROR DevInitSGXPart1 (IMG_VOID *pvDeviceNode)
 					 (IMG_VOID **)&psDevInfo, IMG_NULL,
 					 "SGX Device Info") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"DevInitSGXPart1 : Failed to alloc memory for DevInfo"));
+		PVR_DPF(PVR_DBG_ERROR,"DevInitSGXPart1 : Failed to alloc memory for DevInfo");
 		return (PVRSRV_ERROR_OUT_OF_MEMORY);
 	}
 	OSMemSet (psDevInfo, 0, sizeof(PVRSRV_SGXDEV_INFO));
@@ -655,7 +655,7 @@ static PVRSRV_ERROR DevInitSGXPart1 (IMG_VOID *pvDeviceNode)
 											IMG_NULL);
 	if (hKernelDevMemContext == IMG_NULL)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"DevInitSGXPart1: Failed BM_CreateContext"));
+		PVR_DPF(PVR_DBG_ERROR,"DevInitSGXPart1: Failed BM_CreateContext");
 		return PVRSRV_ERROR_OUT_OF_MEMORY;
 	}
 
@@ -694,7 +694,7 @@ static PVRSRV_ERROR DevInitSGXPart1 (IMG_VOID *pvDeviceNode)
 	eError = MMU_BIFResetPDAlloc(psDevInfo);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"DevInitSGX : Failed to alloc memory for BIF reset"));
+		PVR_DPF(PVR_DBG_ERROR,"DevInitSGX : Failed to alloc memory for BIF reset");
 		return eError;
 	}
 
@@ -728,7 +728,7 @@ PVRSRV_ERROR SGXGetInfoForSrvinitKM(IMG_HANDLE hDevHandle, SGX_BRIDGE_INFO_FOR_S
 #endif
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SGXGetInfoForSrvinit: PVRSRVGetDeviceMemHeapsKM failed (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR,"SGXGetInfoForSrvinit: PVRSRVGetDeviceMemHeapsKM failed (%d)", eError);
 		return eError;
 	}
 
@@ -760,7 +760,7 @@ PVRSRV_ERROR DevInitSGXPart2KM (PVRSRV_PER_PROCESS_DATA *psPerProc,
 	eError = InitDevInfo(psPerProc, psDeviceNode, psInitInfo);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"DevInitSGXPart2KM: Failed to load EDM program"));
+		PVR_DPF(PVR_DBG_ERROR,"DevInitSGXPart2KM: Failed to load EDM program");
 		goto failed_init_dev_info;
 	}
 
@@ -769,7 +769,7 @@ PVRSRV_ERROR DevInitSGXPart2KM (PVRSRV_PER_PROCESS_DATA *psPerProc,
 									(IMG_VOID**)&psSGXDeviceMap);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"DevInitSGXPart2KM: Failed to get device memory map!"));
+		PVR_DPF(PVR_DBG_ERROR,"DevInitSGXPart2KM: Failed to get device memory map!");
 		return PVRSRV_ERROR_INIT_FAILURE;
 	}
 
@@ -787,7 +787,7 @@ PVRSRV_ERROR DevInitSGXPart2KM (PVRSRV_PER_PROCESS_DATA *psPerProc,
 											   IMG_NULL);
 		if (!psDevInfo->pvRegsBaseKM)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"DevInitSGXPart2KM: Failed to map in regs\n"));
+			PVR_DPF(PVR_DBG_ERROR,"DevInitSGXPart2KM: Failed to map in regs\n");
 			return PVRSRV_ERROR_BAD_MAPPING;
 		}
 	}
@@ -805,7 +805,7 @@ PVRSRV_ERROR DevInitSGXPart2KM (PVRSRV_PER_PROCESS_DATA *psPerProc,
 									  	           IMG_NULL);
 		if (!psDevInfo->pvHostPortBaseKM)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"DevInitSGXPart2KM: Failed to map in host port\n"));
+			PVR_DPF(PVR_DBG_ERROR,"DevInitSGXPart2KM: Failed to map in host port\n");
 			return PVRSRV_ERROR_BAD_MAPPING;
 		}
 		psDevInfo->ui32HPSize = psSGXDeviceMap->ui32HPSize;
@@ -834,7 +834,7 @@ PVRSRV_ERROR DevInitSGXPart2KM (PVRSRV_PER_PROCESS_DATA *psPerProc,
 										eDefaultPowerState);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"DevInitSGXPart2KM: failed to register device with power manager"));
+		PVR_DPF(PVR_DBG_ERROR,"DevInitSGXPart2KM: failed to register device with power manager");
 		return eError;
 	}
 
@@ -842,7 +842,7 @@ PVRSRV_ERROR DevInitSGXPart2KM (PVRSRV_PER_PROCESS_DATA *psPerProc,
 	eError = WorkaroundBRN22997Alloc(psDeviceNode);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SGXInitialise : Failed to alloc memory for BRN22997 workaround"));
+		PVR_DPF(PVR_DBG_ERROR,"SGXInitialise : Failed to alloc memory for BRN22997 workaround");
 		return eError;
 	}
 #endif 
@@ -854,7 +854,7 @@ PVRSRV_ERROR DevInitSGXPart2KM (PVRSRV_PER_PROCESS_DATA *psPerProc,
 	eError = MMU_MapExtSystemCacheRegs(psDeviceNode);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SGXInitialise : Failed to map external system cache registers"));
+		PVR_DPF(PVR_DBG_ERROR,"SGXInitialise : Failed to map external system cache registers");
 		return eError;
 	}
 #endif 
@@ -889,7 +889,7 @@ static PVRSRV_ERROR DevDeInitSGX (IMG_VOID *pvDeviceNode)
 	if (!psDevInfo)
 	{
 		
-		PVR_DPF((PVR_DBG_ERROR,"DevDeInitSGX: Null DevInfo"));
+		PVR_DPF(PVR_DBG_ERROR,"DevDeInitSGX: Null DevInfo");
 		return PVRSRV_OK;
 	}
 
@@ -899,7 +899,7 @@ static PVRSRV_ERROR DevDeInitSGX (IMG_VOID *pvDeviceNode)
 		eError = OSRemoveTimer(psDevInfo->hTimer);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"DevDeInitSGX: Failed to remove timer"));
+			PVR_DPF(PVR_DBG_ERROR,"DevDeInitSGX: Failed to remove timer");
 			return 	eError;
 		}
 		psDevInfo->hTimer = IMG_NULL;
@@ -911,7 +911,7 @@ static PVRSRV_ERROR DevDeInitSGX (IMG_VOID *pvDeviceNode)
 	eError = MMU_UnmapExtSystemCacheRegs(psDeviceNode);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"DevDeInitSGX: Failed to unmap ext system cache registers"));
+		PVR_DPF(PVR_DBG_ERROR,"DevDeInitSGX: Failed to unmap ext system cache registers");
 		return eError;
 	}
 #endif 
@@ -949,7 +949,7 @@ static PVRSRV_ERROR DevDeInitSGX (IMG_VOID *pvDeviceNode)
 	eError = BM_DestroyContext(psDeviceNode->sDevMemoryInfo.pBMKernelContext, IMG_NULL);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"DevDeInitSGX : Failed to destroy kernel context"));
+		PVR_DPF(PVR_DBG_ERROR,"DevDeInitSGX : Failed to destroy kernel context");
 		return eError;
 	}
 
@@ -964,7 +964,7 @@ static PVRSRV_ERROR DevDeInitSGX (IMG_VOID *pvDeviceNode)
 									(IMG_VOID**)&psSGXDeviceMap);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"DevDeInitSGX: Failed to get device memory map!"));
+		PVR_DPF(PVR_DBG_ERROR,"DevDeInitSGX: Failed to get device memory map!");
 		return eError;
 	}
 
@@ -1049,8 +1049,8 @@ IMG_VOID SGXDumpDebugInfo (PVRSRV_SGXDEV_INFO	*psDevInfo,
 
 	if (bDumpSGXRegs)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SGX Register Base Address (Linear):   0x%08X", (IMG_UINTPTR_T)psDevInfo->pvRegsBaseKM));
-		PVR_DPF((PVR_DBG_ERROR,"SGX Register Base Address (Physical): 0x%08X", psDevInfo->sRegsPhysBase.uiAddr));
+		PVR_DPF(PVR_DBG_ERROR,"SGX Register Base Address (Linear):   0x%08X", (IMG_UINTPTR_T)psDevInfo->pvRegsBaseKM);
+		PVR_DPF(PVR_DBG_ERROR,"SGX Register Base Address (Physical): 0x%08X", psDevInfo->sRegsPhysBase.uiAddr);
 
 		SGXDumpDebugReg(psDevInfo, 0, "EUR_CR_CORE_ID:          ", EUR_CR_CORE_ID);
 		SGXDumpDebugReg(psDevInfo, 0, "EUR_CR_CORE_REVISION:    ", EUR_CR_CORE_REVISION);
@@ -1249,7 +1249,7 @@ IMG_VOID HWRecoveryResetSGX (PVRSRV_DEVICE_NODE *psDeviceNode,
 		
 
 
-		PVR_DPF((PVR_DBG_WARNING,"HWRecoveryResetSGX: Power transition in progress"));
+		PVR_DPF(PVR_DBG_WARNING,"HWRecoveryResetSGX: Power transition in progress");
 		return;
 	}
 
@@ -1272,7 +1272,7 @@ IMG_VOID HWRecoveryResetSGX (PVRSRV_DEVICE_NODE *psDeviceNode,
 	}
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"HWRecoveryResetSGX: SGXInitialise failed (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR,"HWRecoveryResetSGX: SGXInitialise failed (%d)", eError);
 	}
 
 	
@@ -1380,7 +1380,7 @@ IMG_VOID SGXOSTimer(IMG_VOID *pvData)
 				else
 	#endif
 				{
-					PVR_DPF((PVR_DBG_ERROR, "SGXOSTimer() detected SGX lockup (0x%x tasks)", ui32EDMTasks));
+					PVR_DPF(PVR_DBG_ERROR, "SGXOSTimer() detected SGX lockup (0x%x tasks)", ui32EDMTasks);
 
 					bLockup = IMG_TRUE;
 					(psDevInfo->psSGXHostCtl)->ui32OpenCLDelayCount = 0;
@@ -1435,7 +1435,7 @@ IMG_BOOL SGX_ISRHandler (IMG_VOID *pvData)
 		
 		if(pvData == IMG_NULL)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "SGX_ISRHandler: Invalid params\n"));
+			PVR_DPF(PVR_DBG_ERROR, "SGX_ISRHandler: Invalid params\n");
 			return bInterruptProcessed;
 		}
 
@@ -1540,7 +1540,7 @@ PVRSRV_ERROR SGX_FreeMemTilingRange(PVRSRV_DEVICE_NODE *psDeviceNode,
 
 	if(ui32RangeIndex >= 10)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SGX_FreeMemTilingRange: invalid Range index "));
+		PVR_DPF(PVR_DBG_ERROR,"SGX_FreeMemTilingRange: invalid Range index ");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 
@@ -1660,7 +1660,7 @@ PVRSRV_ERROR SGXRegisterDevice (PVRSRV_DEVICE_NODE *psDeviceNode)
 					 (IMG_VOID **)&psDevMemoryInfo->psDeviceMemoryHeap, 0,
 					 "Array of Device Memory Heap Info") != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SGXRegisterDevice : Failed to alloc memory for DEVICE_MEMORY_HEAP_INFO"));
+		PVR_DPF(PVR_DBG_ERROR,"SGXRegisterDevice : Failed to alloc memory for DEVICE_MEMORY_HEAP_INFO");
 		return (PVRSRV_ERROR_OUT_OF_MEMORY);
 	}
 	OSMemSet(psDevMemoryInfo->psDeviceMemoryHeap, 0, sizeof(DEVICE_MEMORY_HEAP_INFO) * SGX_MAX_HEAP_ID);
@@ -1702,7 +1702,7 @@ PVRSRV_ERROR SGXRegisterDevice (PVRSRV_DEVICE_NODE *psDeviceNode)
 	
 	psDeviceMemoryHeap->ui32DataPageSize = SGX_MMU_PAGE_SIZE;
 	psDeviceMemoryHeap->ui32XTileStride = SGX_VPB_TILED_HEAP_STRIDE;
-	PVR_DPF((PVR_DBG_WARNING, "VPB tiling heap tiling stride = 0x%x", psDeviceMemoryHeap->ui32XTileStride));
+	PVR_DPF(PVR_DBG_WARNING, "VPB tiling heap tiling stride = 0x%x", psDeviceMemoryHeap->ui32XTileStride);
 	psDeviceMemoryHeap++;
 #endif
 
@@ -1946,7 +1946,7 @@ PVRSRV_ERROR SGXResetPDump(PVRSRV_DEVICE_NODE *psDeviceNode)
 {
 	PVRSRV_SGXDEV_INFO *psDevInfo = (PVRSRV_SGXDEV_INFO *)(psDeviceNode->pvDevice);
 	psDevInfo->psKernelCCBInfo->ui32CCBDumpWOff = 0;
-	PVR_DPF((PVR_DBG_MESSAGE, "Reset pdump CCB write offset."));
+	PVR_DPF(PVR_DBG_MESSAGE, "Reset pdump CCB write offset.");
 	
 	return PVRSRV_OK;
 }
@@ -2040,7 +2040,7 @@ PVRSRV_ERROR SGXDevInitCompatCheck(PVRSRV_DEVICE_NODE *psDeviceNode)
 	}
 	else
 	{
-		PVR_DPF((PVR_DBG_MESSAGE, "SGXInit: Client-side and KM driver build options match. [ OK ]"));
+		PVR_DPF(PVR_DBG_MESSAGE, "SGXInit: Client-side and KM driver build options match. [ OK ]");
 	}
 
 #if !defined (NO_HARDWARE)
@@ -2072,8 +2072,8 @@ PVRSRV_ERROR SGXDevInitCompatCheck(PVRSRV_DEVICE_NODE *psDeviceNode)
 	}
 	else
 	{
-		PVR_DPF((PVR_DBG_MESSAGE, "SGXInit: driver DDK (%d) and device DDK (%d) match. [ OK ]",
-				PVRVERSION_BUILD, psSGXFeatures->ui32DDKBuild));
+		PVR_DPF(PVR_DBG_MESSAGE, "SGXInit: driver DDK (%d) and device DDK (%d) match. [ OK ]",
+				PVRVERSION_BUILD, psSGXFeatures->ui32DDKBuild);
 	}
 
 	
@@ -2111,8 +2111,8 @@ PVRSRV_ERROR SGXDevInitCompatCheck(PVRSRV_DEVICE_NODE *psDeviceNode)
 			}
 			else
 			{
-				PVR_DPF((PVR_DBG_MESSAGE, "SGXInit: HW core rev (%x) and SW core rev (%x) match. [ OK ]",
-						psSGXFeatures->ui32CoreRev, psSGXFeatures->ui32CoreRevSW));
+				PVR_DPF(PVR_DBG_MESSAGE, "SGXInit: HW core rev (%x) and SW core rev (%x) match. [ OK ]",
+						psSGXFeatures->ui32CoreRev, psSGXFeatures->ui32CoreRevSW);
 			}
 		}
 	}
@@ -2149,7 +2149,7 @@ PVRSRV_ERROR SGXDevInitCompatCheck(PVRSRV_DEVICE_NODE *psDeviceNode)
 	}
 	else
 	{
-		PVR_DPF((PVR_DBG_MESSAGE, "SGXInit: SGXMKIF structure sizes match. [ OK ]"));
+		PVR_DPF(PVR_DBG_MESSAGE, "SGXInit: SGXMKIF structure sizes match. [ OK ]");
 	}
 
 	
@@ -2175,7 +2175,7 @@ PVRSRV_ERROR SGXDevInitCompatCheck(PVRSRV_DEVICE_NODE *psDeviceNode)
 	}
 	else
 	{
-		PVR_DPF((PVR_DBG_MESSAGE, "SGXInit: Driver and microkernel build options match. [ OK ]"));
+		PVR_DPF(PVR_DBG_MESSAGE, "SGXInit: Driver and microkernel build options match. [ OK ]");
 	}
 #endif 
 
@@ -2203,7 +2203,7 @@ PVRSRV_ERROR SGXGetMiscInfoUkernel(PVRSRV_SGXDEV_INFO	*psDevInfo,
 
 	if (! psMemInfo->pvLinAddrKM)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXGetMiscInfoUkernel: Invalid address."));
+		PVR_DPF(PVR_DBG_ERROR, "SGXGetMiscInfoUkernel: Invalid address.");
 		return PVRSRV_ERROR_INVALID_PARAMS;
 	}
 	psSGXMiscInfoInt = psMemInfo->pvLinAddrKM;
@@ -2230,7 +2230,7 @@ PVRSRV_ERROR SGXGetMiscInfoUkernel(PVRSRV_SGXDEV_INFO	*psDevInfo,
 
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR, "SGXGetMiscInfoUkernel: SGXScheduleCCBCommandKM failed."));
+		PVR_DPF(PVR_DBG_ERROR, "SGXGetMiscInfoUkernel: SGXScheduleCCBCommandKM failed.");
 		return eError;
 	}
 
@@ -2252,7 +2252,7 @@ PVRSRV_ERROR SGXGetMiscInfoUkernel(PVRSRV_SGXDEV_INFO	*psDevInfo,
 		
 		if (!bExit)
 		{
-			PVR_DPF((PVR_DBG_ERROR, "SGXGetMiscInfoUkernel: Timeout occurred waiting for misc info."));
+			PVR_DPF(PVR_DBG_ERROR, "SGXGetMiscInfoUkernel: Timeout occurred waiting for misc info.");
 			return PVRSRV_ERROR_TIMEOUT;
 		}
 	}
@@ -2342,7 +2342,7 @@ PVRSRV_ERROR SGXGetMiscInfoKM(PVRSRV_SGXDEV_INFO	*psDevInfo,
 
 			if (eError != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "SGXGetMiscInfoKM: SGXScheduleCCBCommandKM failed."));
+				PVR_DPF(PVR_DBG_ERROR, "SGXGetMiscInfoKM: SGXScheduleCCBCommandKM failed.");
 				return eError;
 			}
 
@@ -2368,7 +2368,7 @@ PVRSRV_ERROR SGXGetMiscInfoKM(PVRSRV_SGXDEV_INFO	*psDevInfo,
 				
 				if (!bExit)
 				{
-					PVR_DPF((PVR_DBG_ERROR, "SGXGetMiscInfoKM: Timeout occurred waiting BP set/clear"));
+					PVR_DPF(PVR_DBG_ERROR, "SGXGetMiscInfoKM: Timeout occurred waiting BP set/clear");
 					return PVRSRV_ERROR_TIMEOUT;
 				}
 			}
@@ -2599,8 +2599,8 @@ PVRSRV_ERROR SGXGetMiscInfoKM(PVRSRV_SGXDEV_INFO	*psDevInfo,
 			eError = SGXGetMiscInfoUkernel(psDevInfo, psDeviceNode, hDevMemContext);
 			if(eError != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "An error occurred in SGXGetMiscInfoUkernel: %d\n",
-						eError));
+				PVR_DPF(PVR_DBG_ERROR, "An error occurred in SGXGetMiscInfoUkernel: %d\n",
+						eError);
 				return eError;
 			}
 			psSGXFeatures = &((PVRSRV_SGX_MISCINFO_INFO*)(psMemInfo->pvLinAddrKM))->sSGXFeatures;
@@ -2609,13 +2609,13 @@ PVRSRV_ERROR SGXGetMiscInfoKM(PVRSRV_SGXDEV_INFO	*psDevInfo,
 			psMiscInfo->uData.sSGXFeatures = *psSGXFeatures;
 
 			
-			PVR_DPF((PVR_DBG_MESSAGE, "SGXGetMiscInfoKM: Core 0x%x, sw ID 0x%x, sw Rev 0x%x\n",
+			PVR_DPF(PVR_DBG_MESSAGE, "SGXGetMiscInfoKM: Core 0x%x, sw ID 0x%x, sw Rev 0x%x\n",
 					psSGXFeatures->ui32CoreRev,
 					psSGXFeatures->ui32CoreIdSW,
-					psSGXFeatures->ui32CoreRevSW));
-			PVR_DPF((PVR_DBG_MESSAGE, "SGXGetMiscInfoKM: DDK version 0x%x, DDK build 0x%x\n",
+					psSGXFeatures->ui32CoreRevSW);
+			PVR_DPF(PVR_DBG_MESSAGE, "SGXGetMiscInfoKM: DDK version 0x%x, DDK build 0x%x\n",
 					psSGXFeatures->ui32DDKVersion,
-					psSGXFeatures->ui32DDKBuild));
+					psSGXFeatures->ui32DDKBuild);
 
 			
 			return PVRSRV_OK;
@@ -2708,8 +2708,8 @@ PVRSRV_ERROR SGXGetMiscInfoKM(PVRSRV_SGXDEV_INFO	*psDevInfo,
 			eError = SGXGetMiscInfoUkernel(psDevInfo, psDeviceNode);
 			if(eError != PVRSRV_OK)
 			{
-				PVR_DPF((PVR_DBG_ERROR, "An error occurred in SGXGetMiscInfoUkernel: %d\n",
-						eError));
+				PVR_DPF(PVR_DBG_ERROR, "An error occurred in SGXGetMiscInfoUkernel: %d\n",
+						eError);
 				return eError;
 			}
 			psSGXFeatures = &((PVRSRV_SGX_MISCINFO_INFO*)(psMemInfo->pvLinAddrKM))->sSGXFeatures;

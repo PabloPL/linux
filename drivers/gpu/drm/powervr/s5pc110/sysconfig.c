@@ -216,7 +216,7 @@ PVRSRV_ERROR SysInitialise(IMG_VOID)
 		g3d_clock = clk_get(&gpsPVRLDMDev->dev, "sclk");
 		if (IS_ERR(g3d_clock))
 		{
-			PVR_DPF((PVR_DBG_ERROR, "G3D failed to find g3d clock source-enable"));
+			PVR_DPF(PVR_DBG_ERROR, "G3D failed to find g3d clock source-enable");
 			return PVRSRV_ERROR_INIT_FAILURE;
 		}
 
@@ -227,7 +227,7 @@ PVRSRV_ERROR SysInitialise(IMG_VOID)
 	eError = OSInitEnvData(&gpsSysData->pvEnvSpecificData);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SysInitialise: Failed to setup env structure"));
+		PVR_DPF(PVR_DBG_ERROR,"SysInitialise: Failed to setup env structure");
 		SysDeinitialise(gpsSysData);
 		gpsSysData = IMG_NULL;
 		return eError;
@@ -264,7 +264,7 @@ PVRSRV_ERROR SysInitialise(IMG_VOID)
 	eError = SysInitialiseCommon(gpsSysData);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SysInitialise: Failed in SysInitialiseCommon"));
+		PVR_DPF(PVR_DBG_ERROR,"SysInitialise: Failed in SysInitialiseCommon");
 		SysDeinitialise(gpsSysData);
 		gpsSysData = IMG_NULL;
 		return eError;
@@ -278,7 +278,7 @@ PVRSRV_ERROR SysInitialise(IMG_VOID)
 	eError = SysLocateDevices(gpsSysData);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SysInitialise: Failed to locate devices"));
+		PVR_DPF(PVR_DBG_ERROR,"SysInitialise: Failed to locate devices");
 		SysDeinitialise(gpsSysData);
 		gpsSysData = IMG_NULL;
 		return eError;
@@ -291,7 +291,7 @@ PVRSRV_ERROR SysInitialise(IMG_VOID)
 	eError = PVRSRVRegisterDevice(gpsSysData, SGXRegisterDevice, 1, &gui32SGXDeviceID);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SysInitialise: Failed to register device!"));
+		PVR_DPF(PVR_DBG_ERROR,"SysInitialise: Failed to register device!");
 		SysDeinitialise(gpsSysData);
 		gpsSysData = IMG_NULL;
 		return eError;
@@ -409,7 +409,7 @@ PVRSRV_ERROR SysInitialise(IMG_VOID)
 														pStr,
 														&psDeviceMemoryHeap[i].ui32DataPageSize) == IMG_TRUE)
 					{
-						PVR_DPF((PVR_DBG_VERBOSE,"SysInitialise: set Heap %s page size to %d", pStr, psDeviceMemoryHeap[i].ui32DataPageSize));
+						PVR_DPF(PVR_DBG_VERBOSE,"SysInitialise: set Heap %s page size to %d", pStr, psDeviceMemoryHeap[i].ui32DataPageSize);
 					}
 #endif
 					/*
@@ -425,7 +425,7 @@ PVRSRV_ERROR SysInitialise(IMG_VOID)
 				break;
 			}
 			default:
-				PVR_DPF((PVR_DBG_ERROR,"SysInitialise: Failed to find SGX device node!"));
+				PVR_DPF(PVR_DBG_ERROR,"SysInitialise: Failed to find SGX device node!");
 				return PVRSRV_ERROR_INIT_FAILURE;
 		}
 
@@ -439,7 +439,7 @@ PVRSRV_ERROR SysInitialise(IMG_VOID)
 	eError = PVRSRVInitialiseDevice (gui32SGXDeviceID);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SysInitialise: Failed to initialise device!"));
+		PVR_DPF(PVR_DBG_ERROR,"SysInitialise: Failed to initialise device!");
 		SysDeinitialise(gpsSysData);
 		gpsSysData = IMG_NULL;
 		return eError;
@@ -472,7 +472,7 @@ PVRSRV_ERROR SysFinalise(IMG_VOID)
 	eError = EnableSGXClocks();
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SysInitialise: Failed to Enable SGX clocks (%d)", eError));
+		PVR_DPF(PVR_DBG_ERROR,"SysInitialise: Failed to Enable SGX clocks (%d)", eError);
 		(IMG_VOID)SysDeinitialise(gpsSysData);
 		gpsSysData = IMG_NULL;
 		return eError;
@@ -482,7 +482,7 @@ PVRSRV_ERROR SysFinalise(IMG_VOID)
 	eError = OSInstallMISR(gpsSysData);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"OSInstallMISR: Failed to install MISR"));
+		PVR_DPF(PVR_DBG_ERROR,"OSInstallMISR: Failed to install MISR");
 		SysDeinitialise(gpsSysData);
 		gpsSysData = IMG_NULL;
 		return eError;
@@ -494,7 +494,7 @@ PVRSRV_ERROR SysFinalise(IMG_VOID)
 	eError = OSInstallSystemLISR(gpsSysData, gsSGXDeviceMap.ui32IRQ);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"OSInstallSystemLISR: Failed to install ISR"));
+		PVR_DPF(PVR_DBG_ERROR,"OSInstallSystemLISR: Failed to install ISR");
 		OSUninstallMISR(gpsSysData);
 		SysDeinitialise(gpsSysData);
 		gpsSysData = IMG_NULL;
@@ -510,11 +510,11 @@ PVRSRV_ERROR SysFinalise(IMG_VOID)
 
 	if (!gpsSysData->pszVersionString)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SysFinalise: Failed to create a system version string"));
+		PVR_DPF(PVR_DBG_ERROR,"SysFinalise: Failed to create a system version string");
     }
 	else
 	{
-		PVR_DPF((PVR_DBG_WARNING, "SysFinalise: Version string: %s", gpsSysData->pszVersionString));
+		PVR_DPF(PVR_DBG_WARNING, "SysFinalise: Version string: %s", gpsSysData->pszVersionString);
 	}
 
 #if defined(SUPPORT_ACTIVE_POWER_MANAGEMENT)
@@ -543,7 +543,7 @@ PVRSRV_ERROR SysDeinitialise (SYS_DATA *psSysData)
 	PVRSRV_ERROR eError;
 
 	if (psSysData == IMG_NULL) {
-		PVR_DPF((PVR_DBG_ERROR, "SysDeinitialise: Called with NULL SYS_DATA pointer.  Probably called before."));
+		PVR_DPF(PVR_DBG_ERROR, "SysDeinitialise: Called with NULL SYS_DATA pointer.  Probably called before.");
 		return PVRSRV_OK;
 	}
 
@@ -562,7 +562,7 @@ PVRSRV_ERROR SysDeinitialise (SYS_DATA *psSysData)
 		eError = OSUninstallSystemLISR(psSysData);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"SysDeinitialise: OSUninstallSystemLISR failed"));
+			PVR_DPF(PVR_DBG_ERROR,"SysDeinitialise: OSUninstallSystemLISR failed");
 			return eError;
 		}
 	}
@@ -573,7 +573,7 @@ PVRSRV_ERROR SysDeinitialise (SYS_DATA *psSysData)
 		eError = OSUninstallMISR(psSysData);
 		if (eError != PVRSRV_OK)
 		{
-			PVR_DPF((PVR_DBG_ERROR,"SysDeinitialise: OSUninstallMISR failed"));
+			PVR_DPF(PVR_DBG_ERROR,"SysDeinitialise: OSUninstallMISR failed");
 			return eError;
 		}
 	}
@@ -582,14 +582,14 @@ PVRSRV_ERROR SysDeinitialise (SYS_DATA *psSysData)
 	eError = PVRSRVDeinitialiseDevice (gui32SGXDeviceID);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SysDeinitialise: failed to de-init the device"));
+		PVR_DPF(PVR_DBG_ERROR,"SysDeinitialise: failed to de-init the device");
 		return eError;
 	}
 
 	eError = OSDeInitEnvData(gpsSysData->pvEnvSpecificData);
 	if (eError != PVRSRV_OK)
 	{
-		PVR_DPF((PVR_DBG_ERROR,"SysDeinitialise: failed to de-init env structure"));
+		PVR_DPF(PVR_DBG_ERROR,"SysDeinitialise: failed to de-init env structure");
 		return eError;
 	}
 
@@ -629,7 +629,7 @@ PVRSRV_ERROR SysGetDeviceMemoryMap(PVRSRV_DEVICE_TYPE eDeviceType,
 		}
 		default:
 		{
-			PVR_DPF((PVR_DBG_ERROR,"SysGetDeviceMemoryMap: unsupported device type"));
+			PVR_DPF(PVR_DBG_ERROR,"SysGetDeviceMemoryMap: unsupported device type");
 		}
 	}
 	return PVRSRV_OK;
@@ -916,7 +916,7 @@ PVRSRV_ERROR SysDevicePrePowerState(IMG_UINT32			ui32DeviceIndex,
 	if (eNewPowerState == PVRSRV_DEV_POWER_STATE_OFF)
 	{
 		PVRSRVSetDCState(DC_STATE_FLUSH_COMMANDS);
-		PVR_DPF((PVR_DBG_MESSAGE, "SysDevicePrePowerState: SGX Entering state D3"));
+		PVR_DPF(PVR_DBG_MESSAGE, "SysDevicePrePowerState: SGX Entering state D3");
 		DisableSGXClocks();
 		PVRSRVSetDCState(DC_STATE_NO_FLUSH_COMMANDS);
 	}
@@ -959,7 +959,7 @@ PVRSRV_ERROR SysDevicePostPowerState(IMG_UINT32			ui32DeviceIndex,
 #if defined(SUPPORT_ACTIVE_POWER_MANAGEMENT)
 	if (eNewPowerState == PVRSRV_DEV_POWER_STATE_ON)
 	{
-		PVR_DPF((PVR_DBG_MESSAGE, "SysDevicePostPowerState: SGX Leaving state D3"));
+		PVR_DPF(PVR_DBG_MESSAGE, "SysDevicePostPowerState: SGX Leaving state D3");
 		eError = EnableSGXClocks();
 	}
 #else
