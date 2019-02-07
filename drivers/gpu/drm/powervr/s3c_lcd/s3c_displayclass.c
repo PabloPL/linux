@@ -979,6 +979,8 @@ int s3c_displayclass_init(void)
 		num_of_fb = S3C_MAX_BUFFERS;
 
 	num_of_backbuffer = num_of_fb - 1;
+	printk("num_of_backbuffer: %d\n", num_of_backbuffer);
+	printk("num_of_fb: %d\n", num_of_fb);
 
 	if (gpsLCDInfo != NULL)
 		goto exit_out;
