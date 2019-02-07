@@ -108,6 +108,7 @@ static int exynos_drm_fbdev_update(struct drm_fb_helper *helper,
 	fbi->screen_base = exynos_gem->kvaddr + offset;
 	fbi->screen_size = size;
 	fbi->fix.smem_len = size;
+	fbi->fix.smem_start = virt_to_phys(fbi->screen_base);
 
 	return 0;
 }
