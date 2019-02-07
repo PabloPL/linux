@@ -41,12 +41,12 @@
  */
 
 
-#if defined(DEBUG) || defined (INTERNAL_TEST)
-#define DEBUG_SET_OFFSET	OPTIONS_BIT0
-#define OPTIONS_BIT0		0x1U
-#else
+//#if defined(DEBUG) || defined (INTERNAL_TEST)
+//#define DEBUG_SET_OFFSET	OPTIONS_BIT0
+//#define OPTIONS_BIT0		0x1U
+//#else
 #define OPTIONS_BIT0		0x0
-#endif /* DEBUG */
+//#endif /* DEBUG */
 
 #if defined(PDUMP) || defined (INTERNAL_TEST)
 #define PDUMP_SET_OFFSET	OPTIONS_BIT1
