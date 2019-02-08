@@ -19,6 +19,8 @@ ccflags-y += -DLINUX -D__linux__ -DANDROID
 ccflags-y += -Idrivers/gpu/drm/powervr
 
 ccflags-y += \
+	-DPVRSRV_NEED_PVR_TRACE \
+	-DPVRSRV_NEED_PVR_ASSERT \
 	-DSUPPORT_SGX_NEW_STATUS_VALS \
 	-DSUPPORT_SGX_HWPERF \
 	-DSYS_USING_INTERRUPTS \
