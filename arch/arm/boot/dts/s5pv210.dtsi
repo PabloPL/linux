@@ -164,6 +164,7 @@
 			reg = <0xe1700000 0x1000>;
 			interrupt-parent = <&vic2>;
 			interrupts = <23>, <24>;
+			samsung,syscon-phandle = <&pmu_syscon>;
 			clocks = <&clocks CLK_TSADC>;
 			clock-names = "adc";
 			#io-channel-cells = <1>;
