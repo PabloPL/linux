@@ -129,6 +129,7 @@
 
 #define EXYNOS_ADCV1_PHY_OFFSET	0x0718
 #define EXYNOS_ADCV2_PHY_OFFSET	0x0720
+#define S5PV210_ADC_PHY_OFFSET  0x6818
 
 struct exynos_adc {
 	struct exynos_adc_data	*data;
@@ -300,6 +301,8 @@ static const struct exynos_adc_data exynos_adc_v1_data = {
 static const struct exynos_adc_data exynos_adc_s5pv210_data = {
 	.num_channels	= MAX_S5PV210_ADC_CHANNELS,
 	.mask		= ADC_DATX_MASK,	/* 12 bit ADC resolution */
+	.needs_adc_phy	= true,
+	.phy_offset	= S5PV210_ADC_PHY_OFFSET,
 
 	.init_hw	= exynos_adc_v1_init_hw,
 	.exit_hw	= exynos_adc_v1_exit_hw,
