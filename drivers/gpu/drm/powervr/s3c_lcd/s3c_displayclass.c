@@ -981,6 +981,13 @@ int s3c_displayclass_init(void)
 	num_of_backbuffer = num_of_fb - 1;
 	printk("num_of_backbuffer: %d\n", num_of_backbuffer);
 	printk("num_of_fb: %d\n", num_of_fb);
+	if (psLINFBInfo->var.width == 0) {
+		psLINFBInfo->var.width = 53;
+	}
+	if (psLINFBInfo->var.height == 0) {
+		psLINFBInfo->var.height = 89;
+	}
+	printk("display width: %d, height %d", psLINFBInfo->var.width, psLINFBInfo->var.height);
 
 	if (gpsLCDInfo != NULL)
 		goto exit_out;
