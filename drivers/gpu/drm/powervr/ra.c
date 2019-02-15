@@ -148,11 +148,11 @@ struct _RA_ARENA_
 
 	struct proc_dir_entry* pProcInfo;
 	PVR_PROC_SEQ_HANDLERS* pProcInfoHandlers;
-	IMG_CHAR *pProcInfoName;
+	IMG_CHAR pProcInfoName[PROC_NAME_SIZE];
 
 	struct proc_dir_entry* pProcSegs;
 	PVR_PROC_SEQ_HANDLERS* pProcSegsHandlers;
-	IMG_CHAR *pProcSegsName;
+	IMG_CHAR pProcSegsName[PROC_NAME_SIZE];
 
 	IMG_BOOL bInitProcEntry;
 #endif
@@ -928,8 +928,9 @@ RA_Create (IMG_CHAR *name,
 		ret = snprintf(szProcInfoName, sizeof(szProcInfoName), "ra_info_%s", pArena->name);
 		if (ret > 0 && ret < sizeof(szProcInfoName))
 		{
-			pArena->pProcInfoName = szProcInfoName;
-			pArena->pProcInfo =  pfnCreateProcEntrySeq(ReplaceSpaces(szProcInfoName), pArena, NULL,
+			ReplaceSpaces(szProcInfoName);
+			strncpy(pArena->pProcInfoName, szProcInfoName, sizeof(pArena->pProcInfoName));
+			pArena->pProcInfo =  pfnCreateProcEntrySeq(pArena->pProcInfoName, pArena, NULL,
 											 RA_ProcSeqShowInfo, RA_ProcSeqOff2ElementInfo, NULL, NULL, &pArena->pProcInfoHandlers);
 		}
 		else
@@ -939,10 +940,11 @@ RA_Create (IMG_CHAR *name,
 		}
 
 		ret = snprintf(szProcSegsName, sizeof(szProcSegsName), "ra_segs_%s", pArena->name);
-		if (ret > 0 && ret < sizeof(szProcInfoName))
+		if (ret > 0 && ret < sizeof(szProcSegsName))
 		{
-			pArena->pProcSegsName = szProcSegsName;
-			pArena->pProcSegs = pfnCreateProcEntrySeq(ReplaceSpaces(szProcSegsName), pArena, NULL,
+			ReplaceSpaces(szProcSegsName);
+			strncpy(pArena->pProcSegsName, szProcSegsName, sizeof(pArena->pProcSegsName));
+			pArena->pProcSegs = pfnCreateProcEntrySeq(pArena->pProcSegsName, pArena, NULL,
 											 RA_ProcSeqShowRegs, RA_ProcSeqOff2ElementRegs, NULL, NULL, &pArena->pProcSegsHandlers);
 		}
 		else
