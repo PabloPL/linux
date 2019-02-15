@@ -954,7 +954,8 @@ int s3c_displayclass_init(void)
 		bytes_per_pixel = 2;
 		break;
 	case 32:
-		rgb_format = PVRSRV_PIXEL_FORMAT_ARGB8888;
+		//rgb_format = PVRSRV_PIXEL_FORMAT_ARGB8888;
+		rgb_format = PVRSRV_PIXEL_FORMAT_XRGB8888;
 		bytes_per_pixel = 4;
 		break;
 	default:
