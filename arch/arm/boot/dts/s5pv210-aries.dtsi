@@ -374,6 +374,11 @@
 		offset = <0x681c>; /* PS_HOLD_CONTROL */
 		value = <0x5200>;
 	};
+
+	cpuidle: cpuidle {
+		compatible = "samsung,s5pv210-cpuidle";
+		regmap = <&pmu_syscon>;
+	};
 };
 
 &fimd {

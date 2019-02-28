@@ -70,6 +70,12 @@ config ARM_EXYNOS_CPUIDLE
 	help
 	  Select this to enable cpuidle for Exynos processors
 
+config ARM_S5PV210_CPUIDLE
+	bool "Cpu Idle Driver for the Samsung s5pv210 processor"
+	depends on ARCH_S5PV210
+	help
+	  Select this to enable cpuidle for Samsung s5pv210 processors
+
 config ARM_MVEBU_V7_CPUIDLE
 	bool "CPU Idle Driver for mvebu v7 family processors"
 	depends on ARCH_MVEBU && !ARM64
