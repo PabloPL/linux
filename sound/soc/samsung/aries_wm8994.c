@@ -240,10 +240,8 @@ static int aries_hw_params(struct snd_pcm_substream *substream,
 	/* set the codec system clock */
 	ret = snd_soc_dai_set_sysclk(codec_dai, WM8994_SYSCLK_FLL1,
 			pll_out, SND_SOC_CLOCK_IN);
-	if (ret < 0)
-		return ret;
 
-	return 0;
+	return ret;
 }
 
 static int aries_hw_free(struct snd_pcm_substream *substream)
@@ -306,10 +304,8 @@ static int aries_modem_init(struct snd_soc_pcm_runtime *rtd)
 	/* set wm8994 system clock */
 	ret = snd_soc_dai_set_sysclk(cpu_dai, WM8994_SYSCLK_FLL2,
 			pll_out, SND_SOC_CLOCK_IN);
-	if (ret < 0)
-		return ret;
 
-	return 0;
+	return ret;
 }
 
 static int aries_late_probe(struct snd_soc_card *card)
