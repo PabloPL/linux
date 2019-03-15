@@ -55,6 +55,7 @@ struct bma180_part_info {
 	u8 power_reg, power_mask, lowpower_val;
 	u8 int_enable_reg, int_enable_mask;
 	u8 softreset_reg, softreset_mask;
+	int temp_offset;
 
 	int (*chip_config)(struct bma180_data *data);
 	void (*chip_disable)(struct bma180_data *data);
@@ -95,6 +96,9 @@ struct bma180_part_info {
 
 /* Chip power modes */
 #define BMA180_LOW_POWER	0x03
+
+/* Temperature offset */
+#define BMA180_TEMP_OFFSET	48 /* 0 LSB @ 24 degree C */
 
 #define BMA250_RANGE_REG	0x0f
 #define BMA250_BW_REG		0x10
@@ -500,7 +504,7 @@ static int bma180_read_raw(struct iio_dev *indio_dev,
 			return -EINVAL;
 		}
 	case IIO_CHAN_INFO_OFFSET:
-		*val = 48; /* 0 LSB @ 24 degree C */
+		*val = data->part_info->temp_offset;
 		return IIO_VAL_INT;
 	default:
 		return -EINVAL;
@@ -632,6 +636,7 @@ static const struct bma180_part_info bma180_part_info[] = {
 		BMA180_TCO_Z, BMA180_MODE_CONFIG, BMA180_LOW_POWER,
 		BMA180_CTRL_REG3, BMA180_NEW_DATA_INT,
 		BMA180_RESET, BMA180_RESET_VAL,
+		BMA180_TEMP_OFFSET,
 		bma180_chip_config,
 		bma180_chip_disable,
 	},
