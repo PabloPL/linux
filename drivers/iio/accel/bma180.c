@@ -54,7 +54,7 @@ struct bma180_part_info {
 	u8 scale_reg, scale_mask;
 	u8 power_reg, power_mask, lowpower_val;
 	u8 int_enable_reg, int_enable_mask;
-	u8 softreset_reg;
+	u8 softreset_reg, softreset_mask;
 
 	int (*chip_config)(struct bma180_data *data);
 	void (*chip_disable)(struct bma180_data *data);
@@ -294,7 +294,8 @@ static int bma180_set_pmode(struct bma180_data *data, bool mode)
 static int bma180_soft_reset(struct bma180_data *data)
 {
 	int ret = i2c_smbus_write_byte_data(data->client,
-		data->part_info->softreset_reg, BMA180_RESET_VAL);
+		data->part_info->softreset_reg,
+		data->part_info->softreset_mask);
 
 	if (ret)
 		dev_err(&data->client->dev, "failed to reset the chip\n");
@@ -630,7 +631,7 @@ static const struct bma180_part_info bma180_part_info[] = {
 		BMA180_OFFSET_LSB1, BMA180_RANGE,
 		BMA180_TCO_Z, BMA180_MODE_CONFIG, BMA180_LOW_POWER,
 		BMA180_CTRL_REG3, BMA180_NEW_DATA_INT,
-		BMA180_RESET,
+		BMA180_RESET, BMA180_RESET_VAL,
 		bma180_chip_config,
 		bma180_chip_disable,
 	},
@@ -644,7 +645,8 @@ static const struct bma180_part_info bma180_part_info[] = {
 		BMA250_RANGE_REG, BMA250_RANGE_MASK,
 		BMA250_POWER_REG, BMA250_LOWPOWER_MASK, 1,
 		BMA250_INT_ENABLE_REG, BMA250_DATA_INTEN_MASK,
-		BMA250_RESET_REG,
+		BMA250_RESET_REG, BMA180_RESET_VAL,
+		BMA180_TEMP_OFFSET,
 		bma250_chip_config,
 		bma250_chip_disable,
 	},
