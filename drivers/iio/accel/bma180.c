@@ -10,6 +10,7 @@
  * directory of this archive for more details.
  *
  * SPI is not supported by driver
+ * BMA150: 7-bit I2C slave address 0x38
  * BMA180: 7-bit I2C slave address 0x40 or 0x41
  * BMA250: 7-bit I2C slave address 0x18 or 0x19
  */
@@ -34,6 +35,7 @@
 #define BMA180_IRQ_NAME "bma180_event"
 
 enum chip_ids {
+	BMA150,
 	BMA180,
 	BMA250,
 };
@@ -100,6 +102,19 @@ struct bma180_part_info {
 /* Temperature offset */
 #define BMA180_TEMP_OFFSET	48 /* 0 LSB @ 24 degree C */
 
+#define BMA150_CTRL_REG0	0x0a
+#define BMA150_CTRL_REG1	0x0b
+#define BMA150_CTRL_REG2	0x14
+#define BMA150_CTRL_REG3	0x15
+
+#define BMA150_RANGE_MASK	GENMASK(4, 3) /* Range of accel values */
+#define BMA150_BW_MASK		GENMASK(2, 0) /* Accel bandwidth */
+#define BMA150_SLEEP		BIT(0)
+#define BMA150_INT_RESET_MASK	BIT(6)
+#define BMA150_NEW_DATA_INT	BIT(5) /* Intr every new accel data is ready */
+#define BMA150_RESET_VAL	BIT(1)
+#define BMA150_TEMP_OFFSET	-30 /* 0 LSB @ -30 degree C */
+
 #define BMA250_RANGE_REG	0x0f
 #define BMA250_BW_REG		0x10
 #define BMA250_POWER_REG	0x11
@@ -134,6 +149,9 @@ enum bma180_chan {
 	AXIS_Z,
 	TEMP
 };
+
+static int bma150_bw_table[] = { 25, 50, 100, 190, 375, 750, 1500 }; /* Hz */
+static int bma150_scale_table[] = { 2452, 4903, 9709, };
 
 static int bma180_bw_table[] = { 10, 20, 40, 75, 150, 300 }; /* Hz */
 static int bma180_scale_table[] = { 1275, 1863, 2452, 3727, 4903, 9709, 19417 };
@@ -307,6 +325,27 @@ static int bma180_soft_reset(struct bma180_data *data)
 	return ret;
 }
 
+static int bma150_chip_config(struct bma180_data *data)
+{
+	int ret = bma180_soft_reset(data);
+
+	if (ret)
+		goto err;
+
+	ret = bma180_set_bw(data, 50); /* 50 Hz */
+	if (ret)
+		goto err;
+	ret = bma180_set_scale(data, 2452); /* 2 G */
+	if (ret)
+		goto err;
+
+	return 0;
+
+err:
+	dev_err(&data->client->dev, "failed to config the chip\n");
+	return ret;
+}
+
 static int bma180_chip_init(struct bma180_data *data)
 {
 	/* Try to read chip_id register. It must return 0x03. */
@@ -384,6 +423,17 @@ static int bma250_chip_config(struct bma180_data *data)
 err:
 	dev_err(&data->client->dev, "failed to config the chip\n");
 	return ret;
+}
+
+static void bma150_chip_disable(struct bma180_data *data)
+{
+	if (bma180_set_sleep_state(data, true))
+		goto err;
+
+	return;
+
+err:
+	dev_err(&data->client->dev, "failed to disable the chip\n");
 }
 
 static void bma180_chip_disable(struct bma180_data *data)
@@ -579,6 +629,22 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
 	{ },
 };
 
+#define BMA150_ACC_CHANNEL(_axis, _bits) {				\
+	.type = IIO_ACCEL,						\
+	.modified = 1,							\
+	.channel2 = IIO_MOD_##_axis,					\
+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
+		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),	\
+	.scan_index = AXIS_##_axis,					\
+	.scan_type = {							\
+		.sign = 's',						\
+		.realbits = _bits,					\
+		.storagebits = 16,					\
+		.shift = 16 - _bits,					\
+	},								\
+}
+
 #define BMA180_ACC_CHANNEL(_axis, _bits) {				\
 	.type = IIO_ACCEL,						\
 	.modified = 1,							\
@@ -608,6 +674,14 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
 	},								\
 }
 
+static const struct iio_chan_spec bma150_channels[] = {
+	BMA150_ACC_CHANNEL(X, 14),
+	BMA150_ACC_CHANNEL(Y, 14),
+	BMA150_ACC_CHANNEL(Z, 14),
+	BMA180_TEMP_CHANNEL,
+	IIO_CHAN_SOFT_TIMESTAMP(4),
+};
+
 static const struct iio_chan_spec bma180_channels[] = {
 	BMA180_ACC_CHANNEL(X, 14),
 	BMA180_ACC_CHANNEL(Y, 14),
@@ -625,6 +699,21 @@ static const struct iio_chan_spec bma250_channels[] = {
 };
 
 static const struct bma180_part_info bma180_part_info[] = {
+	[BMA150] = {
+		bma150_channels, ARRAY_SIZE(bma150_channels),
+		bma150_scale_table, ARRAY_SIZE(bma150_scale_table),
+		bma150_bw_table, ARRAY_SIZE(bma150_bw_table),
+		BMA150_CTRL_REG0, BMA150_INT_RESET_MASK,
+		BMA150_CTRL_REG0, BMA150_SLEEP,
+		BMA150_CTRL_REG2, BMA150_BW_MASK,
+		BMA150_CTRL_REG2, BMA150_RANGE_MASK,
+		0, 0, 0, /* No low power mode */
+		BMA150_CTRL_REG3, BMA150_NEW_DATA_INT,
+		BMA180_RESET, BMA150_RESET_VAL,
+		BMA150_TEMP_OFFSET,
+		bma150_chip_config,
+		bma150_chip_disable,
+	},
 	[BMA180] = {
 		bma180_channels, ARRAY_SIZE(bma180_channels),
 		bma180_scale_table, ARRAY_SIZE(bma180_scale_table),
@@ -848,6 +937,7 @@ static SIMPLE_DEV_PM_OPS(bma180_pm_ops, bma180_suspend, bma180_resume);
 #endif
 
 static const struct i2c_device_id bma180_ids[] = {
+	{ "bma150", BMA150 },
 	{ "bma180", BMA180 },
 	{ "bma250", BMA250 },
 	{ }
@@ -856,6 +946,10 @@ static const struct i2c_device_id bma180_ids[] = {
 MODULE_DEVICE_TABLE(i2c, bma180_ids);
 
 static const struct of_device_id bma180_of_match[] = {
+	{
+		.compatible = "bosch,bma150",
+		.data = (void *)BMA150
+	},
 	{
 		.compatible = "bosch,bma180",
 		.data = (void *)BMA180
@@ -883,5 +977,5 @@ module_i2c_driver(bma180_driver);
 
 MODULE_AUTHOR("Kravchenko Oleksandr <x0199363@ti.com>");
 MODULE_AUTHOR("Texas Instruments, Inc.");
-MODULE_DESCRIPTION("Bosch BMA180/BMA250 triaxial acceleration sensor");
+MODULE_DESCRIPTION("Bosch BMA150/BMA180/BMA250 triaxial acceleration sensor");
 MODULE_LICENSE("GPL");
