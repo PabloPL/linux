@@ -273,6 +273,7 @@ static IMG_VOID MakeKernelPageReadWrite(IMG_PVOID ulCPUVAddr)
     pmd_t *psPMD;
     pte_t *psPTE;
     pte_t ptent;
+    pte_t oldPtent;
     IMG_UINT32 ui32CPUVAddr = (IMG_UINT32) ulCPUVAddr;
 
     psPGD = pgd_offset_k(ui32CPUVAddr);
@@ -294,9 +295,9 @@ static IMG_VOID MakeKernelPageReadWrite(IMG_PVOID ulCPUVAddr)
     }
 	psPTE = (pte_t *)pte_offset_kernel(psPMD, ui32CPUVAddr);
 
-	ptent = ptep_modify_prot_start(&init_mm, ui32CPUVAddr, psPTE);
-	ptent = pte_mkwrite(ptent);
-	ptep_modify_prot_commit(&init_mm, ui32CPUVAddr, psPTE, ptent);
+	oldPtent = ptep_modify_prot_start(init_mm.mmap, ui32CPUVAddr, psPTE);
+	ptent = pte_mkwrite(oldPtent);
+	ptep_modify_prot_commit(init_mm.mmap, ui32CPUVAddr, psPTE, oldPtent, ptent);
 
 	flush_tlb_all();
 }
@@ -308,6 +309,7 @@ static IMG_VOID MakeKernelPageReadOnly(IMG_PVOID ulCPUVAddr)
     pmd_t *psPMD;
     pte_t *psPTE;
     pte_t ptent;
+    pte_t oldPtent;
     IMG_UINT32 ui32CPUVAddr = (IMG_UINT32) ulCPUVAddr;
 
 	OSWriteMemoryBarrier();
@@ -332,9 +334,9 @@ static IMG_VOID MakeKernelPageReadOnly(IMG_PVOID ulCPUVAddr)
 
 	psPTE = (pte_t *)pte_offset_kernel(psPMD, ui32CPUVAddr);
 
-	ptent = ptep_modify_prot_start(&init_mm, ui32CPUVAddr, psPTE);
-	ptent = pte_wrprotect(ptent);
-	ptep_modify_prot_commit(&init_mm, ui32CPUVAddr, psPTE, ptent);
+	oldPtent = ptep_modify_prot_start(init_mm.mmap, ui32CPUVAddr, psPTE);
+	ptent = pte_wrprotect(oldPtent);
+	ptep_modify_prot_commit(init_mm.mmap, ui32CPUVAddr, psPTE, oldPtent, ptent);
 
 	flush_tlb_all();
 
