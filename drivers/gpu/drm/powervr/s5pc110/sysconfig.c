@@ -37,6 +37,7 @@
 #include <linux/err.h>
 #include <linux/cpufreq.h>
 #include <linux/of_irq.h>
+#include <linux/pm_runtime.h>
 
 // TODO - Convert BASEADDR and MAPPING_SIZE to DT
 #define REAL_HARDWARE 1
@@ -221,6 +222,13 @@ PVRSRV_ERROR SysInitialise(IMG_VOID)
 		}
 
 		EnableSGXClocks();
+
+		eError = pm_runtime_get_sync(&gpsPVRLDMDev->dev);
+		if (eError < 0) {
+			PVR_DPF(PVR_DBG_ERROR, "Failed to enable power domain");
+		} else {
+			PVR_DPF(PVR_DBG_ERROR, "Power domain enabled");
+		}
 	}
 #endif
 
