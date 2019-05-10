@@ -6,6 +6,7 @@
 /dts-v1/;
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/power/s5pv210-power.h>
 #include "s5pv210.dtsi"
 
 / {
@@ -335,6 +336,7 @@
 		interrupt-parent = <&vic2>;
 		interrupts = <10>, <1>;
 		interrupt-names = "main", "vsync";
+		power-domains = <&power_domain S5PV210_PD_G3D>;
 		clock-names = "sclk";
 		clocks = <&clocks CLK_G3D>;
 	};
