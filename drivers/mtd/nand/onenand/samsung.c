@@ -938,11 +938,6 @@ static int s3c_onenand_probe(struct platform_device *pdev)
 		onenand->oob_buf = devm_kzalloc(&pdev->dev, 128, GFP_KERNEL);
 		if (!onenand->oob_buf)
 			return -ENOMEM;
-
-		/* S3C doesn't handle subpage write */
-		mtd->subpage_sft = 0;
-		this->subpagesize = mtd->writesize;
-
 	} else { /* S5PC110 */
 		/* Set onenand_chip also */
 		this->base = onenand->chip_base;
