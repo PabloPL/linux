@@ -10,7 +10,7 @@
  * directory of this archive for more details.
  *
  * SPI is not supported by driver
- * BMA150: 7-bit I2C slave address 0x38
+ * BMA023/BMA150: 7-bit I2C slave address 0x38
  * BMA180: 7-bit I2C slave address 0x40 or 0x41
  * BMA250: 7-bit I2C slave address 0x18 or 0x19
  */
@@ -35,6 +35,7 @@
 #define BMA180_IRQ_NAME "bma180_event"
 
 enum chip_ids {
+	BMA023,
 	BMA150,
 	BMA180,
 	BMA250,
@@ -674,6 +675,13 @@ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
 	},								\
 }
 
+static const struct iio_chan_spec bma023_channels[] = {
+	BMA150_ACC_CHANNEL(X, 14),
+	BMA150_ACC_CHANNEL(Y, 14),
+	BMA150_ACC_CHANNEL(Z, 14),
+	IIO_CHAN_SOFT_TIMESTAMP(4),
+};
+
 static const struct iio_chan_spec bma150_channels[] = {
 	BMA150_ACC_CHANNEL(X, 14),
 	BMA150_ACC_CHANNEL(Y, 14),
@@ -699,6 +707,21 @@ static const struct iio_chan_spec bma250_channels[] = {
 };
 
 static const struct bma180_part_info bma180_part_info[] = {
+	[BMA023] = {
+		bma023_channels, ARRAY_SIZE(bma023_channels),
+		bma150_scale_table, ARRAY_SIZE(bma150_scale_table),
+		bma150_bw_table, ARRAY_SIZE(bma150_bw_table),
+		BMA150_CTRL_REG0, BMA150_INT_RESET_MASK,
+		BMA150_CTRL_REG0, BMA150_SLEEP,
+		BMA150_CTRL_REG2, BMA150_BW_MASK,
+		BMA150_CTRL_REG2, BMA150_RANGE_MASK,
+		0, 0, 0, /* No low power mode */
+		BMA150_CTRL_REG3, BMA150_NEW_DATA_INT,
+		BMA180_RESET, BMA150_RESET_VAL,
+		BMA150_TEMP_OFFSET,
+		bma150_chip_config,
+		bma150_chip_disable,
+	},
 	[BMA150] = {
 		bma150_channels, ARRAY_SIZE(bma150_channels),
 		bma150_scale_table, ARRAY_SIZE(bma150_scale_table),
@@ -937,6 +960,7 @@ static SIMPLE_DEV_PM_OPS(bma180_pm_ops, bma180_suspend, bma180_resume);
 #endif
 
 static const struct i2c_device_id bma180_ids[] = {
+	{ "bma023", BMA023 },
 	{ "bma150", BMA150 },
 	{ "bma180", BMA180 },
 	{ "bma250", BMA250 },
@@ -946,6 +970,10 @@ static const struct i2c_device_id bma180_ids[] = {
 MODULE_DEVICE_TABLE(i2c, bma180_ids);
 
 static const struct of_device_id bma180_of_match[] = {
+	{
+		.compatible = "bosch,bma023",
+		.data = (void *)BMA023
+	},
 	{
 		.compatible = "bosch,bma150",
 		.data = (void *)BMA150
