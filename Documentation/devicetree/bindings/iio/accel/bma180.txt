@@ -5,7 +5,8 @@ http://ae-bst.resource.bosch.com/media/products/dokumente/bma250/bst-bma250-ds00
 
 Required properties:
 
-  - compatible : should be "bosch,bma180" or "bosch,bma250"
+  - compatible : should be "bosch,bma023", "bosch,bma150",
+		"bosch,bma180" or "bosch,bma250"
   - reg : the I2C address of the sensor
 
 Optional properties:
