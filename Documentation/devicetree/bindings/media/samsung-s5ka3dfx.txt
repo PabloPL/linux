@@ -1,0 +1,51 @@
+Samsung S5KA3DFX VGA Image Sensor with embedded SoC ISP
+--------------------------------------------------------------------
+
+Required properties:
+
+- compatible	  : "samsung,s5ka3dfx";
+- reg		  : I2C slave address of the sensor;
+- vddio-supply	  : 2.8V power supply
+- isp_sys-supply  : 2.8V power supply
+- dvdd-supply	  : 1.8V power supply
+- isp_host-supply : 2.8V power supply
+- nstandy-gpios	  : GPIO connected to nStandby pin;
+- nreset-gpios	  : GPIO connected to nReset pin;
+- clocks	  : list of phandle and clock specifier pairs
+		    according to common clock bindings for the
+		    clocks described in clock-names;
+- clock-names	  : should include "mclk" for the sensor's master clock;
+
+The device node should contain one 'port' child node with one child 'endpoint'
+node, according to the bindings defined in Documentation/devicetree/bindings/
+media/video-interfaces.txt. The following are properties specific to those
+nodes.
+
+Example:
+
+	s5ka3dfx: sensor@62 {
+		compatible = "samsung,s5ka3dfx";
+		reg = <0x62>;
+
+		clocks = <&camera 0>;
+		clock-names = "mclk";
+
+		vddio-supply = <&ldo13_reg>;
+		isp_sys-supply = <&s5ka3dfx_isp_host_pwr>;
+		dvdd-supply = <&ldo14_reg>;
+		isp_host-supply = <&ldo15_reg>;
+
+		nreset-gpios = <&gpb 2 GPIO_ACTIVE_HIGH>;
+		nstandby-gpios = <&gpb 0 GPIO_ACTIVE_HIGH>;
+
+		port {
+			s5ka3dfx_ep: endpoint {
+				remote-endpoint = <&fimc0_ep>;
+				bus-type = <5>; /* Parallel */
+				bus-width = <8>;
+				hsync-active = <0>;
+				vsync-active = <1>;
+				pclk-sample = <1>;
+			};
+		};
+	};
