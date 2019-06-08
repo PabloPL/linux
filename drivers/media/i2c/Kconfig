@@ -1009,6 +1009,14 @@ config VIDEO_S5K5BAF
 	  This is a V4L2 sensor driver for Samsung S5K5BAF 2M
 	  camera sensor with an embedded SoC image signal processor.
 
+config VIDEO_S5KA3DFX
+	tristate "Samsung S5KA3DFX sensor support"
+	depends on I2C && VIDEO_V4L2 && VIDEO_V4L2_SUBDEV_API
+	select V4L2_FWNODE
+	help
+	  This is a V4L2 sensor driver for Samsung S5KA3DFX VGA
+	  camera sensor with an embedded SoC image signal processor.
+
 source "drivers/media/i2c/smiapp/Kconfig"
 source "drivers/media/i2c/et8ek8/Kconfig"
 
