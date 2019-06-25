@@ -1,0 +1,16 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * SAMSUNG A3 2016 device tree source
+ */
+
+/dts-v1/;
+#include "exynos7580.dtsi"
+
+/ {
+	model = "Samsung A3 2016 based on EXYNOS7580";
+	compatible = "samsung,exynos7580-a3xeltexx", "samsung,exynos7580";
+};
+
+&xxti {
+	clock-frequency = <26000000>;
+};

@@ -1,0 +1,475 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * SAMSUNG EXYNOS7580 SoC device tree source
+ */
+
+#include <dt-bindings/clock/exynos7580-clk.h>
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+
+/ {
+	compatible = "samsung,exynos7580";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	interrupt-parent = <&gic>;
+
+	aliases {
+		pinctrl0 = &pinctrl_alive;
+		pinctrl1 = &pinctrl_aud;
+		pinctrl2 = &pinctrl_ese;
+		pinctrl3 = &pinctrl_fsys;
+		pinctrl4 = &pinctrl_mif;
+		pinctrl5 = &pinctrl_nfc;
+		pinctrl6 = &pinctrl_top;
+		pinctrl7 = &pinctrl_touch;
+	};
+
+	xxti: clock {
+		/* XXTI */
+		compatible = "fixed-clock";
+		clock-output-names = "oscclk";
+		#clock-cells = <0>;
+	};
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x0>;
+			operating-points-v2 = <&cpu_opp_table>;
+			cpu-idle-states = <&CPU_SLEEP_0 &CPU_SLEEP_1 &CPU_SLEEP_2 &CPU_SLEEP_3>;
+			#cooling-cells = <2>;
+		};
+
+		cpu1: cpu@1 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x1>;
+			operating-points-v2 = <&cpu_opp_table>;
+			cpu-idle-states = <&CPU_SLEEP_0 &CPU_SLEEP_1 &CPU_SLEEP_2 &CPU_SLEEP_3>;
+			#cooling-cells = <2>;
+		};
+
+		cpu2: cpu@2 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x2>;
+			operating-points-v2 = <&cpu_opp_table>;
+			cpu-idle-states = <&CPU_SLEEP_0 &CPU_SLEEP_1 &CPU_SLEEP_2 &CPU_SLEEP_3>;
+			#cooling-cells = <2>;
+		};
+
+		cpu3: cpu@3 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x3>;
+			operating-points-v2 = <&cpu_opp_table>;
+			cpu-idle-states = <&CPU_SLEEP_0 &CPU_SLEEP_1 &CPU_SLEEP_2 &CPU_SLEEP_3>;
+			#cooling-cells = <2>;
+		};
+
+		cpu4: cpu@100 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x100>;
+			operating-points-v2 = <&cpu_opp_table>;
+			cpu-idle-states = <&CPU_SLEEP_0 &CPU_SLEEP_1 &CPU_SLEEP_2 &CPU_SLEEP_3>;
+			#cooling-cells = <2>;
+		};
+
+		cpu5: cpu@101 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x101>;
+			operating-points-v2 = <&cpu_opp_table>;
+			cpu-idle-states = <&CPU_SLEEP_0 &CPU_SLEEP_1 &CPU_SLEEP_2 &CPU_SLEEP_3>;
+			#cooling-cells = <2>;
+		};
+
+		cpu6: cpu@102 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x102>;
+			operating-points-v2 = <&cpu_opp_table>;
+			cpu-idle-states = <&CPU_SLEEP_0 &CPU_SLEEP_1 &CPU_SLEEP_2 &CPU_SLEEP_3>;
+			#cooling-cells = <2>;
+		};
+
+		cpu7: cpu@103 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x103>;
+			operating-points-v2 = <&cpu_opp_table>;
+			cpu-idle-states = <&CPU_SLEEP_0 &CPU_SLEEP_1 &CPU_SLEEP_2 &CPU_SLEEP_3>;
+			#cooling-cells = <2>;
+		};
+
+		idle-states {
+			entry-method = "psci";
+
+			CPU_SLEEP_0: C1 {
+				compatible = "arm,idle-state";
+				desc = "ARM clock gating (WFI)";
+				arm,psci-suspend-param = <0x0000000>;
+				exit-latency-us = <10>;
+				min-residency-us = <500>;
+			};
+
+			CPU_SLEEP_1: C2 {
+				compatible = "arm,idle-state";
+				desc = "ARM power down";
+				arm,psci-suspend-param = <0x0000000>;
+				exit-latency-us = <100>;
+				min-residency-us = <750>;
+			};
+
+			CPU_SLEEP_2: CPD {
+				compatible = "arm,idle-state";
+				desc = "Cluster power down";
+				arm,psci-suspend-param = <0x1000000>;
+				exit-latency-us = <300>;
+				min-residency-us = <3000>;
+			};
+
+			CPU_SLEEP_3: LPM {
+				compatible = "arm,idle-state";
+				desc = "System power down";
+				arm,psci-suspend-param = <0x1000000>;
+				exit-latency-us = <300>;
+				min-residency-us = <5000>;
+			};
+		};
+	};
+
+	cpu_opp_table: cpu_opp_table {
+		compatible = "operating-points-v2";
+		opp-shared;
+
+		opp-300000000 {
+			opp-hz = /bits/ 64 <300000000>;
+			opp-microvolt = <850000>;
+		};
+		opp-400000000 {
+			opp-hz = /bits/ 64 <400000000>;
+			opp-microvolt = <850000>;
+		};
+		opp-500000000 {
+			opp-hz = /bits/ 64 <500000000>;
+			opp-microvolt = <887500>;
+		};
+		opp-600000000 {
+			opp-hz = /bits/ 64 <600000000>;
+			opp-microvolt = <925000>;
+		};
+		opp-700000000 {
+			opp-hz = /bits/ 64 <700000000>;
+			opp-microvolt = <962500>;
+		};
+		opp-800000000 {
+			opp-hz = /bits/ 64 <800000000>;
+			opp-microvolt = <1000000>;
+		};
+		opp-900000000 {
+			opp-hz = /bits/ 64 <900000000>;
+			opp-microvolt = <1037500>;
+		};
+		opp-1000000000 {
+			opp-hz = /bits/ 64 <1000000000>;
+			opp-microvolt = <1075000>;
+		};
+		opp-1100000000 {
+			opp-hz = /bits/ 64 <1100000000>;
+			opp-microvolt = <1112500>;
+		};
+		opp-1200000000 {
+			opp-hz = /bits/ 64 <1200000000>;
+			opp-microvolt = <1150000>;
+		};
+		opp-1300000000 {
+			opp-hz = /bits/ 64 <1300000000>;
+			opp-microvolt = <1187500>;
+		};
+		opp-1400000000 {
+			opp-hz = /bits/ 64 <1400000000>;
+			opp-microvolt = <1237500>;
+		};
+		opp-1500000000 {
+			opp-hz = /bits/ 64 <1500000000>;
+			opp-microvolt = <1287500>;
+		};
+		opp-1600000000 {
+			opp-hz = /bits/ 64 <1600000000>;
+			opp-microvolt = <1300000>;
+		};
+	};
+
+	arm-pmu {
+		compatible = "arm,armv8-pmuv3";
+		interrupts = <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 52 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 53 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>,
+						<&cpu4>, <&cpu5>, <&cpu6>, <&cpu7>;
+	};
+
+	psci {
+		compatible = "arm,psci";
+		method = "smc";
+		cpu_suspend = <0xC4000001>;
+		cpu_off = <0x84000002>;
+		cpu_on = <0xC4000003>;
+	};
+
+	soc: soc {
+		compatible = "simple-bus";
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		gic: interrupt-controller@10C00000 {
+			compatible = "arm,cortex-a15-gic";
+			#interrupt-cells = <3>;
+			interrupt-controller;
+			reg = <0x10C01000 0x1000>,
+			      <0x10C02000 0x1000>,
+			      <0x10C04000 0x2000>,
+			      <0x10C06000 0x2000>;
+			interrupts = <GIC_PPI 9 0xf04>;
+		};
+
+		cmu_top: clock-controller@10010000 {
+			compatible = "samsung,exynos7580-cmu-top";
+			reg = <0x10010000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		cmu_mif: clock-controller@10430000 {
+			compatible = "samsung,exynos7580-cmu-mif";
+			reg = <0x10430000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		cmu_apl: clock-controller@10800000 {
+			compatible = "samsung,exynos7580-cmu-apl";
+			reg = <0x10800000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		cmu_cpu: clock-controller@10900000 {
+			compatible = "samsung,exynos7580-cmu-cpu";
+			reg = <0x10900000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		cmu_imem: clock-controller@10C60000 {
+			compatible = "samsung,exynos7580-cmu-imem";
+			reg = <0x10C60000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		cmu_aud: clock-controller@110C0000 {
+			compatible = "samsung,exynos7580-cmu-aud";
+			reg = <0x110C0000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		cmu_g3d: clock-controller@11460000 {
+			compatible = "samsung,exynos7580-cmu-g3d";
+			reg = <0x11460000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		cmu_bus0: clock-controller@11800000 {
+			compatible = "samsung,exynos7580-cmu-bus0";
+			reg = <0x11800000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		cmu_bus1: clock-controller@12400000 {
+			compatible = "samsung,exynos7580-cmu-bus1";
+			reg = <0x12400000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		cmu_mfcmscl: clock-controller@12CB0000 {
+			compatible = "samsung,exynos7580-cmu-mfcmscl";
+			reg = <0x12CB0000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		cmu_bus2: clock-controller@13000000 {
+			compatible = "samsung,exynos7580-cmu-bus2";
+			reg = <0x13000000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		cmu_fsys: clock-controller@13730000 {
+			compatible = "samsung,exynos7580-cmu-fsys";
+			reg = <0x13730000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		cmu_peri: clock-controller@139F0000 {
+			compatible = "samsung,exynos7580-cmu-peri";
+			reg = <0x139F0000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		cmu_isp: clock-controller@14720000 {
+			compatible = "samsung,exynos7580-cmu-isp";
+			reg = <0x14720000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		cmu_disp: clock-controller@14870000 {
+			compatible = "samsung,exynos7580-cmu-disp";
+			reg = <0x14870000 0x10000>;
+			#clock-cells = <1>;
+		};
+
+		pinctrl_mif: pinctrl@104E0000 {
+			compatible = "samsung,exynos7580-pinctrl";
+			reg = <0x104E0000 0x1000>;
+			interrupts = <GIC_SPI 385 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_aud: pinctrl@110B0000 {
+			compatible = "samsung,exynos7580-pinctrl";
+			reg = <0x110B0000 0x1000>;
+			interrupts = <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_fsys: pinctrl@13750000 {
+			compatible = "samsung,exynos7580-pinctrl";
+			reg = <0x13750000 0x1000>;
+			interrupts = <GIC_SPI 250 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_nfc: pinctrl@138C0000 {
+			compatible = "samsung,exynos7580-pinctrl";
+			reg = <0x138C0000 0x1000>;
+			interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_touch: pinctrl@138D0000 {
+			compatible = "samsung,exynos7580-pinctrl";
+			reg = <0x138D0000 0x1000>;
+			interrupts = <GIC_SPI 116 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_ese: pinctrl@138E0000 {
+			compatible = "samsung,exynos7580-pinctrl";
+			reg = <0x138E0000 0x1000>;
+			interrupts = <GIC_SPI 438 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_alive: pinctrl@139B0000 {
+			compatible = "samsung,exynos7580-pinctrl";
+			reg = <0x139B0000 0x1000>;
+			interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 1 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 2 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 3 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 4 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 5 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 7 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 8 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 9 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 10 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 11 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>,
+				     <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
+
+			wakeup-interrupt-controller {
+				compatible = "samsung,exynos7-wakeup-eint";
+				interrupt-parent = <&gic>;
+				interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>;
+			};
+		};
+
+		pinctrl_top: pinctrl@139C0000 {
+			compatible = "samsung,exynos7580-pinctrl";
+			reg = <0x139C0000 0x1000>;
+			interrupts = <GIC_SPI 440 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		serial_0: uart@13800000 {
+			compatible = "samsung,samsung,exynos5433-uart";
+			reg = <0x13800000 0x100>;
+			interrupts = <GIC_SPI 421 IRQ_TYPE_LEVEL_HIGH>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&uart0_bus>;
+			clocks = <&cmu_peri CLK_PUART0>, <&cmu_peri CLK_SUART0>;
+			clock-names = "uart", "clk_uart_baud0";
+			status = "disabled";
+		};
+
+		serial_1: uart@13810000 {
+			compatible = "samsung,samsung,exynos5433-uart";
+			reg = <0x13810000 0x100>;
+			interrupts = <GIC_SPI 422 IRQ_TYPE_LEVEL_HIGH>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&uart1_bus>;
+			clocks = <&cmu_peri CLK_PUART1>, <&cmu_peri CLK_SUART1>;
+			clock-names = "uart", "clk_uart_baud0";
+			status = "disabled";
+		};
+
+		serial_2: uart@13820000 {
+			compatible = "samsung,samsung,exynos5433-uart";
+			reg = <0x13820000 0x100>;
+			interrupts = <GIC_SPI 423 IRQ_TYPE_LEVEL_HIGH>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&uart2_bus>;
+			clocks = <&cmu_peri CLK_PUART2>, <&cmu_peri CLK_SUART2>;
+			clock-names = "uart", "clk_uart_baud0";
+			status = "disabled";
+		};
+
+		serial_3: uart@11060000 {
+			compatible = "samsung,samsung,exynos5433-uart";
+			reg = <0x11060000 0x100>;
+			interrupts = <GIC_SPI 67 IRQ_TYPE_LEVEL_HIGH>;
+			pinctrl-names = "default", "idle", "lpm";
+			pinctrl-0 = <&uart_aud_bus>;
+			pinctrl-1 = <&uart_aud_bus_idle>;
+			pinctrl-2 = <&uart_aud_bus_lpm>;
+			clocks = <&cmu_aud CLK_PUART3>, <&cmu_aud CLK_SUART3>;
+			clock-names = "uart", "clk_uart_baud0";
+			status = "disabled";
+		};
+	};
+
+	timer: timer {
+			compatible = "arm,armv8-timer";
+			interrupts = <GIC_PPI 13
+					(GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_HIGH)>,
+				<GIC_PPI 14
+					(GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_HIGH)>,
+				<GIC_PPI 11
+					(GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_HIGH)>,
+				<GIC_PPI 10
+					(GIC_CPU_MASK_SIMPLE(8) | IRQ_TYPE_LEVEL_HIGH)>;
+		};
+};
+
+#include "exynos7580-pinctrl.dtsi"
