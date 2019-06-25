@@ -1,0 +1,62 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * SAMSUNG EXYNOS7578 SoC cpu device tree source
+ *
+ * The Exynos7578 and 7580 actually have the same cpu count
+ * but on 7578 half of them are disabled.
+ *
+ */
+/dts-v1/;
+#include "exynos75xx.dtsi"
+
+/ {
+	compatible = "samsung,exynos7578";
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x0>;
+			clock-frequency = <1600000000>;
+			clocks = <&cmu_cpu CLK_CPU_PLL>;
+			clock-names = "cpu_pll";
+		};
+
+		cpu1: cpu@1 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x1>;
+			clock-frequency = <1600000000>;
+		};
+
+		cpu2: cpu@2 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x2>;
+			clock-frequency = <1600000000>;
+		};
+
+		cpu3: cpu@3 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x3>;
+			clock-frequency = <1600000000>;
+		};
+	};
+
+    arm-pmu {
+        compatible = "arm,armv8-pmuv3";
+        interrupts = <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>,
+                    <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>,
+                    <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>,
+                    <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
+        interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
+    };
+};

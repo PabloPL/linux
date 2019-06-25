@@ -1,0 +1,78 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * SAMSUNG A3 2016 device tree source
+ */
+
+/dts-v1/;
+#include "exynos7578.dtsi"
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/input/input.h>
+
+/ {
+	model = "Samsung A3 2016 based on EXYNOS7578";
+	compatible = "samsung,exynos7578-a3xeltexx", "samsung,exynos7578";
+
+	chosen {
+		bootargs = "console=ttySAC1,115200 earlycon=exynos4210,0x13810000 clk_ignore_unused ignore_loglevel";
+		stdout-path = &serial_1;
+
+		linux,initrd-start = <0x42000000>;
+		linux,initrd-end = <0x421FFFFF>;
+	};
+
+	memory@40000000 {
+		device_type = "memory";
+		reg = <0x40000000 0x18000000
+			0x58000000 0x18000000
+			0x70000000 0x18000000
+			0x88000000 0x17700000>;
+	};
+
+	gpio-keys {
+		compatible = "gpio-keys";
+		pinctrl-names = "default";
+		pinctrl-0 = <&gpa2_pull_up_univ>;
+
+		power-key {
+			gpios = <&gpa2 7 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_POWER>;
+			label = "power key";
+			wakeup-source;
+		};
+
+		volume-up-key {
+			gpios = <&gpa2 0 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_VOLUMEUP>;
+			label = "volume-up key";
+		};
+
+		volume-down-key {
+			gpios = <&gpa2 1 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_VOLUMEDOWN>;
+			label = "volume-down key";
+		};
+
+		homepage-key {
+			gpios = <&gpa2 5 GPIO_ACTIVE_LOW>;
+			linux,code = <KEY_MENU>;
+			label = "homepage key";
+			wakeup-source;
+		};
+	};
+};
+
+&serial_0 {
+	status = "okay";
+};
+
+&serial_1 {
+	status = "okay";
+};
+
+&timer {
+	clock-frequency = <26000000>;
+};
+
+&xxti {
+	clock-frequency = <26000000>;
+};

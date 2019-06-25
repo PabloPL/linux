@@ -1,0 +1,99 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * SAMSUNG EXYNOS7580 SoC cpu device tree source
+ *
+ * The Exynos7578 and 7580 actually have the same cpu count
+ * but on 7578 half of them are disabled.
+ *
+ */
+/dts-v1/;
+#include "exynos75xx.dtsi"
+
+/ {
+	compatible = "samsung,exynos7580";
+
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu0: cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x0>;
+			clock-frequency = <1600000000>;
+			clocks = <&cmu_cpu CLK_CPU_PLL>;
+			clock-names = "cpu_pll";
+		};
+
+		cpu1: cpu@1 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x1>;
+			clock-frequency = <1600000000>;
+		};
+
+		cpu2: cpu@2 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x2>;
+			clock-frequency = <1600000000>;
+		};
+
+		cpu3: cpu@3 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x3>;
+			clock-frequency = <1600000000>;
+		};
+
+        cpu4: cpu@100 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x100>;
+            clock-frequency = <1600000000>;
+		};
+
+		cpu5: cpu@101 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x101>;
+			clock-frequency = <1600000000>;
+		};
+
+		cpu6: cpu@102 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x102>;
+			clock-frequency = <1600000000>;
+		};
+
+		cpu7: cpu@103 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a53";
+			enable-method = "psci";
+			reg = <0x103>;
+			clock-frequency = <1600000000>;
+		};
+	};
+
+    arm-pmu {
+        compatible = "arm,armv8-pmuv3";
+        interrupts = <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>,
+                    <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>,
+                    <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>,
+                    <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>,
+                    <GIC_SPI 50 IRQ_TYPE_LEVEL_HIGH>,
+                    <GIC_SPI 51 IRQ_TYPE_LEVEL_HIGH>,
+                    <GIC_SPI 52 IRQ_TYPE_LEVEL_HIGH>,
+                    <GIC_SPI 53 IRQ_TYPE_LEVEL_HIGH>;
+        interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>,
+            <&cpu4>, <&cpu5>, <&cpu6>, <&cpu7>;
+    };
+};
