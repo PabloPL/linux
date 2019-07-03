@@ -1056,6 +1056,108 @@ static const struct clk_ops samsung_pll2550xx_clk_min_ops = {
 };
 
 /*
+ * PLL255xx Clock Type : PLL2551x, PLL2555x
+ */
+
+/* Maximum lock time can be 200 * Pdiv cycles */
+#define PLL255XX_LOCK_FACTOR	200
+
+#define PLL255XX_M_MASK		0x3FF
+#define PLL255XX_P_MASK		0x3F
+#define PLL255XX_S_MASK		0x7
+#define PLL255XX_LOCK_STAT_MASK		0x1
+#define PLL255XX_M_SHIFT	12
+#define PLL255XX_P_SHIFT	4
+#define PLL255XX_S_SHIFT	0
+#define PLL255XX_LOCK_STAT_SHIFT	29
+
+static unsigned long samsung_pll255xx_recalc_rate(struct clk_hw *hw,
+				unsigned long parent_rate)
+{
+	struct samsung_clk_pll *pll = to_clk_pll(hw);
+	u32 mdiv, pdiv, sdiv, pll_con;
+	u64 fvco = parent_rate;
+
+	pll_con = readl_relaxed(pll->con_reg);
+	mdiv = (pll_con >> PLL255XX_M_SHIFT) & PLL255XX_M_MASK;
+	pdiv = (pll_con >> PLL255XX_P_SHIFT) & PLL255XX_P_MASK;
+	sdiv = (pll_con >> PLL255XX_S_SHIFT) & PLL255XX_S_MASK;
+
+	fvco *= mdiv;
+	do_div(fvco, (pdiv << sdiv));
+
+	return (unsigned long)fvco;
+}
+
+static inline bool samsung_pll255xx_mp_change(u32 mdiv, u32 pdiv, u32 pll_con)
+{
+	u32 old_mdiv, old_pdiv;
+
+	old_mdiv = (pll_con >> PLL255XX_M_SHIFT) & PLL255XX_M_MASK;
+	old_pdiv = (pll_con >> PLL255XX_P_SHIFT) & PLL255XX_P_MASK;
+
+	return mdiv != old_mdiv || pdiv != old_pdiv;
+}
+
+static int samsung_pll255xx_set_rate(struct clk_hw *hw, unsigned long drate,
+					unsigned long prate)
+{
+	struct samsung_clk_pll *pll = to_clk_pll(hw);
+	const struct samsung_pll_rate_table *rate;
+	u32 tmp;
+
+	/* Get required rate settings from table */
+	rate = samsung_get_pll_settings(pll, drate);
+	if (!rate) {
+		pr_err("%s: Invalid rate : %lu for pll clk %s\n", __func__,
+			drate, clk_hw_get_name(hw));
+		return -EINVAL;
+	}
+
+	tmp = readl_relaxed(pll->con_reg);
+
+	if (!(samsung_pll255xx_mp_change(rate->mdiv, rate->pdiv, tmp))) {
+		/* If only s change, change just s value only*/
+		tmp &= ~(PLL255XX_S_MASK << PLL255XX_S_SHIFT);
+		tmp |= rate->sdiv << PLL255XX_S_SHIFT;
+		writel_relaxed(tmp, pll->con_reg);
+
+		return 0;
+	}
+
+	/* Set PLL lock time. */
+	writel_relaxed(rate->pdiv * PLL255XX_LOCK_FACTOR, pll->lock_reg);
+
+	/* Change PLL PMS values */
+	tmp &= ~((PLL255XX_M_MASK << PLL255XX_M_SHIFT) |
+			(PLL255XX_P_MASK << PLL255XX_P_SHIFT) |
+			(PLL255XX_S_MASK << PLL255XX_S_SHIFT));
+	tmp |= (rate->mdiv << PLL255XX_M_SHIFT) |
+			(rate->pdiv << PLL255XX_P_SHIFT) |
+			(rate->sdiv << PLL255XX_S_SHIFT);
+	writel_relaxed(tmp, pll->con_reg);
+
+	/* wait_lock_time */
+	do {
+		cpu_relax();
+		tmp = readl_relaxed(pll->con_reg);
+	} while (!(tmp & (PLL255XX_LOCK_STAT_MASK
+			<< PLL255XX_LOCK_STAT_SHIFT)));
+
+	return 0;
+}
+
+static const struct clk_ops samsung_pll255xx_clk_ops = {
+	.recalc_rate = samsung_pll255xx_recalc_rate,
+	.round_rate = samsung_pll_round_rate,
+	.set_rate = samsung_pll255xx_set_rate,
+};
+
+static const struct clk_ops samsung_pll255xx_clk_min_ops = {
+	.recalc_rate = samsung_pll255xx_recalc_rate,
+};
+
+/*
  * PLL2650x Clock Type
  */
 
@@ -1363,6 +1465,18 @@ static void __init _samsung_clk_register_pll(struct samsung_clk_provider *ctx,
 			init.ops = &samsung_pll2550xx_clk_min_ops;
 		else
 			init.ops = &samsung_pll2550xx_clk_ops;
+		break;
+	case pll_2551x:
+		if (!pll->rate_table)
+			init.ops = &samsung_pll255xx_clk_min_ops;
+		else
+			init.ops = &samsung_pll255xx_clk_ops;
+		break;
+	case pll_2555x:
+		if (!pll->rate_table)
+			init.ops = &samsung_pll255xx_clk_min_ops;
+		else
+			init.ops = &samsung_pll255xx_clk_ops;
 		break;
 	case pll_2650x:
 		if (!pll->rate_table)
