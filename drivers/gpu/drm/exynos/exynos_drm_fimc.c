@@ -49,16 +49,12 @@ MODULE_PARM_DESC(fimc_devs, "Alias mask for assigning FIMC devices to Exynos DRM
 enum {
 	FIMC_CLK_LCLK,
 	FIMC_CLK_GATE,
-	FIMC_CLK_WB_A,
-	FIMC_CLK_WB_B,
 	FIMC_CLKS_MAX
 };
 
 static const char * const fimc_clock_names[] = {
 	[FIMC_CLK_LCLK]   = "sclk_fimc",
 	[FIMC_CLK_GATE]   = "fimc",
-	[FIMC_CLK_WB_A]   = "pxl_async0",
-	[FIMC_CLK_WB_B]   = "pxl_async1",
 };
 
 /*
@@ -1174,19 +1170,13 @@ static void fimc_put_clocks(struct fimc_context *ctx)
 static int fimc_setup_clocks(struct fimc_context *ctx)
 {
 	struct device *fimc_dev = ctx->dev;
-	struct device *dev;
 	int ret, i;
 
 	for (i = 0; i < FIMC_CLKS_MAX; i++)
 		ctx->clocks[i] = ERR_PTR(-EINVAL);
 
 	for (i = 0; i < FIMC_CLKS_MAX; i++) {
-		if (i == FIMC_CLK_WB_A || i == FIMC_CLK_WB_B)
-			dev = fimc_dev->parent;
-		else
-			dev = fimc_dev;
-
-		ctx->clocks[i] = clk_get(dev, fimc_clock_names[i]);
+		ctx->clocks[i] = clk_get(fimc_dev, fimc_clock_names[i]);
 		if (IS_ERR(ctx->clocks[i])) {
 			ret = PTR_ERR(ctx->clocks[i]);
 			dev_err(fimc_dev, "failed to get clock: %s\n",
