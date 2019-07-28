@@ -1197,6 +1197,9 @@ int exynos_drm_check_fimc_device(struct device *dev)
 {
 	int id = of_alias_get_id(dev->of_node, "fimc");
 
+	if (!of_property_read_bool(dev->of_node, "samsung,mainscaler-ext"))
+		return -ENODEV;
+
 	if (id >= 0 && (BIT(id) & fimc_mask))
 		return 0;
 	return -ENODEV;
@@ -1396,6 +1399,7 @@ static const struct dev_pm_ops fimc_pm_ops = {
 static const struct of_device_id fimc_of_match[] = {
 	{ .compatible = "samsung,exynos4210-fimc" },
 	{ .compatible = "samsung,exynos4212-fimc" },
+	{ .compatible = "samsung,s5pv210-fimc" },
 	{ },
 };
 MODULE_DEVICE_TABLE(of, fimc_of_match);
