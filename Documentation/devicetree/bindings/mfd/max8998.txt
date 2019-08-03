@@ -39,6 +39,7 @@ Optional properties:
   value of 0 is taken.
 - max8998,pmic-buck-voltage-lock: If present, disallows changing of
   preprogrammed buck dvfs voltages.
+- wakeup-source: See Documentation/devicetree/bindings/power/wakeup-source.txt
 
 Additional properties required if max8998,pmic-buck1-dvs-gpios is defined:
 - max8998,pmic-buck1-dvs-voltage: An array of 4 voltage values in microvolts
