@@ -124,7 +124,28 @@ ENDPROC(stext)
  * Preserve the arguments passed by the bootloader in x0 .. x3
  */
 preserve_boot_args:
+/*
+ * it seems that whenever the kernel is being relocated, all the operations
+ * are done on the x21 directly so set the fdt pointer as if it was
+ * passed by the bootloader and hand control to the kernel
+ */
+#ifdef CONFIG_ARM64_APPENDED_DTB
 	mov	x21, x0				// x21=FDT
+
+	mov	x22, x1			// w1 is 32bit subset of x1
+	adrp 	x23, _edata
+	ldr	w0, [x23]
+#ifndef __AARCH64EB__
+	ldr	w1, =0xedfe0dd0		// FDT magic word
+#else
+	ldr	w1, =0xd00dfeed
+#endif
+	cmp	w0, w1 //compares w0 -> whats under x21 to the magic word that should be used
+	b.ne	1f			// no FDT found
+#endif
+	mov	x21, x23		// use x0 as fdt pointer
+1:
+	mov	x1, x22 		// restore x1
 
 	adr_l	x0, boot_args			// record the contents of
 	stp	x21, x1, [x0]			// x0 .. x3 at kernel entry

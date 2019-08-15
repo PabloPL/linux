@@ -84,6 +84,18 @@ PECOFF_FILE_ALIGNMENT = 0x200;
 #define PECOFF_EDATA_PADDING
 #endif
 
+/*
+ * Set FDT pointer 2MB aligned to ensure
+ * it don't cross a 2-megabyte boundary.
+ */
+FDT_FILE_ALIGNMENT = (1 << 21);
+#ifdef CONFIG_ARM64_APPENDED_DTB
+#define FDT_EDATA_PADDING	\
+	.fdt_edata_padding : { BYTE(0); . = ALIGN(FDT_FILE_ALIGNMENT); }
+#else
+#define FDT_EDATA_PADDING
+#endif
+
 SECTIONS
 {
 	/*
@@ -228,7 +240,12 @@ SECTIONS
 
 	PECOFF_EDATA_PADDING
 	__pecoff_data_rawsize = ABSOLUTE(. - __initdata_begin);
+	FDT_EDATA_PADDING	/* 2MB aligned */
 	_edata = .;
+
+#ifdef CONFIG_ARM64_APPENDED_DTB
+	. += (1 << 21);		/* maximum 2MB for FDT blob */
+#endif
 
 	BSS_SECTION(0, 0, 0)
 

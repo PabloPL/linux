@@ -1521,6 +1521,17 @@ endmenu
 
 menu "Boot options"
 
+config ARM64_APPENDED_DTB
+	bool "Use appended device tree blob to Image"
+	depends on OF
+	help
+	  With this option, the boot code will look for a device tree binary
+	  (DTB) appended to Image
+	  (e.g. cat Image <filename>.dtb > Image_w_dtb).
+
+	  With this option, the size of Image will be extended to be 2MB aligned.
+	  The 2MB memory followed by Image is used for FDT blob.
+
 config ARM64_ACPI_PARKING_PROTOCOL
 	bool "Enable support for the ARM64 ACPI parking protocol"
 	depends on ACPI
