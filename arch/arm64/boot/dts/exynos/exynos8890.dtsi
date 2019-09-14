@@ -118,6 +118,76 @@
 			//clocks = <&xxti>, <&cmu_peris CLK_PCLK_MCT>;
 			//clock-names = "fin_pll", "mct";
 		};
+
+		pinctrl_alive: pinctrl@10580000 {
+			compatible = "samsung,exynos8890-pinctrl";
+			reg = <0x10580000 0x1000>;
+
+			wakeup-interrupt-controller {
+				compatible = "samsung,exynos7-wakeup-eint";
+				interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>;
+			};
+		};
+
+		pinctrl_aud: pinctrl@114B0000 {
+			compatible = "samsung,exynos8890-pinctrl";
+			reg = <0x114B0000 0x1000>;
+			interrupts = <GIC_SPI 61 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_ccore: pinctrl@105A0000 {
+			compatible = "samsung,exynos8890-pinctrl";
+			reg = <0x105A0000 0x1000>;
+			interrupts = <GIC_SPI 383 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_fp: pinctrl@14CA0000 {
+			compatible = "samsung,exynos8890-pinctrl";
+			reg = <0x14CA0000 0x1000>;
+			interrupts = <GIC_SPI 459 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_ese: pinctrl@14C90000 {
+			compatible = "samsung,exynos8890-pinctrl";
+			reg = <0x14C90000 0x1000>;
+			interrupts = <GIC_SPI 458 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_fsys0: pinctrl@10E60000 {
+			compatible = "samsung,exynos8890-pinctrl";
+			reg = <0x10E60000 0x1000>;
+			interrupts = <GIC_SPI 212 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_fsys1: pinctrl@15690000 {
+			compatible = "samsung,exynos8890-pinctrl";
+			reg = <0x15690000 0x1000>;
+			interrupts = <GIC_SPI 202 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_nfc: pinctrl@14CD0000 {
+			compatible = "samsung,exynos8890-pinctrl";
+			reg = <0x14CD0000 0x1000>;
+			interrupts = <GIC_SPI 456 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_peric0: pinctrl@136D0000 {
+			compatible = "samsung,exynos8890-pinctrl";
+			reg = <0x136D0000 0x1000>;
+			interrupts = <GIC_SPI 430 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_peric1: pinctrl@14CC0000 {
+			compatible = "samsung,exynos8890-pinctrl";
+			reg = <0x14CC0000 0x1000>;
+			interrupts = <GIC_SPI 460 IRQ_TYPE_LEVEL_HIGH>;
+		};
+
+		pinctrl_touch: pinctrl@14CE0000 {
+			compatible = "samsung,exynos8890-pinctrl";
+			reg = <0x14CE0000 0x1000>;
+			interrupts = <GIC_SPI 457 IRQ_TYPE_LEVEL_HIGH>;
+		};
 	};
 
 	timer: timer {
@@ -133,3 +203,5 @@
 		clock-frequency = <26000000>;
 	};
 };
+
+#include "exynos8890-pinctrl.dtsi"
