@@ -1,0 +1,27 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * SAMSUNG Galaxy S7 device tree source
+ */
+
+/dts-v1/;
+#include "exynos8890.dtsi"
+
+/ {
+	model = "Samsung Galaxy S7 based on EXYNOS8890";
+	compatible = "samsung,exynos8890-herolte", "samsung,exynos8890";
+
+	memory@80000000 {
+		device_type = "memory";
+
+		reg = <0x0 0x80000000 0x0 0x80000000>;
+	};
+	memory@880000000 {
+		device_type = "memory";
+
+		reg = <0x00000008 0x80000000 0x0 0x80000000>;
+	};
+};
+
+&xxti {
+	clock-frequency = <26000000>;
+};
