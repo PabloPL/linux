@@ -188,6 +188,72 @@
 			reg = <0x14CE0000 0x1000>;
 			interrupts = <GIC_SPI 457 IRQ_TYPE_LEVEL_HIGH>;
 		};
+
+		serial_0: uart@13630000 {
+			compatible = "samsung,exynos8890-uart";
+			reg = <0x13630000 0x100>;
+			interrupts = <GIC_SPI 429 IRQ_TYPE_LEVEL_HIGH>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&uart0_bus>;
+			//clocks = <&clock 207>, <&clock 208>, <&clock 208>;
+			//clock-names = "gate_pclk0", "gate_uart0", "sclk_uart0";
+			status = "disabled";
+		};
+
+		serial_1: uart@14C20000 {
+			compatible = "samsung,exynos8890-uart";
+			reg = <0x14C20000 0x100>;
+			interrupts = <GIC_SPI 432 IRQ_TYPE_LEVEL_HIGH>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&uart1_bus>;
+			//clocks = <&clock 258>, <&clock 263>, <&clock 263>;
+			//clock-names = "gate_pclk1", "gate_uart1", "sclk_uart1";
+			status = "disabled";
+		};
+
+		serial_2: uart@14C30000 {
+			compatible = "samsung,exynos8890-uart";
+			reg = <0x14C30000 0x100>;
+			interrupts = <GIC_SPI 433 IRQ_TYPE_LEVEL_HIGH>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&uart2_bus>;
+			//clocks = <&clock 259>, <&clock 264>, <&clock 264>;
+			//clock-names = "gate_pclk2", "gate_uart2", "sclk_uart2";
+			status = "disabled";
+		};
+
+		serial_3: uart@14C40000 {
+			compatible = "samsung,exynos8890-uart";
+			reg = <0x14C40000 0x100>;
+			interrupts = <GIC_SPI 434 IRQ_TYPE_LEVEL_HIGH>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&uart3_bus>;
+			//clocks = <&clock 260>, <&clock 265>, <&clock 265>;
+			//clock-names = "gate_pclk3", "gate_uart3", "sclk_uart3";
+			status = "disabled";
+		};
+
+		serial_4: uart@14C50000 {
+			compatible = "samsung,exynos8890-uart";
+			reg = <0x14C50000 0x100>;
+			interrupts = <GIC_SPI 435 IRQ_TYPE_LEVEL_HIGH>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&uart4_bus>;
+			//clocks = <&clock 261>, <&clock 266>, <&clock 266>;
+			//clock-names = "gate_pclk4", "gate_uart4", "sclk_uart4";
+			status = "disabled";
+		};
+
+		serial_5: uart@14C10000 {
+			compatible = "samsung,exynos8890-uart";
+			reg = <0x14C10000 0x100>;
+			interrupts = <GIC_SPI 436 IRQ_TYPE_LEVEL_HIGH>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&uart5_bus>;
+			//clocks = <&clock 262>, <&clock 267>, <&clock 267>;
+			//clock-names = "gate_pclk5", "gate_uart5", "sclk_uart5";
+			status = "disabled";
+		};
 	};
 
 	timer: timer {
