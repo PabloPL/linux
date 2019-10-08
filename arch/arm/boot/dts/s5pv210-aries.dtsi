@@ -307,6 +307,12 @@
 				safe2_sreg: ESAFEOUT2 {
 					regulator-name = "SAFEOUT2";
 				};
+
+				charger_reg: CHARGER {
+					regulator-name = "CHARGER";
+					regulator-min-microamp = <90000>;
+					regulator-max-microamp = <800000>;
+				};
 			};
 		};
 	};
