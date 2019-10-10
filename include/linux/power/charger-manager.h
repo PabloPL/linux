@@ -46,7 +46,7 @@ enum cm_event_types {
 /**
  * struct charger_cable
  * @extcon_name: the name of extcon device.
- * @name: the name of charger cable(external connector).
+ * @name: the name of the cable connector
  * @extcon_dev: the extcon device.
  * @wq: the workqueue to control charger according to the state of
  *	charger cable. If charger cable is attached, enable charger.
@@ -62,9 +62,9 @@ enum cm_event_types {
 struct charger_cable {
 	const char *extcon_name;
 	const char *name;
+	struct extcon_dev *extcon_dev;
 
 	/* The charger-manager use Extcon framework */
-	struct extcon_specific_cable_nb extcon_dev;
 	struct work_struct wq;
 	struct notifier_block nb;
 
