@@ -112,11 +112,6 @@
 					regulator-name = "VADC_3.3V";
 					regulator-min-microvolt = <3300000>;
 					regulator-max-microvolt = <3300000>;
-					regulator-always-on;
-
-					regulator-state-mem {
-						regulator-off-in-suspend;
-					};
 				};
 
 				ldo5_reg: LDO5 {
@@ -348,6 +343,12 @@
 		offset = <0x681c>; /* PS_HOLD_CONTROL */
 		value = <0x5200>;
 	};
+};
+
+&adc {
+	vdd-supply = <&ldo4_reg>;
+
+	status = "okay";
 };
 
 &fimd {
