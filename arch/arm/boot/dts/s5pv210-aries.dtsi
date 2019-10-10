@@ -41,6 +41,167 @@
 		};
 	};
 
+	thermal-zones {
+		batt_thermal: batt-thermal {
+			polling-delay-passive = <60000>; /* 60 seconds */
+			polling-delay = <600000>; /* 600 seconds */
+
+			thermal-sensors = <&batt_thermistor>;
+		};
+	};
+
+	batt_thermistor: thermal-sensor-0 {
+		compatible = "generic-adc-thermal";
+		#thermal-sensor-cells = <0>;
+		io-channels = <&adc 6>;
+		io-channel-names = "sensor-channel";
+
+		temperature-lookup-table = <
+			(-20000) 1859
+			(-19000) 1846
+			(-18000) 1832
+			(-17000) 1818
+			(-16000) 1804
+			(-15000) 1790
+			(-14000) 1773
+			(-13000) 1756
+			(-12000) 1739
+			(-11000) 1722
+			(-10000) 1705
+			(-9000) 1691
+			(-8000) 1677
+			(-7000) 1663
+			(-6000) 1649
+			(-5000) 1635
+			(-4000) 1550
+			(-3000) 1510
+			(-2000) 1500
+			(-1000) 1490
+			0 1480
+			1000 1470
+			2000 1460
+			3000 1450
+			4000 1430
+			5000 1420
+			6000 1406
+			7000 1386
+			8000 1366
+			9000 1346
+			10000 1326
+			11000 1302
+			12000 1278
+			13000 1254
+			14000 1230
+			15000 1206
+			16000 1182
+			17000 1158
+			18000 1134
+			19000 1110
+			20000 1086
+			21000 1059
+			22000 1035
+			23000 1011
+			24000 987
+			25000 963
+			26000 937
+			27000 913
+			28000 889
+			29000 865
+			30000 841
+			31000 816
+			32000 794
+			33000 772
+			34000 750
+			35000 728
+			36000 708
+			37000 690
+			38000 672
+			39000 654
+			40000 636
+			41000 616
+			42000 599
+			43000 580
+			44000 565
+			45000 548
+			46000 529
+			47000 512
+			48000 495
+			49000 478
+			50000 461
+			51000 440
+			52000 431
+			53000 416
+			54000 405
+			55000 396
+			56000 375
+			57000 360
+			58000 347
+			59000 334
+			60000 325
+			61000 311
+			62000 303
+			63000 296
+			64000 290
+			65000 279
+			66000 265
+			67000 254
+			68000 240
+			69000 220
+			70000 206>;
+	};
+
+	charger_manager: charger-manager@0 {
+		compatible = "charger-manager";
+
+		cm-name = "cm-battery";
+
+		chg-reg-supply = <&charger_reg>;
+
+		/* poll when externally connected */
+		cm-poll-mode = <2>;
+		cm-poll-interval = <30>;
+
+		/* read supply status for status */
+		cm-battery-stat = <0>;
+
+		cm-battery-temp-diff = <5>;
+		cm-battery-hot = <5000>;
+		cm-battery-cold = <400>;
+		cm-battery-cold-in-minus;
+
+		/* 6hr max charging time */
+		cm-charging-max = <21600000>;
+		/* 1.5hr max discharging time */
+		cm-discharging-max = <5400000>;
+
+		cm-fuel-gauge = "battery";
+
+		cm-fullbatt-vchkdrop-ms = <30000>;
+		cm-fullbatt-vchkdrop-volt = <4130000>;
+		cm-fullbatt-soc = <92>;
+
+		cm-num-chargers = <1>;
+		cm-chargers = "max8998_pmic";
+
+		cm-thermal-zone = "batt-thermal";
+
+		regulator@0 {
+			cm-regulator-name = "chg-reg";
+			cable@0 {
+				cm-cable-name = "USB";
+				cm-cable-extcon = "7-0025";
+				cm-cable-min = <475000>;
+				cm-cable-max = <500000>;
+			};
+			cable@1 {
+				cm-cable-name = "TA";
+				cm-cable-extcon = "7-0025";
+				cm-cable-min = <380000>;
+				cm-cable-max = <600000>;
+			};
+		};
+	};
+
 	vibrator_pwr: regulator-fixed-0 {
 		compatible = "regulator-fixed";
 		regulator-name = "vibrator-en";
