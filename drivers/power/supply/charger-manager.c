@@ -557,7 +557,7 @@ static void fullbatt_vchk(struct work_struct *work)
 	if (diff < 0)
 		return;
 
-	dev_info(cm->dev, "VBATT dropped %duV after full-batt\n", diff);
+	dev_dbg(cm->dev, "VBATT dropped %duV after full-batt\n", diff);
 
 	if (diff > desc->fullbatt_vchkdrop_uV) {
 		try_charger_restart(cm);
