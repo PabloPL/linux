@@ -1,0 +1,34 @@
+* Sharp GP2AP002A00F I2C Proximity/ALS sensor
+
+The proximity detector sensor requires power supply
+for its built-in led. It is also defined by this binding.
+
+Required properties:
+
+  - compatible : should be "sharp,gp2ap002a00f"
+  - reg : the I2C slave address of the light sensor
+  - interrupts : interrupt specifier for the sole interrupt generated
+		 by the device
+  - vled-supply : VLED power supply, as covered in ../regulator/regulator.txt
+  - vout-gpios : gpio connected to the vout pin (checked for the proximity status)
+  - io-channels : phandle to the ADC connected to the light sensor output
+  - io-channel-names : must be "light"
+
+Optional properties:
+
+  - wakeup-source : if the chip can be used to wakeup the system
+
+Example:
+
+gp2a@44 {
+	compatible = "sharp,gp2ap002a00f";
+	reg = <0x44>;
+	vout-gpio = <&gph0 2 GPIO_ACTIVE_LOW>;
+	vled-supply = <&gp2a_vled>;
+	interrupt-parent = <&gph0>;
+	interrupts = <2 IRQ_TYPE_EDGE_BOTH>;
+	io-channels = <&adc 9>;
+	io-channel-names = "light";
+
+	wakeup-source;
+};
