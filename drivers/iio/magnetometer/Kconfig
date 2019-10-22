@@ -114,6 +114,16 @@ config MMC35240
 	  To compile this driver as a module, choose M here: the module
 	  will be called mmc35240.
 
+config YAS529
+	tristate "Yamaha YAS529 3-axis magnetic sensor"
+	depends on I2C
+	help
+	  Say yes here to build support for the Yamaha YAS529 3-axis
+	  magnetic sensor.
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called yas529.
+
 config IIO_ST_MAGN_3AXIS
 	tristate "STMicroelectronics magnetometers 3-Axis Driver"
 	depends on (I2C || SPI_MASTER) && SYSFS
