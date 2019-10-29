@@ -14,6 +14,7 @@
 	aliases {
 		i2c6 = &i2c_pmic;
 		i2c9 = &i2c_fuel;
+		i2c12 = &i2c_yas529;
 	};
 
 	memory@30000000 {
@@ -322,6 +323,28 @@
 		};
 	};
 
+	i2c_yas529: i2c-gpio-9 {
+		compatible = "i2c-gpio";
+		sda-gpios = <&gpj0 1 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		scl-gpios = <&gpj0 0 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+		i2c-gpio,delay-us = <0>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&yas529_i2c>;
+
+		yas529@2e {
+			compatible = "yamaha,yas529";
+			reg = <0x2e>;
+
+			resetn-gpios = <&gpb 1 GPIO_ACTIVE_HIGH>;
+
+			pinctrl-names = "default";
+			pinctrl-0 = <&yas529_reset>;
+		};
+	};
+
 	vibrator: pwm-vibrator {
 		compatible = "pwm-vibrator";
 		pwms = <&pwm 1 44642 0>;
@@ -435,6 +458,20 @@
 	ts_irq: ts-irq {
 		samsung,pins = "gpj0-5";
 		samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
+		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
+		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
+	};
+
+	yas529_i2c: yas529-i2c {
+		samsung,pins = "gpj0-0", "gpj0-1";
+		samsung,pin-function = <EXYNOS_PIN_FUNC_F>;
+		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
+		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
+	};
+
+	yas529_reset: yas529-reset {
+		samsung,pins = "gpb-1";
+		samsung,pin-function = <EXYNOS_PIN_FUNC_OUTPUT>;
 		samsung,pin-pud = <S3C64XX_PIN_PULL_NONE>;
 		samsung,pin-drv = <EXYNOS4_PIN_DRV_LV1>;
 	};
