@@ -33,6 +33,7 @@ static const struct exynos_soc_id {
 	{ "EXYNOS5800", 0xE5422000 },
 	{ "EXYNOS7420", 0xE7420000 },
 	{ "EXYNOS5433", 0xE5433000 },
+	{ "EXYNOS8890", 0xE8890000 },
 };
 
 static const char * __init product_id_to_soc_id(unsigned int product_id)
