@@ -63,7 +63,7 @@ static long samsung_pll_round_rate(struct clk_hw *hw,
 	return rate_table[i - 1].rate;
 }
 
-static int samsung_pll3xxx_enable(struct clk_hw *hw)
+static int samsung_pll_enable(struct clk_hw *hw)
 {
 	struct samsung_clk_pll *pll = to_clk_pll(hw);
 	u32 tmp;
@@ -81,7 +81,7 @@ static int samsung_pll3xxx_enable(struct clk_hw *hw)
 	return 0;
 }
 
-static void samsung_pll3xxx_disable(struct clk_hw *hw)
+static void samsung_pll_disable(struct clk_hw *hw)
 {
 	struct samsung_clk_pll *pll = to_clk_pll(hw);
 	u32 tmp;
@@ -254,8 +254,8 @@ static const struct clk_ops samsung_pll35xx_clk_ops = {
 	.recalc_rate = samsung_pll35xx_recalc_rate,
 	.round_rate = samsung_pll_round_rate,
 	.set_rate = samsung_pll35xx_set_rate,
-	.enable = samsung_pll3xxx_enable,
-	.disable = samsung_pll3xxx_disable,
+	.enable = samsung_pll_enable,
+	.disable = samsung_pll_disable,
 };
 
 static const struct clk_ops samsung_pll35xx_clk_min_ops = {
@@ -371,8 +371,8 @@ static const struct clk_ops samsung_pll36xx_clk_ops = {
 	.recalc_rate = samsung_pll36xx_recalc_rate,
 	.set_rate = samsung_pll36xx_set_rate,
 	.round_rate = samsung_pll_round_rate,
-	.enable = samsung_pll3xxx_enable,
-	.disable = samsung_pll3xxx_disable,
+	.enable = samsung_pll_enable,
+	.disable = samsung_pll_disable,
 };
 
 static const struct clk_ops samsung_pll36xx_clk_min_ops = {
