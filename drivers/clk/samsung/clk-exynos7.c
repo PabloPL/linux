@@ -841,6 +841,8 @@ static const struct samsung_mux_clock peris_mux_clks[] __initconst = {
 };
 
 static const struct samsung_gate_clock peris_gate_clks[] __initconst = {
+	GATE(PCLK_MCT, "pclk_mct", "mout_aclk_peris_66_user",
+		ENABLE_PCLK_PERIS, 5, 0, 0),
 	GATE(PCLK_WDT, "pclk_wdt", "mout_aclk_peris_66_user",
 		ENABLE_PCLK_PERIS, 6, 0, 0),
 	GATE(PCLK_TMU, "pclk_tmu_apbif", "mout_aclk_peris_66_user",
