@@ -1,0 +1,56 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Samsung Exynos7420 SoC device tree source
+ *
+ * It's basically Exynos7 with additional 4 x A53 cores.
+ */
+
+/dts-v1/;
+#include "exynos7.dtsi"
+
+/ {
+	compatible = "samsung,exynos7420", "samsung,exynos7";
+	interrupt-parent = <&gic>;
+	#address-cells = <2>;
+	#size-cells = <2>;
+
+	arm_a53_pmu {
+		compatible = "arm,cortex-a53-pmu";
+		interrupts = <GIC_SPI 32 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 33 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 34 IRQ_TYPE_LEVEL_HIGH>,
+			     <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-affinity = <&cpu_apollo0>, <&cpu_apollo1>,
+				     <&cpu_apollo2>, <&cpu_apollo3>;
+	};
+};
+
+&cpus {
+    cpu_apollo0: cpu@100 {
+        device_type = "cpu";
+        compatible = "arm,cortex-a53";
+        reg = <0x100>;
+        enable-method = "psci";
+    };
+
+    cpu_apollo1: cpu@101 {
+        device_type = "cpu";
+        compatible = "arm,cortex-a53";
+        reg = <0x101>;
+        enable-method = "psci";
+    };
+
+    cpu_apollo2: cpu@102 {
+        device_type = "cpu";
+        compatible = "arm,cortex-a53";
+        reg = <0x102>;
+        enable-method = "psci";
+    };
+
+    cpu_apollo3: cpu@103 {
+        device_type = "cpu";
+        compatible = "arm,cortex-a53";
+        reg = <0x103>;
+        enable-method = "psci";
+    };
+};
