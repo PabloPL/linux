@@ -125,7 +125,8 @@
 #define PCLK_WDT			3
 #define PCLK_TMU			4
 #define SCLK_TMU			5
-#define PERIS_NR_CLK			6
+#define PCLK_MCT			6
+#define PERIS_NR_CLK			7
 
 /* FSYS0 */
 #define ACLK_MMC2			1
