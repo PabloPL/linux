@@ -8,6 +8,7 @@
  *
  */
 
+#include <linux/arm-smccc.h>
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -710,19 +711,36 @@ static void exynos_ufs_establish_connt(struct exynos_ufs *ufs)
 
 static void exynos_ufs_config_smu(struct exynos_ufs *ufs)
 {
-	u32 reg, val;
+	// u32 reg, val;
 
-	exynos_ufs_disable_auto_ctrl_hcc_save(ufs, &val);
+	// exynos_ufs_disable_auto_ctrl_hcc_save(ufs, &val);
 
-	/* make encryption disabled by default */
-	reg = ufsp_readl(ufs, UFSPRSECURITY);
-	ufsp_writel(ufs, reg | NSSMU, UFSPRSECURITY);
-	ufsp_writel(ufs, 0x0, UFSPSBEGIN0);
-	ufsp_writel(ufs, 0xffffffff, UFSPSEND0);
-	ufsp_writel(ufs, 0xff, UFSPSLUN0);
-	ufsp_writel(ufs, 0xf1, UFSPSCTRL0);
+	// /* make encryption disabled by default */
+	// reg = ufsp_readl(ufs, UFSPRSECURITY);
+	// ufsp_writel(ufs, reg | NSSMU, UFSPRSECURITY);
+	// ufsp_writel(ufs, 0x0, UFSPSBEGIN0);
+	// ufsp_writel(ufs, 0xffffffff, UFSPSEND0);
+	// ufsp_writel(ufs, 0xff, UFSPSLUN0);
+	// ufsp_writel(ufs, 0xf1, UFSPSCTRL0);
 
-	exynos_ufs_auto_ctrl_hcc_restore(ufs, &val);
+	// exynos_ufs_auto_ctrl_hcc_restore(ufs, &val);
+
+	struct arm_smccc_res res;
+#define SMC_CMD_FMP		(0xC2001810)
+#define FMP_SECURITY		0x8
+#define UFS_FMP			0x15572000
+#define FMP_DESC_OFF		0x0
+
+	arm_smccc_smc(SMC_CMD_FMP, FMP_SECURITY, UFS_FMP, FMP_DESC_OFF, 0, 0, 0, 0, &res);
+	if (res.a0)
+		dev_err(ufs->hba->dev, "Fail to smc call for FMP SECURITY\n");
+
+#define SMC_CMD_SMU		(0xC2001820)
+#define FMP_SMU_INIT		0x0
+#define FMP_SMU_OFF		0x0
+	arm_smccc_smc(SMC_CMD_SMU, FMP_SMU_INIT, FMP_SMU_OFF, 0, 0, 0, 0, 0, &res);
+	if (res.a0)
+		dev_err(ufs->hba->dev, "Fail to smc call for FMP SMU initialization\n");
 }
 
 static void exynos_ufs_config_sync_pattern_mask(struct exynos_ufs *ufs,
