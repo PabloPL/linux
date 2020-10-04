@@ -760,7 +760,7 @@ static const struct linear_range s2mps15_ldo_voltage_ranges2[] = {
 
 /* voltage range for s2mps15 LDO 4, 11, 12, 13, 22 and 26 */
 static const struct linear_range s2mps15_ldo_voltage_ranges3[] = {
-	REGULATOR_LINEAR_RANGE(700000, 0x0, 0x34, 12500),
+	REGULATOR_LINEAR_RANGE(700000, 0x0, 0x3f, 12500),
 };
 
 /* voltage range for s2mps15 LDO 7, 8, 9 and 10 */
