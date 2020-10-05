@@ -488,9 +488,9 @@
 			status = "disabled";
 		};
 
-		hsi2c_7: i2c@13e10000 {
+		hsi2c_7: i2c@14e10000 {
 			compatible = "samsung,exynos7-hsi2c";
-			reg = <0x13e10000 0x1000>;
+			reg = <0x14e10000 0x1000>;
 			interrupts = <GIC_SPI 462 IRQ_TYPE_LEVEL_HIGH>;
 			#address-cells = <1>;
 			#size-cells = <0>;
