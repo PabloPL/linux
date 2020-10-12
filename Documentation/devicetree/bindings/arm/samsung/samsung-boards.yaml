@@ -202,6 +202,14 @@ properties:
               - samsung,exynos7-espresso        # Samsung Exynos7 Espresso
           - const: samsung,exynos7
 
+      - description: Exynos7420 based boards
+        items:
+          - enum:
+              - samsung,exynos7420-zeroflte     # Samsung S6
+              - samsung,exynos7420-zerolte      # Samsung S6E
+          - const: samsung,exynos7420
+          - const: samsung,exynos7
+
       - description: Exynos7885 based boards
         items:
           - enum:
